@@ -1,0 +1,656 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Changed light mode to gray theme */
+  --background: oklch(0.95 0 0); /* Light gray background */
+  --foreground: oklch(0.2 0 0); /* Dark gray text */
+  --card: oklch(0.98 0 0); /* Very light gray cards */
+  --card-foreground: oklch(0.2 0 0);
+  --popover: oklch(0.98 0 0);
+  --popover-foreground: oklch(0.2 0 0);
+  --primary: oklch(0.4 0 0); /* Medium gray primary */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.9 0 0); /* Light gray secondary */
+  --secondary-foreground: oklch(0.3 0 0);
+  --muted: oklch(0.92 0 0); /* Muted gray */
+  --muted-foreground: oklch(0.5 0 0);
+  --accent: oklch(0.88 0 0); /* Accent gray */
+  --accent-foreground: oklch(0.3 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.85 0 0); /* Gray border */
+  --input: oklch(0.85 0 0); /* Gray input */
+  --ring: oklch(0.6 0 0); /* Gray ring */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.96 0 0); /* Light gray sidebar */
+  --sidebar-foreground: oklch(0.2 0 0);
+  --sidebar-primary: oklch(0.4 0 0);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.9 0 0);
+  --sidebar-accent-foreground: oklch(0.3 0 0);
+  --sidebar-border: oklch(0.85 0 0);
+  --sidebar-ring: oklch(0.6 0 0);
+
+  /* Added custom color variables for dynamic theming */
+  --custom-primary-hue: 0;
+  --custom-primary-saturation: 0;
+  --custom-primary-lightness: 0.4;
+}
+
+.dark {
+  --background: oklch(0.18 0.08 260); /* Darker blue */
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.18 0.08 260); /* Darker blue */
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.18 0.08 260); /* Darker blue */
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.25 0.05 260); /* Secondary background for dark blue */
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.25 0.05 260); /* Muted background for dark blue */
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.25 0.05 260); /* Accent background for dark blue */
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.25 0.05 260); /* Slightly lighter blue for borders */
+  --input: oklch(0.25 0.05 260); /* Slightly lighter blue for inputs */
+  --ring: oklch(0.35 0.05 260); /* Even lighter blue for rings */
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --sidebar: oklch(0.18 0.08 260); /* Darker blue */
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.25 0.05 260); /* Sidebar accent for dark blue */
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.25 0.05 260); /* Sidebar border for dark blue */
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+/* Added custom color theme classes */
+.custom-theme {
+  --primary: oklch(var(--custom-primary-lightness) var(--custom-primary-saturation) var(--custom-primary-hue));
+  --primary-foreground: oklch(0.98 0 0);
+  --accent: oklch(
+    calc(var(--custom-primary-lightness) + 0.1) calc(var(--custom-primary-saturation) * 0.5) var(--custom-primary-hue)
+  );
+  --accent-foreground: oklch(0.2 0 0);
+}
+
+@theme inline {
+  /* Added Montserrat as the default sans font */
+  --font-sans: var(--font-montserrat);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: oklch(0.646 0.222 41.116);
+  --color-chart-2: oklch(0.6 0.118 184.704);
+  --color-chart-3: oklch(0.398 0.07 227.392);
+  --color-chart-4: oklch(0.828 0.189 84.429);
+  --color-chart-5: oklch(0.769 0.188 70.08);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Added global link hover styles to use custom primary color */
+  a:hover,
+  button:hover,
+  [role="button"]:hover {
+    color: hsl(var(--primary)) !important;
+    transition: color 0.2s ease-in-out;
+  }
+
+  /* Ensure custom theme overrides apply to all interactive elements */
+  .custom-theme a:hover,
+  .custom-theme button:hover,
+  .custom-theme [role="button"]:hover,
+  .custom-theme .text-primary,
+  .custom-theme .hover\:text-primary:hover {
+    color: oklch(var(--custom-primary-lightness) var(--custom-primary-saturation) var(--custom-primary-hue)) !important;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Animations */
+/* New Falling Lines Animation */
+.lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  margin: auto;
+  width: 90vw; /* Adjust as needed, or use full width */
+  display: flex;
+  justify-content: space-between; /* Distribute lines evenly */
+  pointer-events: none; /* Ensure it doesn't block interactions */
+  z-index: 0; /* Place behind content */
+}
+
+.line {
+  position: relative;
+  width: 1px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.line::after {
+  content: "";
+  display: block;
+  position: absolute;
+  height: 15vh;
+  width: 100%;
+  top: -50%;
+  left: 0;
+  /* Default background, will be overridden by nth-child */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ffffff 75%, #ffffff 100%);
+  animation: drop 7s 0s infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.4, 0.26, 0, 0.97);
+}
+
+/* Different colors for each line's pseudo-element */
+.line:nth-child(1)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ff4500 75%, #ff4500 100%);
+  animation-delay: 0.5s;
+}
+.line:nth-child(2)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #32cd32 75%, #32cd32 100%);
+  animation-delay: 1s;
+}
+.line:nth-child(3)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #1e90ff 75%, #1e90ff 100%);
+  animation-delay: 1.5s;
+}
+.line:nth-child(4)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ffd700 75%, #ffd700 100%);
+  animation-delay: 2s;
+}
+.line:nth-child(5)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #8a2be2 75%, #8a2be2 100%);
+  animation-delay: 2.5s;
+}
+.line:nth-child(6)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #20b2aa 75%, #20b2aa 100%);
+  animation-delay: 3s;
+}
+.line:nth-child(7)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #dc143c 75%, #dc143c 100%);
+  animation-delay: 3.5s;
+}
+.line:nth-child(8)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #00fa9a 75%, #00fa9a 100%);
+  animation-delay: 4s;
+}
+.line:nth-child(9)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #ff1493 75%, #ff1493 100%);
+  animation-delay: 4.5s;
+}
+.line:nth-child(10)::after {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, #00bfff 75%, #00bfff 100%);
+  animation-delay: 5s;
+}
+
+/* Firefly Container */
+.firefly-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Firefly Base Styles */
+.firefly {
+  position: absolute;
+  width: 0.4vw;
+  height: 0.4vw;
+  animation: ease 200s alternate infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Apply specific movement animations to each firefly */
+.firefly:nth-child(1) {
+  left: 10%;
+  top: 20%;
+  animation: move1 15s ease-in-out infinite alternate;
+}
+.firefly:nth-child(2) {
+  left: 80%;
+  top: 15%;
+  animation: move2 18s ease-in-out infinite alternate;
+}
+.firefly:nth-child(3) {
+  left: 25%;
+  top: 70%;
+  animation: move3 12s ease-in-out infinite alternate;
+}
+.firefly:nth-child(4) {
+  left: 65%;
+  top: 80%;
+  animation: move4 20s ease-in-out infinite alternate;
+}
+.firefly:nth-child(5) {
+  left: 45%;
+  top: 30%;
+  animation: move5 16s ease-in-out infinite alternate;
+}
+.firefly:nth-child(6) {
+  left: 15%;
+  top: 60%;
+  animation: move6 14s ease-in-out infinite alternate;
+}
+.firefly:nth-child(7) {
+  left: 75%;
+  top: 45%;
+  animation: move7 22s ease-in-out infinite alternate;
+}
+.firefly:nth-child(8) {
+  left: 35%;
+  top: 85%;
+  animation: move8 13s ease-in-out infinite alternate;
+}
+.firefly:nth-child(9) {
+  left: 90%;
+  top: 25%;
+  animation: move9 19s ease-in-out infinite alternate;
+}
+.firefly:nth-child(10) {
+  left: 5%;
+  top: 40%;
+  animation: move10 17s ease-in-out infinite alternate;
+}
+.firefly:nth-child(11) {
+  left: 55%;
+  top: 65%;
+  animation: move11 21s ease-in-out infinite alternate;
+}
+.firefly:nth-child(12) {
+  left: 20%;
+  top: 10%;
+  animation: move12 11s ease-in-out infinite alternate;
+}
+.firefly:nth-child(13) {
+  left: 70%;
+  top: 75%;
+  animation: move13 24s ease-in-out infinite alternate;
+}
+.firefly:nth-child(14) {
+  left: 40%;
+  top: 55%;
+  animation: move14 15s ease-in-out infinite alternate;
+}
+.firefly:nth-child(15) {
+  left: 85%;
+  top: 90%;
+  animation: move15 18s ease-in-out infinite alternate;
+}
+
+.firefly::before,
+.firefly::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transform-origin: center;
+}
+
+.firefly::before {
+  background: rgba(255, 255, 0, 0.8);
+  opacity: 0.6;
+  animation: drift 4s ease alternate infinite;
+}
+
+.firefly::after {
+  background: yellow;
+  opacity: 0;
+  box-shadow: 0 0 0vw 0vw yellow;
+  animation: drift 4s ease alternate infinite, flash 3s ease infinite;
+}
+
+/* Movement Keyframes for Each Firefly */
+@keyframes move1 {
+  0% {
+    transform: translateX(-20vw) translateY(-15vh) scale(0.5);
+  }
+  25% {
+    transform: translateX(10vw) translateY(-25vh) scale(0.8);
+  }
+  50% {
+    transform: translateX(-5vw) translateY(-10vh) scale(0.6);
+  }
+  75% {
+    transform: translateX(15vw) translateY(-30vh) scale(0.9);
+  }
+  100% {
+    transform: translateX(-25vw) translateY(-20vh) scale(0.4);
+  }
+}
+
+@keyframes move2 {
+  0% {
+    transform: translateX(30vw) translateY(-10vh) scale(0.7);
+  }
+  33% {
+    transform: translateX(-10vw) translateY(-35vh) scale(0.5);
+  }
+  66% {
+    transform: translateX(20vw) translateY(-5vh) scale(0.8);
+  }
+  100% {
+    transform: translateX(-15vw) translateY(-25vh) scale(0.6);
+  }
+}
+
+@keyframes move3 {
+  0% {
+    transform: translateX(-35vw) translateY(-20vh) scale(0.6);
+  }
+  20% {
+    transform: translateX(5vw) translateY(-40vh) scale(0.9);
+  }
+  40% {
+    transform: translateX(-20vw) translateY(-8vh) scale(0.4);
+  }
+  60% {
+    transform: translateX(25vw) translateY(-28vh) scale(0.7);
+  }
+  80% {
+    transform: translateX(-10vw) translateY(-15vh) scale(0.8);
+  }
+  100% {
+    transform: translateX(15vw) translateY(-35vh) scale(0.5);
+  }
+}
+
+@keyframes move4 {
+  0% {
+    transform: translateX(40vw) translateY(-25vh) scale(0.8);
+  }
+  25% {
+    transform: translateX(-20vw) translateY(-5vh) scale(0.6);
+  }
+  50% {
+    transform: translateX(10vw) translateY(-40vh) scale(0.9);
+  }
+  75% {
+    transform: translateX(-30vw) translateY(-18vh) scale(0.4);
+  }
+  100% {
+    transform: translateX(20vw) translateY(-32vh) scale(0.7);
+  }
+}
+
+@keyframes move5 {
+  0% {
+    transform: translateX(-15vw) translateY(-30vh) scale(0.5);
+  }
+  30% {
+    transform: translateX(35vw) translateY(-12vh) scale(0.8);
+  }
+  60% {
+    transform: translateX(-25vw) translateY(-38vh) scale(0.6);
+  }
+  100% {
+    transform: translateX(10vw) translateY(-22vh) scale(0.9);
+  }
+}
+
+@keyframes move6 {
+  0% {
+    transform: translateX(25vw) translateY(-8vh) scale(0.7);
+  }
+  25% {
+    transform: translateX(-40vw) translateY(-28vh) scale(0.4);
+  }
+  50% {
+    transform: translateX(15vw) translateY(-42vh) scale(0.8);
+  }
+  75% {
+    transform: translateX(-5vw) translateY(-15vh) scale(0.6);
+  }
+  100% {
+    transform: translateX(30vw) translateY(-35vh) scale(0.5);
+  }
+}
+
+@keyframes move7 {
+  0% {
+    transform: translateX(-30vw) translateY(-18vh) scale(0.6);
+  }
+  40% {
+    transform: translateX(20vw) translateY(-35vh) scale(0.9);
+  }
+  80% {
+    transform: translateX(-10vw) translateY(-8vh) scale(0.4);
+  }
+  100% {
+    transform: translateX(35vw) translateY(-25vh) scale(0.7);
+  }
+}
+
+@keyframes move8 {
+  0% {
+    transform: translateX(15vw) translateY(-40vh) scale(0.8);
+  }
+  20% {
+    transform: translateX(-25vw) translateY(-12vh) scale(0.5);
+  }
+  40% {
+    transform: translateX(40vw) translateY(-30vh) scale(0.7);
+  }
+  60% {
+    transform: translateX(-15vw) translateY(-45vh) scale(0.6);
+  }
+  80% {
+    transform: translateX(5vw) translateY(-20vh) scale(0.9);
+  }
+  100% {
+    transform: translateX(-35vw) translateY(-38vh) scale(0.4);
+  }
+}
+
+@keyframes move9 {
+  0% {
+    transform: translateX(-40vw) translateY(-22vh) scale(0.5);
+  }
+  33% {
+    transform: translateX(10vw) translateY(-38vh) scale(0.8);
+  }
+  66% {
+    transform: translateX(-20vw) translateY(-10vh) scale(0.6);
+  }
+  100% {
+    transform: translateX(30vw) translateY(-28vh) scale(0.7);
+  }
+}
+
+@keyframes move10 {
+  0% {
+    transform: translateX(35vw) translateY(-15vh) scale(0.9);
+  }
+  25% {
+    transform: translateX(-10vw) translateY(-42vh) scale(0.4);
+  }
+  50% {
+    transform: translateX(20vw) translateY(-25vh) scale(0.6);
+  }
+  75% {
+    transform: translateX(-30vw) translateY(-8vh) scale(0.8);
+  }
+  100% {
+    transform: translateX(5vw) translateY(-35vh) scale(0.5);
+  }
+}
+
+@keyframes move11 {
+  0% {
+    transform: translateX(-25vw) translateY(-35vh) scale(0.7);
+  }
+  30% {
+    transform: translateX(40vw) translateY(-18vh) scale(0.5);
+  }
+  60% {
+    transform: translateX(-5vw) translateY(-45vh) scale(0.8);
+  }
+  100% {
+    transform: translateX(25vw) translateY(-12vh) scale(0.6);
+  }
+}
+
+@keyframes move12 {
+  0% {
+    transform: translateX(20vw) translateY(-28vh) scale(0.6);
+  }
+  40% {
+    transform: translateX(-35vw) translateY(-5vh) scale(0.9);
+  }
+  80% {
+    transform: translateX(15vw) translateY(-40vh) scale(0.4);
+  }
+  100% {
+    transform: translateX(-20vw) translateY(-22vh) scale(0.7);
+  }
+}
+
+@keyframes move13 {
+  0% {
+    transform: translateX(-10vw) translateY(-12vh) scale(0.8);
+  }
+  25% {
+    transform: translateX(30vw) translateY(-38vh) scale(0.5);
+  }
+  50% {
+    transform: translateX(-40vw) translateY(-25vh) scale(0.6);
+  }
+  75% {
+    transform: translateX(10vw) translateY(-8vh) scale(0.9);
+  }
+  100% {
+    transform: translateX(-15vw) translateY(-42vh) scale(0.4);
+  }
+}
+
+@keyframes move14 {
+  0% {
+    transform: translateX(40vw) translateY(-20vh) scale(0.5);
+  }
+  33% {
+    transform: translateX(-20vw) translateY(-40vh) scale(0.7);
+  }
+  66% {
+    transform: translateX(25vw) translateY(-15vh) scale(0.8);
+  }
+  100% {
+    transform: translateX(-35vw) translateY(-32vh) scale(0.6);
+  }
+}
+
+@keyframes move15 {
+  0% {
+    transform: translateX(-5vw) translateY(-38vh) scale(0.9);
+  }
+  20% {
+    transform: translateX(35vw) translateY(-10vh) scale(0.4);
+  }
+  40% {
+    transform: translateX(-30vw) translateY(-28vh) scale(0.7);
+  }
+  60% {
+    transform: translateX(15vw) translateY(-45vh) scale(0.5);
+  }
+  80% {
+    transform: translateX(-25vw) translateY(-18vh) scale(0.8);
+  }
+  100% {
+    transform: translateX(20vw) translateY(-35vh) scale(0.6);
+  }
+}
+
+/* Base Animations */
+@keyframes drift {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes flash {
+  0%,
+  30%,
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0vw 0vw yellow;
+  }
+  5% {
+    opacity: 1;
+    box-shadow: 0 0 2vw 0.4vw yellow;
+  }
+}
+
+/* Adding missing drop animation keyframes for rainbow fall effect */
+@keyframes drop {
+  0% {
+    top: -50%;
+  }
+  100% {
+    top: 110%;
+  }
+}
