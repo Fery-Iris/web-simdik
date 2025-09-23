@@ -12,7 +12,7 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: "v0 App",
+  title: "PortalSIMDIK",
   description: "Created with v0",
   generator: "v0.dev",
 }
@@ -24,15 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <style>{`
-html {
-  font-family: ${montserrat.style.fontFamily};
-  --font-sans: ${montserrat.variable};
-}
-        `}</style>
-      </head>
-      <body>
+      <body className={`${montserrat.className} ${montserrat.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>

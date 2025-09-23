@@ -20,12 +20,36 @@ export function ScrollReveal({
   className = "",
   triggerOnce = true,
 }: ScrollRevealProps) {
-  const [ref, isVisible] = useScrollAnimation({ triggerOnce })
+  const [ref, isVisible] = useScrollAnimation<HTMLDivElement>({ triggerOnce })
 
   const getAnimationClass = () => {
     const baseClass = "transition-all ease-out"
-    const durationClass = `duration-[${duration}ms]`
-    const delayClass = delay > 0 ? `delay-[${delay}ms]` : ""
+    
+    // Use predefined Tailwind duration classes
+    const getDurationClass = (ms: number) => {
+      if (ms <= 150) return "duration-150"
+      if (ms <= 200) return "duration-200"
+      if (ms <= 300) return "duration-300"
+      if (ms <= 500) return "duration-500"
+      if (ms <= 700) return "duration-700"
+      if (ms <= 1000) return "duration-1000"
+      return "duration-1000"
+    }
+    
+    const getDelayClass = (ms: number) => {
+      if (ms <= 75) return "delay-75"
+      if (ms <= 100) return "delay-100"
+      if (ms <= 150) return "delay-150"
+      if (ms <= 200) return "delay-200"
+      if (ms <= 300) return "delay-300"
+      if (ms <= 500) return "delay-500"
+      if (ms <= 700) return "delay-700"
+      if (ms <= 1000) return "delay-1000"
+      return ""
+    }
+
+    const durationClass = getDurationClass(duration)
+    const delayClass = delay > 0 ? getDelayClass(delay) : ""
 
     if (!isVisible) {
       switch (animation) {

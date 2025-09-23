@@ -1,78 +1,96 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useState, useEffect, useRef, RefObject } from "react"
 
-interface UseScrollAnimationOptions {
+// Opsi untuk kedua hook
+interface ScrollAnimationOptions {
   threshold?: number
   rootMargin?: string
   triggerOnce?: boolean
-  delay?: number
+  delay?: number // Khusus untuk staggered hook
 }
 
-export function useScrollAnimation(options: UseScrollAnimationOptions = {}) {
+/**
+ * Hook untuk mendeteksi kapan sebuah elemen masuk ke dalam viewport.
+ * Mengembalikan ref untuk dipasang ke elemen dan status boolean `isVisible`.
+ */
+// ✨ FIX 1: Jadikan hook "generic" dengan `<T extends HTMLElement>`
+// Ini membuatnya bisa menerima tipe elemen spesifik (seperti HTMLDivElement).
+export function useScrollAnimation<T extends HTMLElement>(
+  options: ScrollAnimationOptions = {},
+): [RefObject<T>, boolean] {
+  const { triggerOnce = true, threshold = 0.1, rootMargin = "0px" } = options
   const [isVisible, setIsVisible] = useState(false)
-  const ref = useRef<HTMLElement>(null)
+
+  // ✨ FIX 2: Gunakan tipe generic <T> pada useRef, bukan HTMLElement
+  const ref = useRef<T>(null)
 
   useEffect(() => {
+    const element = ref.current
+    if (!element) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true)
-          if (options.triggerOnce && ref.current) {
-            observer.unobserve(ref.current)
+          if (triggerOnce) {
+            observer.unobserve(element)
           }
-        } else if (!options.triggerOnce) {
+        } else if (!triggerOnce) {
           setIsVisible(false)
         }
       },
-      {
-        threshold: options.threshold || 0.1,
-        rootMargin: options.rootMargin || "0px 0px -50px 0px",
-      },
+      { threshold, rootMargin },
     )
 
-    const currentRef = ref.current
-    if (currentRef) {
-      observer.observe(currentRef)
-    }
+    observer.observe(element)
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef)
-      }
+      // Pastikan untuk membersihkan observer saat komponen di-unmount
+      observer.unobserve(element)
     }
-  }, [options.threshold, options.rootMargin, options.triggerOnce])
+  }, [ref, triggerOnce, threshold, rootMargin])
 
-  return [ref, isVisible] as const
+  return [ref, isVisible]
 }
 
-// Hook for multiple elements with staggered animations
-export function useStaggeredScrollAnimation(count: number, options: UseScrollAnimationOptions = {}) {
+
+/**
+ * Hook untuk animasi staggered pada beberapa elemen.
+ * Mengembalikan fungsi untuk mengatur ref dan array boolean `visibleItems`.
+ */
+// ✨ FIX 3: Terapkan pola generic yang sama pada hook kedua
+export function useStaggeredScrollAnimation<T extends HTMLElement>(
+  count: number,
+  options: ScrollAnimationOptions = {},
+): [(index: number) => (el: T | null) => void, boolean[]] {
+  const { triggerOnce = true, threshold = 0.1, rootMargin = "0px", delay = 150 } = options
   const [visibleItems, setVisibleItems] = useState<boolean[]>(new Array(count).fill(false))
-  const refs = useRef<(HTMLElement | null)[]>([])
+  
+  // ✨ FIX 4: Gunakan tipe generic <T> untuk array refs
+  const refs = useRef<(T | null)[]>([])
 
   useEffect(() => {
-    const observers = refs.current.map((ref, index) => {
-      if (!ref) return null
+    const observers: IntersectionObserver[] = []
+
+    refs.current.forEach((element, index) => {
+      if (!element) return
 
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setTimeout(
-              () => {
-                setVisibleItems((prev) => {
-                  const newState = [...prev]
-                  newState[index] = true
-                  return newState
-                })
-              },
-              (options.delay || 100) * index,
-            )
+            setTimeout(() => {
+              setVisibleItems((prev) => {
+                const newState = [...prev]
+                newState[index] = true
+                return newState
+              })
+            }, delay * index)
 
-            if (options.triggerOnce) {
-              observer.unobserve(ref)
+            if (triggerOnce) {
+              observer.unobserve(element)
             }
-          } else if (!options.triggerOnce) {
+          } else if (!triggerOnce) {
             setVisibleItems((prev) => {
               const newState = [...prev]
               newState[index] = false
@@ -80,24 +98,22 @@ export function useStaggeredScrollAnimation(count: number, options: UseScrollAni
             })
           }
         },
-        {
-          threshold: options.threshold || 0.1,
-          rootMargin: options.rootMargin || "0px 0px -50px 0px",
-        },
+        { threshold, rootMargin },
       )
 
-      observer.observe(ref)
-      return observer
+      observer.observe(element)
+      observers.push(observer)
     })
 
     return () => {
-      observers.forEach((observer) => observer?.disconnect())
+      observers.forEach((observer) => observer.disconnect())
     }
-  }, [count, options.delay, options.threshold, options.rootMargin, options.triggerOnce])
+  }, [count, delay, threshold, rootMargin, triggerOnce])
 
-  const setRef = (index: number) => (el: HTMLElement | null) => {
+  // ✨ FIX 5: Gunakan tipe generic <T> pada parameter 'el'
+  const setRef = (index: number) => (el: T | null) => {
     refs.current[index] = el
   }
 
-  return [setRef, visibleItems] as const
+  return [setRef, visibleItems]
 }

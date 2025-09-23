@@ -88,6 +88,7 @@ export function ScrollingNewsCarousel() {
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const autoScrollRef = useRef<NodeJS.Timeout>()
+  const resumeTimeoutRef = useRef<NodeJS.Timeout>()
 
   // Auto-scroll functionality
   useEffect(() => {
@@ -95,11 +96,22 @@ export function ScrollingNewsCarousel() {
       autoScrollRef.current = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % allNewsData.length)
       }, 4000) // Change slide every 4 seconds
+    } else {
+      // Clear interval when auto-scrolling is disabled
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current)
+        autoScrollRef.current = undefined
+      }
     }
 
     return () => {
       if (autoScrollRef.current) {
         clearInterval(autoScrollRef.current)
+        autoScrollRef.current = undefined
+      }
+      if (resumeTimeoutRef.current) {
+        clearTimeout(resumeTimeoutRef.current)
+        resumeTimeoutRef.current = undefined
       }
     }
   }, [isAutoScrolling])
@@ -108,8 +120,20 @@ export function ScrollingNewsCarousel() {
   const goToSlide = (index: number) => {
     setCurrentIndex(index)
     setIsAutoScrolling(false)
+    
+    // Clear any existing timeouts
+    if (autoScrollRef.current) {
+      clearInterval(autoScrollRef.current)
+      autoScrollRef.current = undefined
+    }
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current)
+    }
+    
     // Resume auto-scroll after 10 seconds of inactivity
-    setTimeout(() => setIsAutoScrolling(true), 10000)
+    resumeTimeoutRef.current = setTimeout(() => {
+      setIsAutoScrolling(true)
+    }, 10000)
   }
 
   const goToPrevious = () => {
@@ -136,7 +160,7 @@ export function ScrollingNewsCarousel() {
       {/* Scrolling Container */}
       <div
         ref={scrollContainerRef}
-        className="flex transition-transform duration-700 ease-in-out"
+        className="flex transition-transform duration-700 ease-in-out will-change-transform"
         style={{
           transform: `translateX(-${currentIndex * (100 / 3)}%)`,
           width: `${(allNewsData.length * 100) / 3}%`,

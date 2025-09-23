@@ -29,15 +29,51 @@ export function ColorPicker() {
     // Load saved color from localStorage
     const savedColor = localStorage.getItem("custom-color")
     if (savedColor) {
-      const { r, g, b } = JSON.parse(savedColor)
-      setRed(r)
-      setGreen(g)
-      setBlue(b)
-      applyCustomColor(r, g, b)
+      try {
+        const parsedColor = JSON.parse(savedColor)
+        const { r, g, b } = parsedColor
+        
+        // Validate that the parsed values are valid numbers
+        if (
+          typeof r === "number" &&
+          typeof g === "number" &&
+          typeof b === "number" &&
+          !isNaN(r) &&
+          !isNaN(g) &&
+          !isNaN(b) &&
+          r >= 0 && r <= 255 &&
+          g >= 0 && g <= 255 &&
+          b >= 0 && b <= 255
+        ) {
+          setRed(r)
+          setGreen(g)
+          setBlue(b)
+          applyCustomColor(r, g, b)
+        } else {
+          console.warn("Invalid RGB color data in localStorage, using defaults")
+          localStorage.removeItem("custom-color")
+        }
+      } catch (error) {
+        console.warn("Failed to parse saved RGB color data:", error)
+        localStorage.removeItem("custom-color")
+      }
     }
   }, [])
 
   const applyCustomColor = (r: number, g: number, b: number) => {
+    // Validate that all parameters are valid numbers
+    if (
+      typeof r !== "number" ||
+      typeof g !== "number" ||
+      typeof b !== "number" ||
+      isNaN(r) ||
+      isNaN(g) ||
+      isNaN(b)
+    ) {
+      console.warn("Invalid RGB color values provided to applyCustomColor:", { r, g, b })
+      return
+    }
+
     document.documentElement.style.setProperty("--custom-primary-red", r.toString())
     document.documentElement.style.setProperty("--custom-primary-green", g.toString())
     document.documentElement.style.setProperty("--custom-primary-blue", b.toString())

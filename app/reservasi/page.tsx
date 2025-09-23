@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calendar"
+import { SimpleCalendar } from "@/components/ui/simple-calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { CalendarIcon, Clock, Users, GraduationCap, Baby, School, Menu, Printer } from "lucide-react"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
@@ -17,6 +19,7 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { generateTicketPDF, type ReservationTicketData } from "@/lib/pdf-generator"
 
 // Static data for services and time slots
 const services = [
@@ -86,6 +89,7 @@ interface ReservationData {
 export default function ReservasiPage() {
   const [step, setStep] = useState(1)
   const [selectedDate, setSelectedDate] = useState<Date>()
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [reservationData, setReservationData] = useState<ReservationData>({
     service: "",
     date: undefined,
@@ -97,6 +101,7 @@ export default function ReservasiPage() {
   })
   const [queueNumber, setQueueNumber] = useState<string>("")
   const [estimatedTime, setEstimatedTime] = useState<string>("")
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
 
   const handleServiceSelect = (serviceId: string) => {
     setReservationData({ ...reservationData, service: serviceId })
@@ -123,13 +128,36 @@ export default function ReservasiPage() {
     setStep(4)
   }
 
-  const handlePrint = () => {
-    window.print()
+  const handlePrint = async () => {
+    if (!selectedService || !selectedDate || !selectedTimeSlot) return
+
+    setIsGeneratingPDF(true)
+
+    const ticketData: ReservationTicketData = {
+      queueNumber,
+      serviceName: selectedService.name,
+      name: reservationData.name,
+      date: format(selectedDate, "PPP", { locale: id }),
+      time: selectedTimeSlot.time,
+      estimatedTime,
+      phone: reservationData.phone,
+    }
+
+    try {
+      await generateTicketPDF(ticketData)
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      // Fallback to regular print
+      window.print()
+    } finally {
+      setIsGeneratingPDF(false)
+    }
   }
 
   const resetForm = () => {
     setStep(1)
     setSelectedDate(undefined)
+    setIsCalendarOpen(false)
     setReservationData({
       service: "",
       date: undefined,
@@ -227,7 +255,7 @@ export default function ReservasiPage() {
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+      <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 relative">
         <ScrollReveal animation="fade-up" delay={100}>
           <div className="flex items-center justify-center mb-6 sm:mb-8 overflow-x-auto pb-2">
             {[1, 2, 3, 4].map((stepNum) => (
@@ -313,44 +341,69 @@ export default function ReservasiPage() {
               </CardHeader>
               <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-8 bg-card dark:bg-card">
                 {/* Date Selection */}
-                <div>
+                <div className="relative">
                   <Label className="text-sm sm:text-base font-medium text-foreground">Pilih Tanggal</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal mt-2 h-10 sm:h-12 bg-background dark:bg-background border-input dark:border-input text-sm sm:text-base touch-manipulation",
-                          !selectedDate && "text-muted-foreground",
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP", { locale: id }) : "Pilih tanggal"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-popover dark:bg-popover border-border dark:border-border">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => {
-                          setSelectedDate(date)
-                          setReservationData({ ...reservationData, timeSlot: "" })
-                        }}
-                        disabled={(date) => {
-                          // Disable past dates
-                          const today = new Date()
-                          today.setHours(0, 0, 0, 0)
-                          if (date < today) return true
+                  
+                  {/* Desktop Calendar - Using Dialog as fallback */}
+                  <div className="hidden sm:block relative">
+                    <Dialog open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal mt-2 h-10 sm:h-12 bg-background dark:bg-background border-input dark:border-input text-sm sm:text-base touch-manipulation",
+                            !selectedDate && "text-muted-foreground",
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, "PPP", { locale: id }) : "Pilih tanggal"}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="w-auto p-0 bg-background border-border max-w-fit">
+                        <DialogHeader className="px-6 pt-6 pb-2">
+                          <DialogTitle>Pilih Tanggal</DialogTitle>
+                        </DialogHeader>
+                        <div className="px-6 pb-6">
+                          <SimpleCalendar
+                            selected={selectedDate}
+                            onSelect={(date) => {
+                              console.log("Date selected:", date)
+                              setSelectedDate(date)
+                              setReservationData({ ...reservationData, date: date, timeSlot: "" })
+                              setIsCalendarOpen(false)
+                            }}
+                            disabled={(date) => {
+                              const today = new Date()
+                              today.setHours(0, 0, 0, 0)
+                              if (date < today) return true
+                              const dayOfWeek = date.getDay()
+                              return dayOfWeek === 0 || dayOfWeek === 6
+                            }}
+                          />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
 
-                          // Disable weekends (Saturday = 6, Sunday = 0)
-                          const dayOfWeek = date.getDay()
-                          return dayOfWeek === 0 || dayOfWeek === 6
-                        }}
-                        initialFocus
-                        className="bg-popover dark:bg-popover"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  {/* Mobile Calendar */}
+                  <div className="sm:hidden">
+                    <SimpleCalendar
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        console.log("Mobile date selected:", date)
+                        setSelectedDate(date)
+                        setReservationData({ ...reservationData, date: date, timeSlot: "" })
+                      }}
+                      disabled={(date) => {
+                        const today = new Date()
+                        today.setHours(0, 0, 0, 0)
+                        if (date < today) return true
+                        const dayOfWeek = date.getDay()
+                        return dayOfWeek === 0 || dayOfWeek === 6
+                      }}
+                      className="mt-2"
+                    />
+                  </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     *Layanan tidak tersedia pada hari Sabtu dan Minggu
                   </p>
@@ -409,7 +462,7 @@ export default function ReservasiPage() {
                   <Button
                     onClick={handleDateTimeSelect}
                     disabled={!selectedDate || !reservationData.timeSlot}
-                    className="w-full sm:flex-1 h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 touch-manipulation"
+                    className="w-full sm:flex-1 h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Lanjutkan
                   </Button>
@@ -601,11 +654,12 @@ export default function ReservasiPage() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 print:hidden">
                   <Button
                     onClick={handlePrint}
-                    className="w-full sm:flex-1 h-10 sm:h-12 bg-green-600 hover:bg-green-700 touch-manipulation"
+                    disabled={isGeneratingPDF}
+                    className="w-full sm:flex-1 h-10 sm:h-12 bg-green-600 hover:bg-green-700 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
                     size="lg"
                   >
                     <Printer className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    Cetak Tiket
+                    {isGeneratingPDF ? "Membuat PDF..." : "Unduh Tiket"}
                   </Button>
                   <Button
                     onClick={resetForm}

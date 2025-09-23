@@ -142,7 +142,7 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300 pointer-events-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -205,7 +205,7 @@ export default function Component() {
       {/* Hero Section */}
       <section className="py-20 relative overflow-hidden">
         {/* Background Image and Overlay */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 pointer-events-none">
           <Image
             src="/images/dinas-pendidikan-banjarmasin-real.jpeg"
             alt="Kantor Dinas Pendidikan Kota Banjarmasin"
@@ -213,11 +213,11 @@ export default function Component() {
             className="object-cover object-center animate-bg-pan"
             priority
           />
-          <div className="absolute inset-0 bg-blue-900 opacity-60"></div> {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-blue-900 opacity-60 pointer-events-none"></div> {/* Dark overlay for text readability */}
         </div>
 
         {/* Background Animation - More colorful and dynamic "pernak-pernik" */}
-        <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
           <ScrollReveal animation="scale" delay={0}>
             <div className="absolute top-10 left-10 w-24 h-24 bg-blue-400 rounded-full animate-float-strong blur-sm"></div>
           </ScrollReveal>
