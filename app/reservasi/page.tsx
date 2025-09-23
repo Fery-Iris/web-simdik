@@ -141,6 +141,7 @@ export default function ReservasiPage() {
       time: selectedTimeSlot.time,
       estimatedTime,
       phone: reservationData.phone,
+      purpose: reservationData.purpose,
     }
 
     try {
@@ -640,6 +641,10 @@ export default function ReservasiPage() {
                       <div className="flex justify-between py-1 sm:py-2">
                         <span className="font-medium print:text-black">No. HP:</span>
                         <span className="print:text-black text-right">{reservationData.phone}</span>
+                      </div>
+                      <div className="flex justify-between py-1 sm:py-2">
+                        <span className="font-medium print:text-black">Tujuan:</span>
+                        <span className="print:text-black text-right break-words max-w-[60%]">{reservationData.purpose}</span>
                       </div>
                     </div>
 

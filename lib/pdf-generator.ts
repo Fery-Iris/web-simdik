@@ -7,6 +7,7 @@ export interface ReservationTicketData {
   time: string
   estimatedTime: string
   phone: string
+  purpose: string
 }
 
 export async function generateTicketPDF(data: ReservationTicketData): Promise<void> {
@@ -178,6 +179,10 @@ export async function generateTicketPDF(data: ReservationTicketData): Promise<vo
               <div class="detail-row">
                 <span class="detail-label">No. HP:</span>
                 <span class="detail-value">${data.phone}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Tujuan:</span>
+                <span class="detail-value">${data.purpose}</span>
               </div>
             </div>
             
