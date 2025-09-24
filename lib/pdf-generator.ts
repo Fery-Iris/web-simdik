@@ -216,4 +216,3 @@ export async function generateTicketPDF(data: ReservationTicketData): Promise<vo
     throw error
   }
 }
-

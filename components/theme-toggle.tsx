@@ -4,16 +4,9 @@ import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ColorPicker } from "@/components/color-picker"
 
 // 1. PASTIKAN `DropdownMenuPortal` di-import dari sini
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuPortal,
-} from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export function ThemeToggle() {
   const { setTheme } = useTheme()
@@ -29,7 +22,6 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <div className="flex items-center gap-1">
-        <ColorPicker />
         <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
           <Sun className="h-[1.2rem] w-[1.2rem]" />
         </Button>
@@ -40,8 +32,6 @@ export function ThemeToggle() {
   // Tampilkan komponen lengkap setelah siap
   return (
     <div className="flex items-center gap-1">
-      <ColorPicker />
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button type="button" variant="ghost" size="icon" className="h-8 w-8 relative">
@@ -50,20 +40,11 @@ export function ThemeToggle() {
             <span className="sr-only">Toggle theme</span>
           </Button>
         </DropdownMenuTrigger>
-
-        <DropdownMenuPortal>
-          <DropdownMenuContent align="end" sideOffset={8} className="z-50">
-            <DropdownMenuItem onClick={() => setTheme("light")}>
-              Light
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>
-              Dark
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>
-              System
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenuPortal>
+        <DropdownMenuContent align="end" sideOffset={8} className="z-50">
+          <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
+        </DropdownMenuContent>
       </DropdownMenu>
     </div>
   )
