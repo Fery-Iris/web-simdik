@@ -13,7 +13,6 @@ import { Textarea } from "@/components/ui/textarea"
 import {
   School,
   FileText,
-  Settings,
   Menu,
   X,
   Plus,
@@ -25,14 +24,11 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  Shield,
   LogOut,
   Bell,
   ChevronDown,
   Home,
   Newspaper,
-  Database,
-  Save,
   Calendar,
   XCircle,
   Filter,
@@ -247,55 +243,56 @@ export default function AdminDashboard() {
     },
   ])
 
-  const settingsData = {
-    general: {
-      siteName: "SIMDIK Banjarmasin",
-      siteDescription: "Sistem Informasi Manajemen Data dan Informasi Kependidikan Kota Banjarmasin",
-      contactEmail: "info@simdik.banjarmasin.go.id",
-      contactPhone: "(0511) 3252732",
-      address: "Jl. Sultan Adam No. 18, Banjarmasin Tengah, Kota Banjarmasin, Kalimantan Selatan 70111",
-      timezone: "Asia/Makassar",
-      language: "id",
-    },
-    security: {
-      passwordMinLength: 8,
-      sessionTimeout: 30,
-      maxLoginAttempts: 5,
-      twoFactorAuth: false,
-      passwordExpiry: 90,
-    },
-    notifications: {
-      emailNotifications: true,
-      smsNotifications: false,
-      pushNotifications: true,
-      reportAlerts: true,
-      systemMaintenance: true,
-    },
-    backup: {
-      autoBackup: true,
-      backupFrequency: "daily",
-      retentionPeriod: 30,
-      lastBackup: "2024-01-15 02:00:00",
-    },
-  }
+  // Removed settingsData and related state/handlers
+  // const settingsData = {
+  //   general: {
+  //     siteName: "SIMDIK Banjarmasin",
+  //     siteDescription: "Sistem Informasi Manajemen Data dan Informasi Kependidikan Kota Banjarmasin",
+  //     contactEmail: "info@simdik.banjarmasin.go.id",
+  //     contactPhone: "(0511) 3252732",
+  //     address: "Jl. Sultan Adam No. 18, Banjarmasin Tengah, Kota Banjarmasin, Kalimantan Selatan 70111",
+  //     timezone: "Asia/Makassar",
+  //     language: "id",
+  //   },
+  //   security: {
+  //     passwordMinLength: 8,
+  //     sessionTimeout: 30,
+  //     maxLoginAttempts: 5,
+  //     twoFactorAuth: false,
+  //     passwordExpiry: 90,
+  //   },
+  //   notifications: {
+  //     emailNotifications: true,
+  //     smsNotifications: false,
+  //     pushNotifications: true,
+  //     reportAlerts: true,
+  //     systemMaintenance: true,
+  //   },
+  //   backup: {
+  //     autoBackup: true,
+  //     backupFrequency: "daily",
+  //     retentionPeriod: 30,
+  //     lastBackup: "2024-01-15 02:00:00",
+  //   },
+  // }
 
-  const [settingsForm, setSettingsForm] = useState(settingsData)
-  const [activeSettingsTab, setActiveSettingsTab] = useState("general")
+  // const [settingsForm, setSettingsForm] = useState(settingsData)
+  // const [activeSettingsTab, setActiveSettingsTab] = useState("general")
 
-  const handleSettingsChange = (section: string, field: string, value: any) => {
-    setSettingsForm((prev) => ({
-      ...prev,
-      [section]: {
-        ...prev[section as keyof typeof prev],
-        [field]: value,
-      },
-    }))
-  }
+  // const handleSettingsChange = (section: string, field: string, value: any) => {
+  //   setSettingsForm((prev) => ({
+  //     ...prev,
+  //     [section]: {
+  //       ...prev[section as keyof typeof prev],
+  //       [field]: value,
+  //     },
+  //   }))
+  // }
 
-  const handleSaveSettings = () => {
-    console.log("Saving settings:", settingsForm)
-    alert("Pengaturan berhasil disimpan!")
-  }
+  // const handleSaveSettings = () => {
+  //   console.log("Saving settings:", settingsForm)
+  //   alert("Pengaturan berhasil disimpan!")
+  // }
 
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/admin", active: activeTab === "dashboard" },
@@ -303,7 +300,7 @@ export default function AdminDashboard() {
     { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news", active: activeTab === "news" },
     { icon: Clock, label: "Manajemen Agenda", href: "/admin/agenda", active: activeTab === "agenda" },
     { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations", active: activeTab === "reservations" },
-    { icon: Settings, label: "Pengaturan", href: "/admin/settings" },
+    // { icon: Settings, label: "Pengaturan", href: "/admin/settings" },
   ]
 
   const statsData = [
@@ -852,9 +849,9 @@ export default function AdminDashboard() {
                                 ? "agenda"
                                 : item.label === "Laporan Reservasi"
                                   ? "reservations"
-                                  : item.label === "Pengaturan"
-                                    ? "settings"
-                                    : "dashboard",
+                                  : // : item.label === "Pengaturan"
+                                    //   ? "settings"
+                                    "dashboard",
                       )
                       setMobileMenuOpen(false)
                     }}
@@ -905,30 +902,36 @@ export default function AdminDashboard() {
               </Button>
               <div>
                 <h2 className="text-lg lg:text-xl font-semibold text-foreground">
-                  {activeTab === "dashboard"
-                    ? "Dashboard"
-                    : activeTab === "schools"
-                      ? "Manajemen Sekolah"
-                      : activeTab === "news"
-                        ? "Manajemen Berita"
-                        : activeTab === "agenda"
-                          ? "Manajemen Agenda"
-                          : activeTab === "reservations"
-                            ? "Laporan Reservasi"
-                            : "Pengaturan"}
+                  {
+                    activeTab === "dashboard"
+                      ? "Dashboard"
+                      : activeTab === "schools"
+                        ? "Manajemen Sekolah"
+                        : activeTab === "news"
+                          ? "Manajemen Berita"
+                          : activeTab === "agenda"
+                            ? "Manajemen Agenda"
+                            : activeTab === "reservations"
+                              ? "Laporan Reservasi"
+                              : // : "Pengaturan"
+                                "Dashboard" // Default to Dashboard if no active tab
+                  }
                 </h2>
                 <p className="text-sm text-muted-foreground hidden sm:block">
-                  {activeTab === "dashboard"
-                    ? "Ringkasan data dan statistik sistem"
-                    : activeTab === "schools"
-                      ? "Kelola data sekolah dan informasi terkait"
-                      : activeTab === "news"
-                        ? "Kelola berita dan pengumuman"
-                        : activeTab === "agenda"
-                          ? "Kelola agenda dan kegiatan"
-                          : activeTab === "reservations"
-                            ? "Kelola laporan reservasi layanan dari masyarakat"
-                            : "Konfigurasi sistem"}
+                  {
+                    activeTab === "dashboard"
+                      ? "Ringkasan data dan statistik sistem"
+                      : activeTab === "schools"
+                        ? "Kelola data sekolah dan informasi terkait"
+                        : activeTab === "news"
+                          ? "Kelola berita dan pengumuman"
+                          : activeTab === "agenda"
+                            ? "Kelola agenda dan kegiatan"
+                            : activeTab === "reservations"
+                              ? "Kelola laporan reservasi layanan dari masyarakat"
+                              : // : "Konfigurasi sistem"
+                                "Ringkasan data dan statistik sistem" // Default to Dashboard description
+                  }
                 </p>
               </div>
             </div>
@@ -1465,300 +1468,6 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {activeTab === "settings" && (
-            <div>
-              {/* Page Title */}
-              <h1 className="text-3xl font-bold text-foreground mb-8">Pengaturan Sistem</h1>
-
-              {/* Settings Navigation */}
-              <div className="flex space-x-1 mb-6">
-                {[
-                  { id: "general", label: "Umum", icon: Settings },
-                  { id: "security", label: "Keamanan", icon: Shield },
-                  { id: "notifications", label: "Notifikasi", icon: Bell },
-                  { id: "backup", label: "Backup", icon: Database },
-                ].map((tab) => {
-                  const Icon = tab.icon
-                  return (
-                    <Button
-                      key={tab.id}
-                      variant={activeSettingsTab === tab.id ? "default" : "outline"}
-                      onClick={() => setActiveSettingsTab(tab.id)}
-                      className="flex items-center space-x-2"
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{tab.label}</span>
-                    </Button>
-                  )
-                })}
-              </div>
-
-              {/* Settings Content */}
-              <Card className="bg-card text-foreground">
-                <CardContent className="p-6">
-                  {activeSettingsTab === "general" && (
-                    <div className="space-y-6">
-                      <h3 className="text-lg font-semibold mb-4">Pengaturan Umum</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <Label htmlFor="siteName">Nama Situs</Label>
-                          <Input
-                            id="siteName"
-                            value={settingsForm.general.siteName}
-                            onChange={(e) => handleSettingsChange("general", "siteName", e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="contactEmail">Email Kontak</Label>
-                          <Input
-                            id="contactEmail"
-                            type="email"
-                            value={settingsForm.general.contactEmail}
-                            onChange={(e) => handleSettingsChange("general", "contactEmail", e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="contactPhone">Telepon</Label>
-                          <Input
-                            id="contactPhone"
-                            value={settingsForm.general.contactPhone}
-                            onChange={(e) => handleSettingsChange("general", "contactPhone", e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="timezone">Zona Waktu</Label>
-                          <select
-                            id="timezone"
-                            value={settingsForm.general.timezone}
-                            onChange={(e) => handleSettingsChange("general", "timezone", e.target.value)}
-                            className="w-full p-2 border border-input rounded-md"
-                          >
-                            <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
-                            <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
-                            <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
-                          </select>
-                        </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor="siteDescription">Deskripsi Situs</Label>
-                          <textarea
-                            id="siteDescription"
-                            value={settingsForm.general.siteDescription}
-                            onChange={(e) => handleSettingsChange("general", "siteDescription", e.target.value)}
-                            className="w-full p-2 border border-input rounded-md h-20"
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor="address">Alamat</Label>
-                          <textarea
-                            id="address"
-                            value={settingsForm.general.address}
-                            onChange={(e) => handleSettingsChange("general", "address", e.target.value)}
-                            className="w-full p-2 border border-input rounded-md h-20"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeSettingsTab === "security" && (
-                    <div className="space-y-6">
-                      <h3 className="text-lg font-semibold mb-4">Pengaturan Keamanan</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <Label htmlFor="passwordMinLength">Panjang Minimum Password</Label>
-                          <Input
-                            id="passwordMinLength"
-                            type="number"
-                            value={settingsForm.security.passwordMinLength}
-                            onChange={(e) =>
-                              handleSettingsChange("security", "passwordMinLength", Number.parseInt(e.target.value))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="sessionTimeout">Timeout Sesi (menit)</Label>
-                          <Input
-                            id="sessionTimeout"
-                            type="number"
-                            value={settingsForm.security.sessionTimeout}
-                            onChange={(e) =>
-                              handleSettingsChange("security", "sessionTimeout", Number.parseInt(e.target.value))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="maxLoginAttempts">Maksimal Percobaan Login</Label>
-                          <Input
-                            id="maxLoginAttempts"
-                            type="number"
-                            value={settingsForm.security.maxLoginAttempts}
-                            onChange={(e) =>
-                              handleSettingsChange("security", "maxLoginAttempts", Number.parseInt(e.target.value))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="passwordExpiry">Masa Berlaku Password (hari)</Label>
-                          <Input
-                            id="passwordExpiry"
-                            type="number"
-                            value={settingsForm.security.passwordExpiry}
-                            onChange={(e) =>
-                              handleSettingsChange("security", "passwordExpiry", Number.parseInt(e.target.value))
-                            }
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="twoFactorAuth"
-                              checked={settingsForm.security.twoFactorAuth}
-                              onChange={(e) => handleSettingsChange("security", "twoFactorAuth", e.target.checked)}
-                              className="rounded"
-                            />
-                            <Label htmlFor="twoFactorAuth">Aktifkan Autentikasi Dua Faktor</Label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeSettingsTab === "notifications" && (
-                    <div className="space-y-6">
-                      <h3 className="text-lg font-semibold mb-4">Pengaturan Notifikasi</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="emailNotifications"
-                            checked={settingsForm.notifications.emailNotifications}
-                            onChange={(e) =>
-                              handleSettingsChange("notifications", "emailNotifications", e.target.checked)
-                            }
-                            className="rounded"
-                          />
-                          <Label htmlFor="emailNotifications">Notifikasi Email</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="smsNotifications"
-                            checked={settingsForm.notifications.smsNotifications}
-                            onChange={(e) =>
-                              handleSettingsChange("notifications", "smsNotifications", e.target.checked)
-                            }
-                            className="rounded"
-                          />
-                          <Label htmlFor="smsNotifications">Notifikasi SMS</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="pushNotifications"
-                            checked={settingsForm.notifications.pushNotifications}
-                            onChange={(e) =>
-                              handleSettingsChange("notifications", "pushNotifications", e.target.checked)
-                            }
-                            className="rounded"
-                          />
-                          <Label htmlFor="pushNotifications">Notifikasi Push</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="reportAlerts"
-                            checked={settingsForm.notifications.reportAlerts}
-                            onChange={(e) => handleSettingsChange("notifications", "reportAlerts", e.target.checked)}
-                            className="rounded"
-                          />
-                          <Label htmlFor="reportAlerts">Alert Laporan Baru</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id="systemMaintenance"
-                            checked={settingsForm.notifications.systemMaintenance}
-                            onChange={(e) =>
-                              handleSettingsChange("notifications", "systemMaintenance", e.target.checked)
-                            }
-                            className="rounded"
-                          />
-                          <Label htmlFor="systemMaintenance">Notifikasi Maintenance Sistem</Label>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeSettingsTab === "backup" && (
-                    <div className="space-y-6">
-                      <h3 className="text-lg font-semibold mb-4">Pengaturan Backup</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <div className="flex items-center space-x-2 mb-4">
-                            <input
-                              type="checkbox"
-                              id="autoBackup"
-                              checked={settingsForm.backup.autoBackup}
-                              onChange={(e) => handleSettingsChange("backup", "autoBackup", e.target.checked)}
-                              className="rounded"
-                            />
-                            <Label htmlFor="autoBackup">Backup Otomatis</Label>
-                          </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="backupFrequency">Frekuensi Backup</Label>
-                          <select
-                            id="backupFrequency"
-                            value={settingsForm.backup.backupFrequency}
-                            onChange={(e) => handleSettingsChange("backup", "backupFrequency", e.target.value)}
-                            className="w-full p-2 border border-input rounded-md"
-                          >
-                            <option value="daily">Harian</option>
-                            <option value="weekly">Mingguan</option>
-                            <option value="monthly">Bulanan</option>
-                          </select>
-                        </div>
-                        <div>
-                          <Label htmlFor="retentionPeriod">Periode Penyimpanan (hari)</Label>
-                          <Input
-                            id="retentionPeriod"
-                            type="number"
-                            value={settingsForm.backup.retentionPeriod}
-                            onChange={(e) =>
-                              handleSettingsChange("backup", "retentionPeriod", Number.parseInt(e.target.value))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label>Backup Terakhir</Label>
-                          <p className="text-sm text-muted-foreground mt-1">{settingsForm.backup.lastBackup}</p>
-                        </div>
-                        <div className="md:col-span-2">
-                          <Button variant="outline" className="mr-2 bg-transparent">
-                            <Download className="w-4 h-4 mr-2" />
-                            Backup Manual
-                          </Button>
-                          <Button variant="outline">
-                            <Upload className="w-4 h-4 mr-2" />
-                            Restore Backup
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex justify-end mt-8 pt-6 border-t">
-                    <Button onClick={handleSaveSettings} className="bg-blue-600 hover:bg-blue-700">
-                      <Save className="w-4 h-4 mr-2" />
-                      Simpan Pengaturan
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
           {activeTab === "agenda" && (
             <>
               <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 lg:mb-8 space-y-4 lg:space-y-0">
@@ -1766,7 +1475,7 @@ export default function AdminDashboard() {
                   <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Manajemen Agenda</h1>
                   <p className="text-muted-foreground mt-2">Kelola agenda dan kegiatan pendidikan</p>
                 </div>
-                <Dialog>
+                <Dialog open={isAddAgendaOpen} onOpenChange={setIsAddAgendaOpen}>
                   <DialogTrigger asChild>
                     <Button className="hover:scale-105 transition-all duration-200">
                       <Plus className="w-4 h-4 mr-2" />
