@@ -1303,8 +1303,26 @@ export default function AdminDashboard() {
 
           {activeTab === "schools" && (
             <div>
-              {/* Page Title */}
-              <h1 className="text-3xl font-bold text-foreground mb-8">Manajemen Sekolah</h1>
+              <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 lg:mb-8 space-y-4 lg:space-y-0">
+                <div>
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Manajemen Sekolah</h1>
+                  <p className="text-muted-foreground mt-2">Kelola data sekolah dan informasi terkait</p>
+                </div>
+                <Dialog open={isAddSchoolOpen} onOpenChange={setIsAddSchoolOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="hover:scale-105 transition-all duration-200">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Tambah Sekolah
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Tambah Sekolah Baru</DialogTitle>
+                    </DialogHeader>
+                    <SchoolForm onSubmit={handleAddSchool} onCancel={() => setIsAddSchoolOpen(false)} />
+                  </DialogContent>
+                </Dialog>
+              </div>
 
               {/* Schools Table */}
               <Card className="bg-card text-foreground">
@@ -1370,8 +1388,26 @@ export default function AdminDashboard() {
 
           {activeTab === "news" && (
             <div>
-              {/* Page Title */}
-              <h1 className="text-3xl font-bold text-foreground mb-8">Manajemen Berita</h1>
+              <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 lg:mb-8 space-y-4 lg:space-y-0">
+                <div>
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Manajemen Berita</h1>
+                  <p className="text-muted-foreground mt-2">Kelola berita dan pengumuman</p>
+                </div>
+                <Dialog open={isAddNewsOpen} onOpenChange={setIsAddNewsOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="hover:scale-105 transition-all duration-200">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Tambah Berita
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Tambah Berita Baru</DialogTitle>
+                    </DialogHeader>
+                    <NewsForm onSubmit={handleAddNews} onCancel={() => setIsAddNewsOpen(false)} />
+                  </DialogContent>
+                </Dialog>
+              </div>
 
               {/* News Table */}
               <Card className="bg-card text-foreground">
