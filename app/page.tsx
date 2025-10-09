@@ -106,7 +106,7 @@ export default function Component() {
     },
   ]
 
-  // Component for animating numbers
+
   const AnimatedNumber = ({ value, isVisible }: { value: string; isVisible: boolean }) => {
     const [displayNumber, setDisplayNumber] = useState(0)
     const targetNumber = Number.parseInt(value.replace(/,/g, ""), 10)
@@ -114,7 +114,7 @@ export default function Component() {
     useEffect(() => {
       if (isVisible) {
         const start = 0
-        const duration = 1000 // 1 second
+        const duration = 1000 
         let startTime: number | null = null
 
         const animateCount = (currentTime: number) => {
@@ -126,13 +126,13 @@ export default function Component() {
           if (progress < 1) {
             requestAnimationFrame(animateCount)
           } else {
-            setDisplayNumber(targetNumber) // Ensure it reaches the final number
+            setDisplayNumber(targetNumber) 
           }
         }
 
         requestAnimationFrame(animateCount)
       } else {
-        setDisplayNumber(0) // Reset when not visible
+        setDisplayNumber(0) 
       }
     }, [isVisible, targetNumber])
 
