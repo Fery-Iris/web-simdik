@@ -2,7 +2,7 @@
 
 ## Use Case Diagram
 
-```mermaid
+\`\`\`mermaid
 graph TB
     %% Actors
     Admin[👤 Admin]
@@ -66,7 +66,7 @@ graph TB
     UC13 -.->|extend| UC8
     UC15 -.->|extend| UC8
     UC16 -.->|extend| UC8
-```
+\`\`\`
 
 ## Detail Use Cases
 

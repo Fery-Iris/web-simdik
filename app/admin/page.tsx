@@ -929,7 +929,7 @@ export default function AdminDashboard() {
                             ? "Kelola agenda dan kegiatan"
                             : activeTab === "reservations"
                               ? "Kelola laporan reservasi layanan dari masyarakat"
-                              : // : "Konfigurasi sistem"
+                              : // : "Pengaturan"
                                 "Ringkasan data dan statistik sistem" // Default to Dashboard description
                   }
                 </p>
@@ -974,50 +974,50 @@ export default function AdminDashboard() {
 
               {/* Reservation Statistics */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/40 border-blue-200/50 dark:border-blue-800/50">
+                <Card className="bg-card border-border">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Total Reservasi</p>
-                        <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">156</p>
+                        <p className="text-sm font-medium text-muted-foreground">Total Reservasi</p>
+                        <p className="text-2xl font-bold text-foreground">156</p>
                       </div>
-                      <Calendar className="w-8 h-8 text-blue-500" />
+                      <Calendar className="w-8 h-8 text-muted-foreground" />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/40 dark:to-green-900/40 border-green-200/50 dark:border-green-800/50">
+                <Card className="bg-card border-border">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-green-600 dark:text-green-400">Selesai</p>
-                        <p className="text-2xl font-bold text-green-700 dark:text-green-300">142</p>
+                        <p className="text-sm font-medium text-muted-foreground">Selesai</p>
+                        <p className="text-2xl font-bold text-foreground">142</p>
                       </div>
-                      <CheckCircle className="w-8 h-8 text-green-500" />
+                      <CheckCircle className="w-8 h-8 text-muted-foreground" />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950/40 dark:to-yellow-900/40 border-yellow-200/50 dark:border-yellow-800/50">
+                <Card className="bg-card border-border">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-yellow-600 dark:text-yellow-400">Menunggu</p>
-                        <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">12</p>
+                        <p className="text-sm font-medium text-muted-foreground">Menunggu</p>
+                        <p className="text-2xl font-bold text-foreground">12</p>
                       </div>
-                      <Clock className="w-8 h-8 text-yellow-500" />
+                      <Clock className="w-8 h-8 text-muted-foreground" />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-900/40 border-red-200/50 dark:border-red-800/50">
+                <Card className="bg-card border-border">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-red-600 dark:text-red-400">Dibatalkan</p>
-                        <p className="text-2xl font-bold text-red-700 dark:text-red-300">2</p>
+                        <p className="text-sm font-medium text-muted-foreground">Dibatalkan</p>
+                        <p className="text-2xl font-bold text-foreground">2</p>
                       </div>
-                      <XCircle className="w-8 h-8 text-red-500" />
+                      <XCircle className="w-8 h-8 text-muted-foreground" />
                     </div>
                   </CardContent>
                 </Card>
@@ -1025,8 +1025,8 @@ export default function AdminDashboard() {
 
               {/* Reservations Table */}
               <Card className="shadow-lg border-0">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/40">
-                  <CardTitle className="text-blue-700 dark:text-blue-300">Daftar Reservasi</CardTitle>
+                <CardHeader className="bg-muted">
+                  <CardTitle className="text-foreground">Daftar Reservasi</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="overflow-x-auto">
