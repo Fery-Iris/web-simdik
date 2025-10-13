@@ -21,6 +21,7 @@ import { ScrollReveal } from "@/components/scroll-reveal"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SiteHeader } from "@/components/site-header"
 import { useState } from "react"
 import { notFound } from "next/navigation"
 
@@ -263,55 +264,7 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Header - Consistent with main page */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center transform transition-all duration-300 hover:scale-110 hover:rotate-3">
-                <School className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-foreground transition-colors duration-300 hover:text-primary">
-                SIMDIK Kota Banjarmasin
-              </span>
-            </Link>
-
-            {/* Navigation - Simplified for sub-page */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link
-                href="/"
-                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group"
-              >
-                Beranda
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                href="/tentang-simdik"
-                className="text-primary font-medium transition-all duration-300 relative group"
-              >
-                Tentang SIMDIK
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600"></span>
-              </Link>
-              <Link
-                href="/direktori-sekolah"
-                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group"
-              >
-                Direktori Sekolah
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            </nav>
-
-            {/* Mobile Menu Button and Theme Toggle */}
-            <div className="flex items-center space-x-2">
-              <button className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-accent">
-                <Menu className="w-6 h-6 text-foreground" />
-              </button>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Back Navigation */}
       <div className="container mx-auto px-4 py-6">
