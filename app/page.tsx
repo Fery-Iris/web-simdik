@@ -22,6 +22,7 @@ import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { useStaggeredScrollAnimation } from "@/hooks/use-scroll-animation"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SiteHeader } from "@/components/site-header"
 import { ScrollingNewsCarousel } from "@/components/scrolling-news-carousel"
 
 export default function Component() {
@@ -141,66 +142,7 @@ export default function Component() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300 pointer-events-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <ScrollReveal animation="fade-right" delay={0} triggerOnce={false}>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center transform transition-all duration-300 hover:scale-110 hover:rotate-3">
-                  <School className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold text-foreground transition-colors duration-300 hover:text-primary">
-                  SIMDIK Kota Banjarmasin
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Navigation */}
-            <ScrollReveal animation="fade-left" delay={100} triggerOnce={false}>
-              <nav className="hidden md:flex items-center space-x-8">
-                {["Beranda", "Reservasi", "Tentang SIMDIK", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map(
-                  (item, index) => (
-                    <Link
-                      key={item}
-                      href={
-                        item === "Reservasi"
-                          ? "/reservasi"
-                          : item === "Direktori Sekolah"
-                            ? "/direktori-sekolah"
-                            : item === "Tentang SIMDIK"
-                              ? "/tentang-simdik"
-                              : item === "Berita"
-                                ? "#berita"
-                                : item === "Agenda"
-                                  ? "#agenda"
-                                  : item === "Kontak"
-                                    ? "#kontak"
-                                    : "#"
-                      }
-                      className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group"
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      {item}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                  ),
-                )}
-              </nav>
-            </ScrollReveal>
-
-            {/* Mobile Menu Button */}
-            <ScrollReveal animation="fade-left" delay={200} triggerOnce={false}>
-              <button className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-accent">
-                <Menu className="w-6 h-6 text-foreground" />
-              </button>
-            </ScrollReveal>
-            {/* Add ThemeToggle here */}
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero Section */}
       <section className="py-20 relative overflow-hidden">

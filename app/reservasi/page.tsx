@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SiteHeader } from "@/components/site-header"
 import { generateTicketPDF, type ReservationTicketData } from "@/lib/pdf-generator"
 
 // Static data for services and time slots
@@ -178,66 +179,7 @@ export default function ReservasiPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <ScrollReveal animation="fade-right" delay={0} triggerOnce={false}>
-              <Link href="/" className="flex items-center space-x-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center transform transition-all duration-300 hover:scale-110 hover:rotate-3">
-                  <School className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <span className="text-lg sm:text-xl font-bold text-foreground transition-colors duration-300 hover:text-primary">
-                  SIMDIK Kota Banjarmasin
-                </span>
-              </Link>
-            </ScrollReveal>
-
-            {/* Navigation */}
-            <ScrollReveal animation="fade-left" delay={100} triggerOnce={false}>
-              <nav className="hidden md:flex items-center space-x-8">
-                {["Beranda", "Reservasi", "Tentang SIMDIK", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map(
-                  (item, index) => (
-                    <Link
-                      key={item}
-                      href={
-                        item === "Reservasi"
-                          ? "/reservasi"
-                          : item === "Direktori Sekolah"
-                            ? "/direktori-sekolah"
-                            : item === "Tentang SIMDIK"
-                              ? "/tentang-simdik"
-                              : item === "Berita"
-                                ? "/#berita"
-                                : item === "Agenda"
-                                  ? "/#agenda"
-                                  : item === "Kontak"
-                                    ? "/#kontak"
-                                    : "/"
-                      }
-                      className={cn(
-                        "text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group",
-                        item === "Reservasi" && "text-blue-600",
-                      )}
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      {item}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                  ),
-                )}
-              </nav>
-            </ScrollReveal>
-
-            <ScrollReveal animation="fade-left" delay={200} triggerOnce={false}>
-              <button className="md:hidden p-3 rounded-lg transition-all duration-300 hover:bg-accent touch-manipulation">
-                <Menu className="w-6 h-6 text-foreground" />
-              </button>
-            </ScrollReveal>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section className="py-8 sm:py-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">

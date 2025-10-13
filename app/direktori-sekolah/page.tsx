@@ -20,6 +20,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ScrollReveal } from "@/components/scroll-reveal"
+import { SiteHeader } from "@/components/site-header"
 
 // Sample school data
 const schoolsData = [
@@ -196,69 +197,7 @@ export default function SchoolDirectory() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header - Consistent with main page */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <ScrollReveal animation="fade-right" delay={0} triggerOnce={false}>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center transform transition-all duration-300 hover:scale-110 hover:rotate-3">
-                  <School className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold text-foreground transition-colors duration-300 hover:text-primary">
-                  SIMDIK Kota Banjarmasin
-                </span>
-              </div>
-            </ScrollReveal>
-
-            {/* Navigation */}
-            <ScrollReveal animation="fade-left" delay={100} triggerOnce={false}>
-              <nav className="hidden md:flex items-center space-x-8">
-                {["Beranda", "Tentang SIMDIK", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map((item, index) => (
-                  <Link
-                    key={item}
-                    href={
-                      item === "Direktori Sekolah"
-                        ? "/direktori-sekolah"
-                        : item === "Tentang SIMDIK"
-                          ? "/tentang-simdik"
-                          : item === "Berita"
-                            ? "/#berita"
-                            : item === "Agenda"
-                              ? "/#agenda"
-                              : item === "Kontak"
-                                ? "/#kontak"
-                                : "/"
-                    }
-                    className={`font-medium transition-all duration-300 relative group ${
-                      item === "Direktori Sekolah" ? "text-primary" : "text-muted-foreground hover:text-primary"
-                    }`}
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    {item}
-                    <span
-                      className={`absolute -bottom-1 left-0 h-0.5 bg-blue-600 transition-all duration-300 ${
-                        item === "Direktori Sekolah" ? "w-full" : "w-0 group-hover:w-full"
-                      }`}
-                    ></span>
-                  </Link>
-                ))}
-              </nav>
-            </ScrollReveal>
-
-            {/* Mobile Menu Button and Theme Toggle */}
-            <ScrollReveal animation="fade-left" delay={200} triggerOnce={false}>
-              <div className="flex items-center space-x-2">
-                <button className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-accent">
-                  <Menu className="w-6 h-6 text-foreground" />
-                </button>
-                <ThemeToggle />
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Page Title Header */}
       <div className="bg-card border-b border-border">
