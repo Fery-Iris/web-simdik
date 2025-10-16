@@ -64,7 +64,10 @@ export default function AgendaPage() {
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [editingAgenda, setEditingAgenda] = useState<Agenda | null>(null)
+  const [viewingAgenda, setViewingAgenda] = useState<Agenda | null>(null)
+  const [viewLoading, setViewLoading] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -189,6 +192,29 @@ export default function AgendaPage() {
     } catch (error) {
       console.error('Error deleting agenda:', error)
       alert('Terjadi kesalahan saat menghapus agenda')
+    }
+  }
+
+  // Handle view (fetch latest from API before showing)
+  const handleView = async (id: string) => {
+    try {
+      setViewLoading(true)
+      setIsViewDialogOpen(true)
+      const response = await fetch(`/api/agendas/${id}`)
+      const result = await response.json()
+      if (result.success) {
+        setViewingAgenda(result.data)
+      } else {
+        console.error('Failed to fetch agenda detail:', result.message)
+        alert('Gagal memuat detail agenda: ' + result.message)
+        setIsViewDialogOpen(false)
+      }
+    } catch (error) {
+      console.error('Error fetching agenda detail:', error)
+      alert('Terjadi kesalahan saat memuat detail agenda')
+      setIsViewDialogOpen(false)
+    } finally {
+      setViewLoading(false)
     }
   }
 
@@ -596,7 +622,7 @@ export default function AgendaPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => router.push(`/admin/agendas/${agenda.id}`)}
+                          onClick={() => handleView(agenda.id)}
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           Lihat
@@ -642,6 +668,65 @@ export default function AgendaPage() {
                 resetForm()
               }}
             />
+          </DialogContent>
+        </Dialog>
+        
+        {/* View Dialog */}
+        <Dialog open={isViewDialogOpen} onOpenChange={(open) => {
+          setIsViewDialogOpen(open)
+          if (!open) setViewingAgenda(null)
+        }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Detail Agenda</DialogTitle>
+            </DialogHeader>
+            {viewLoading ? (
+              <div className="py-8 text-center text-gray-600">Memuat detail...</div>
+            ) : viewingAgenda ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-600">Judul</Label>
+                    <div className="font-semibold text-gray-900">{viewingAgenda.title}</div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600">Tanggal</Label>
+                    <div className="text-gray-900">{new Date(viewingAgenda.date).toLocaleDateString('id-ID')}</div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600">Waktu</Label>
+                    <div className="text-gray-900">{viewingAgenda.time}</div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600">Lokasi</Label>
+                    <div className="text-gray-900">{viewingAgenda.location}</div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-gray-600">Status</Label>
+                    <div>
+                      <Badge className={statusColors[viewingAgenda.status]}>
+                        {statusLabels[viewingAgenda.status]}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="py-8 text-center text-gray-600">Data tidak tersedia</div>
+            )}
+            <DialogFooter className="gap-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsViewDialogOpen(false)}>
+                Tutup
+              </Button>
+              {viewingAgenda && (
+                <Button type="button" className="bg-blue-600 hover:bg-blue-700" onClick={() => {
+                  setIsViewDialogOpen(false)
+                  handleEdit(viewingAgenda)
+                }}>
+                  Edit
+                </Button>
+              )}
+            </DialogFooter>
           </DialogContent>
         </Dialog>
         </main>
