@@ -838,6 +838,11 @@ export default function AdminDashboard() {
                 <li key={index}>
                   <button
                     onClick={() => {
+                      if (item.label === "Manajemen Agenda") {
+                        router.push('/admin/agenda')
+                        setMobileMenuOpen(false)
+                        return
+                      }
                       setActiveTab(
                         item.label === "Dashboard"
                           ? "dashboard"
@@ -845,13 +850,11 @@ export default function AdminDashboard() {
                             ? "schools"
                             : item.label === "Manajemen Berita"
                               ? "news"
-                              : item.label === "Manajemen Agenda"
-                                ? "agenda"
-                                : item.label === "Laporan Reservasi"
-                                  ? "reservations"
-                                  : // : item.label === "Pengaturan"
-                                    //   ? "settings"
-                                    "dashboard",
+                              : item.label === "Laporan Reservasi"
+                                ? "reservations"
+                                : // : item.label === "Pengaturan"
+                                  //   ? "settings"
+                                  "dashboard",
                       )
                       setMobileMenuOpen(false)
                     }}

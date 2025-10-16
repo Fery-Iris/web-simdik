@@ -1,0 +1,31 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Agenda {
+  id        String   @id @default(cuid())
+  title     String   @db.VarChar(255)
+  date      DateTime @db.Date
+  time      String   @db.VarChar(10)
+  location  String   @db.VarChar(255)
+  status    Status   @default(SCHEDULED)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("agendas")
+}
+
+enum Status {
+  SCHEDULED   @map("Terjadwal")
+  ONGOING     @map("Berlangsung")
+  COMPLETED   @map("Selesai")
+  CANCELLED   @map("Dibatalkan")
+}
+        
