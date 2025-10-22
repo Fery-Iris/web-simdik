@@ -622,27 +622,26 @@ export default function AgendaPage() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="text-blue-600 hover:text-blue-700 bg-transparent"
                           onClick={() => handleView(agenda.id)}
                         >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Lihat
+                          <Eye className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
+                          className="text-green-600 hover:text-green-700 bg-transparent"
                           onClick={() => handleEdit(agenda)}
                         >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
+                          <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
+                          className="text-red-600 hover:text-red-700 bg-transparent"
                           onClick={() => handleDelete(agenda.id)}
-                          className="text-red-600 hover:text-red-700"
                         >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Hapus
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </TableCell>

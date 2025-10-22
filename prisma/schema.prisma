@@ -22,9 +22,34 @@ model Agenda {
   @@map("agendas")
 }
 
+model Reservasi {
+  id                String   @id @default(cuid())
+  queueNumber       String   @unique @db.VarChar(20)
+  service           String   @db.VarChar(10)
+  name              String   @db.VarChar(255)
+  phone             String   @db.VarChar(20)
+  nik               String?  @db.VarChar(20)
+  purpose           String   @db.Text
+  date              DateTime @db.Date
+  timeSlot          String   @db.VarChar(10)
+  status            ReservationStatus @default(WAITING)
+  estimatedCallTime String?  @db.VarChar(10)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("reservations")
+}
+
 enum Status {
   SCHEDULED   @map("Terjadwal")
   ONGOING     @map("Berlangsung")
+  COMPLETED   @map("Selesai")
+  CANCELLED   @map("Dibatalkan")
+}
+
+enum ReservationStatus {
+  WAITING     @map("Menunggu")
+  CALLED      @map("Dipanggil")
   COMPLETED   @map("Selesai")
   CANCELLED   @map("Dibatalkan")
 }

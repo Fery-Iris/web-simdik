@@ -54,10 +54,38 @@ const services = [
   },
 ]
 
-const getTimeSlots = (selectedDate: Date | undefined) => {
+// Format a JS Date to local YYYY-MM-DD (no timezone shift)
+const formatLocalYmd = (d: Date) => {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+const getTimeSlots = async (selectedDate: Date | undefined) => {
   if (!selectedDate) return []
 
+  try {
+    const response = await fetch(`/api/time-slots?date=${formatLocalYmd(selectedDate)}`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch time slots')
+    }
+    
+    const result = await response.json()
+    if (result.success) {
+      return result.data
+    }
+  } catch (error) {
+    console.error('Error fetching time slots:', error)
+  }
+
+  // Fallback to static data if API fails
   const dayOfWeek = selectedDate.getDay()
+
+  // Saturday (6) and Sunday (0) - no service
+  if (dayOfWeek === 6 || dayOfWeek === 0) {
+    return []
+  }
 
   // Friday (5) - only 8 AM to 10 AM
   if (dayOfWeek === 5) {
@@ -67,7 +95,7 @@ const getTimeSlots = (selectedDate: Date | undefined) => {
     ]
   }
 
-  // Normal days (Monday-Thursday) - exclude 12-14 (lunch break), include 14-15
+  // Monday-Thursday (1-4) - 8 AM to 12 PM, then 2 PM to 3 PM (lunch break 12-2 PM)
   return [
     { id: "08:00", time: "08:00 - 09:00", capacity: 10, booked: 3 },
     { id: "09:00", time: "09:00 - 10:00", capacity: 10, booked: 7 },
@@ -103,10 +131,25 @@ export default function ReservasiPage() {
   const [queueNumber, setQueueNumber] = useState<string>("")
   const [estimatedTime, setEstimatedTime] = useState<string>("")
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const [timeSlots, setTimeSlots] = useState<Array<{id: string, time: string, capacity: number, booked: number}>>([])
+  const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false)
 
   const handleServiceSelect = (serviceId: string) => {
     setReservationData({ ...reservationData, service: serviceId })
     setStep(2)
+  }
+
+  const loadTimeSlots = async (date: Date) => {
+    setIsLoadingTimeSlots(true)
+    try {
+      const slots = await getTimeSlots(date)
+      setTimeSlots(slots)
+    } catch (error) {
+      console.error('Error loading time slots:', error)
+      setTimeSlots([])
+    } finally {
+      setIsLoadingTimeSlots(false)
+    }
   }
 
   const handleDateTimeSelect = () => {
@@ -116,17 +159,59 @@ export default function ReservasiPage() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Generate queue number (simple implementation)
-    const queueNum = `${reservationData.service.toUpperCase()}-${Date.now().toString().slice(-6)}`
-    const estimatedCallTime = new Date()
-    estimatedCallTime.setHours(estimatedCallTime.getHours() + 2)
+    try {
+      console.log('Submitting reservation data:', {
+        service: reservationData.service,
+        date: reservationData.date?.toISOString().split('T')[0],
+        timeSlot: reservationData.timeSlot,
+        name: reservationData.name,
+        phone: reservationData.phone,
+        nik: reservationData.nik,
+        purpose: reservationData.purpose,
+      })
 
-    setQueueNumber(queueNum)
-    setEstimatedTime(format(estimatedCallTime, "HH:mm", { locale: id }))
-    setStep(4)
+            const response = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          service: reservationData.service,
+                date: reservationData.date ? formatLocalYmd(reservationData.date) : undefined,
+          timeSlot: reservationData.timeSlot,
+          name: reservationData.name,
+          phone: reservationData.phone,
+          nik: reservationData.nik,
+          purpose: reservationData.purpose,
+        }),
+      })
+
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Response error:', errorText)
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+
+      const result = await response.json()
+      console.log('Response data:', result)
+      
+      if (result.success) {
+        setQueueNumber(result.data.queueNumber)
+        setEstimatedTime(result.data.estimatedCallTime)
+        setStep(4)
+      } else {
+        throw new Error(result.error || 'Failed to create reservation')
+      }
+    } catch (error) {
+      console.error('Error creating reservation:', error)
+      alert(`Terjadi kesalahan saat membuat reservasi: ${error.message}`)
+    }
   }
 
   const handlePrint = async () => {
@@ -174,7 +259,6 @@ export default function ReservasiPage() {
   }
 
   const selectedService = services.find((s) => s.id === reservationData.service)
-  const timeSlots = getTimeSlots(selectedDate)
   const selectedTimeSlot = timeSlots.find((t) => t.id === reservationData.timeSlot)
 
   return (
@@ -314,6 +398,9 @@ export default function ReservasiPage() {
                               setSelectedDate(date)
                               setReservationData({ ...reservationData, date: date, timeSlot: "" })
                               setIsCalendarOpen(false)
+                              if (date) {
+                                loadTimeSlots(date)
+                              }
                             }}
                             disabled={(date) => {
                               const today = new Date()
@@ -336,6 +423,9 @@ export default function ReservasiPage() {
                         console.log("Mobile date selected:", date)
                         setSelectedDate(date)
                         setReservationData({ ...reservationData, date: date, timeSlot: "" })
+                        if (date) {
+                          loadTimeSlots(date)
+                        }
                       }}
                       disabled={(date) => {
                         const today = new Date()
@@ -365,8 +455,25 @@ export default function ReservasiPage() {
                 {selectedDate && (
                   <div>
                     <Label className="text-sm sm:text-base font-medium text-foreground">Pilih Waktu</Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
-                      {timeSlots.map((slot) => {
+                    {isLoadingTimeSlots ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="text-muted-foreground">Memuat slot waktu...</div>
+                      </div>
+                    ) : timeSlots.length === 0 ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="text-center">
+                          <Clock className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                          <div className="text-muted-foreground font-medium">Layanan tidak tersedia</div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {selectedDate && selectedDate.getDay() === 0 && "Hari Minggu"}
+                            {selectedDate && selectedDate.getDay() === 6 && "Hari Sabtu"}
+                            {selectedDate && (selectedDate.getDay() !== 0 && selectedDate.getDay() !== 6) && "Tidak ada slot waktu tersedia"}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
+                        {timeSlots.map((slot) => {
                         const isAvailable = slot.booked < slot.capacity
                         const isSelected = reservationData.timeSlot === slot.id
 
@@ -390,7 +497,8 @@ export default function ReservasiPage() {
                           </Button>
                         )
                       })}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
