@@ -37,6 +37,7 @@ export default function AdminDashboard() {
     { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news", active: false },
     { icon: Calendar, label: "Manajemen Agenda", href: "/admin/agenda", active: false },
     { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations", active: false },
+    { icon: FileText, label: "Manajemen Tentang SIMDIK", href: "/admin/tentang-simdik", active: false },
   ]
 
   const statsData = [

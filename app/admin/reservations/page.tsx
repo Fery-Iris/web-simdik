@@ -88,11 +88,12 @@ export default function AdminReservationsPage() {
   }, [])
 
   const navigationItems = [
-    { icon: Home, label: "Dashboard", href: "/admin", active: false },
+    { icon: Home, label: "Dashboard", href: "/admin/dashboard", active: false },
     { icon: School, label: "Manajemen Sekolah", href: "/admin/schools", active: false },
     { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news", active: false },
     { icon: Calendar, label: "Manajemen Agenda", href: "/admin/agenda", active: false },
     { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations", active: true },
+    { icon: FileText, label: "Manajemen Tentang SIMDIK", href: "/admin/tentang-simdik", active: false },
   ]
 
   // Filter reservations based on selected filters
