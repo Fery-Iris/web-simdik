@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,47 +9,55 @@ datasource db {
 }
 
 model Agenda {
-  id        String   @id @default(cuid())
-  title     String   @db.VarChar(255)
-  date      DateTime @db.Date
-  time      String   @db.VarChar(10)
-  location  String   @db.VarChar(255)
-  status    Status   @default(SCHEDULED)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id               String   @id @default(cuid())
+  title            String   @db.VarChar(255)
+  slug             String   @unique @db.VarChar(255)
+  description      String   @db.Text
+  date             DateTime @db.Date
+  time             String   @db.VarChar(10)
+  location         String   @db.VarChar(255)
+  address          String?  // TAMBAHKAN: Untuk alamat lengkap di bawah lokasi
+  organizer        String   @default("Dinas Pendidikan Kota Banjarmasin") @db.VarChar(255)
+  capacity         Int      @default(0)
+  category         String   @default("Lainnya") @db.VarChar(50) // TAMBAHKAN: e.g., Workshop, Seminar
+  registrationFee  String   @default("Gratis") @db.VarChar(100) // TAMBAHKAN: e.g., Gratis, Rp 150.000
+  contactPerson    String?  // TAMBAHKAN: e.g., disdik@banjarmasinkota.go.id
+  imageUrl         String?
+  status           Status   @default(SCHEDULED)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   @@map("agendas")
 }
 
 model Reservasi {
-  id                String   @id @default(cuid())
-  queueNumber       String   @unique @db.VarChar(20)
-  service           String   @db.VarChar(10)
-  name              String   @db.VarChar(255)
-  phone             String   @db.VarChar(20)
-  nik               String?  @db.VarChar(20)
-  purpose           String   @db.Text
-  date              DateTime @db.Date
-  timeSlot          String   @db.VarChar(10)
+  id                String            @id @default(cuid())
+  queueNumber       String            @unique @db.VarChar(20)
+  service           String            @db.VarChar(10)
+  name              String            @db.VarChar(255)
+  phone             String            @db.VarChar(20)
+  nik               String?           @db.VarChar(20)
+  purpose           String
+  date              DateTime          @db.Date
+  timeSlot          String            @db.VarChar(10)
   status            ReservationStatus @default(WAITING)
-  estimatedCallTime String?  @db.VarChar(10)
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  estimatedCallTime String?           @db.VarChar(10)
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
 
   @@map("reservations")
 }
 
 enum Status {
-  SCHEDULED   @map("Terjadwal")
-  ONGOING     @map("Berlangsung")
-  COMPLETED   @map("Selesai")
-  CANCELLED   @map("Dibatalkan")
+  SCHEDULED @map("Terjadwal")
+  ONGOING   @map("Berlangsung")
+  COMPLETED @map("Selesai")
+  CANCELLED @map("Dibatalkan")
 }
 
 enum ReservationStatus {
-  WAITING     @map("Menunggu")
-  CALLED      @map("Dipanggil")
-  COMPLETED   @map("Selesai")
-  CANCELLED   @map("Dibatalkan")
+  WAITING   @map("Menunggu")
+  CALLED    @map("Dipanggil")
+  COMPLETED @map("Selesai")
+  CANCELLED @map("Dibatalkan")
 }
-        

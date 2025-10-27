@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { AgendaForm } from "@/components/agenda-form"
 import {
   Plus,
   Edit,
@@ -29,14 +30,24 @@ import {
   Home,
   Newspaper,
   Calendar,
+  FileText,
 } from "lucide-react"
 
 interface Agenda {
   id: string
   title: string
+  slug: string
+  description: string
   date: string
   time: string
   location: string
+  address?: string
+  organizer: string
+  capacity: number
+  category: string
+  registrationFee: string
+  contactPerson?: string
+  imageUrl?: string
   status: 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED'
   createdAt: string
   updatedAt: string
@@ -72,9 +83,18 @@ export default function AgendaPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
+    slug: "",
+    description: "",
     date: "",
     time: "",
     location: "",
+    address: "",
+    organizer: "Dinas Pendidikan Kota Banjarmasin",
+    capacity: 0,
+    category: "Lainnya",
+    registrationFee: "Gratis",
+    contactPerson: "",
+    imageUrl: "",
     status: "SCHEDULED" as 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED',
   })
 
@@ -143,9 +163,18 @@ export default function AgendaPage() {
         setEditingAgenda(null)
         setFormData({
           title: "",
+          slug: "",
+          description: "",
           date: "",
           time: "",
           location: "",
+          address: "",
+          organizer: "Dinas Pendidikan Kota Banjarmasin",
+          capacity: 0,
+          category: "Lainnya",
+          registrationFee: "Gratis",
+          contactPerson: "",
+          imageUrl: "",
           status: "SCHEDULED",
         })
       } else {
@@ -163,9 +192,18 @@ export default function AgendaPage() {
     setEditingAgenda(agenda)
     setFormData({
       title: agenda.title,
+      slug: agenda.slug,
+      description: agenda.description,
       date: agenda.date.split('T')[0], // Convert to YYYY-MM-DD format
       time: agenda.time,
       location: agenda.location,
+      address: agenda.address || "",
+      organizer: agenda.organizer,
+      capacity: agenda.capacity,
+      category: agenda.category,
+      registrationFee: agenda.registrationFee,
+      contactPerson: agenda.contactPerson || "",
+      imageUrl: agenda.imageUrl || "",
       status: agenda.status,
     })
     setIsEditDialogOpen(true)
@@ -223,9 +261,18 @@ export default function AgendaPage() {
   const resetForm = () => {
     setFormData({
       title: "",
+      slug: "",
+      description: "",
       date: "",
       time: "",
       location: "",
+      address: "",
+      organizer: "Dinas Pendidikan Kota Banjarmasin",
+      capacity: 0,
+      category: "Lainnya",
+      registrationFee: "Gratis",
+      contactPerson: "",
+      imageUrl: "",
       status: "SCHEDULED",
     })
     setEditingAgenda(null)
@@ -596,11 +643,12 @@ export default function AgendaPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
                   <TableHead>Judul</TableHead>
+                  <TableHead>Kategori</TableHead>
                   <TableHead>Tanggal</TableHead>
                   <TableHead>Waktu</TableHead>
                   <TableHead>Lokasi</TableHead>
+                  <TableHead>Kapasitas</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Aksi</TableHead>
                 </TableRow>
@@ -608,11 +656,16 @@ export default function AgendaPage() {
               <TableBody>
                 {filteredAgendas.map((agenda) => (
                   <TableRow key={agenda.id}>
-                    <TableCell className="font-medium">{agenda.id}</TableCell>
-                    <TableCell>{agenda.title}</TableCell>
+                    <TableCell className="font-medium">{agenda.title}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-xs">
+                        {agenda.category}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{new Date(agenda.date).toLocaleDateString('id-ID')}</TableCell>
                     <TableCell>{agenda.time}</TableCell>
                     <TableCell>{agenda.location}</TableCell>
+                    <TableCell>{agenda.capacity > 0 ? `${agenda.capacity} orang` : 'Tidak terbatas'}</TableCell>
                     <TableCell>
                       <Badge className={statusColors[agenda.status]}>
                         {statusLabels[agenda.status]}
@@ -624,7 +677,8 @@ export default function AgendaPage() {
                           variant="outline"
                           size="sm"
                           className="text-blue-600 hover:text-blue-700 bg-transparent"
-                          onClick={() => handleView(agenda.id)}
+                          onClick={() => window.open(`/agenda/${agenda.slug}`, '_blank')}
+                          title="Lihat di Frontend"
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
@@ -735,95 +789,3 @@ export default function AgendaPage() {
   )
 }
 
-// Agenda Form Component
-interface AgendaFormProps {
-  formData: {
-    title: string
-    date: string
-    time: string
-    location: string
-    status: 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED'
-  }
-  setFormData: React.Dispatch<React.SetStateAction<{
-    title: string
-    date: string
-    time: string
-    location: string
-    status: 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED'
-  }>>
-  onSubmit: (e: React.FormEvent) => void
-  onCancel: () => void
-}
-
-function AgendaForm({ formData, setFormData, onSubmit, onCancel }: AgendaFormProps) {
-  return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Judul Agenda</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          required
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="date">Tanggal</Label>
-          <Input
-            id="date"
-            type="date"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="time">Waktu</Label>
-          <Input
-            id="time"
-            type="time"
-            value={formData.time}
-            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-            required
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="location">Lokasi</Label>
-        <Input
-          id="location"
-          value={formData.location}
-          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-          required
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
-        <Select value={formData.status} onValueChange={(value: 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED') => setFormData({ ...formData, status: value })}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="SCHEDULED">Terjadwal</SelectItem>
-            <SelectItem value="ONGOING">Berlangsung</SelectItem>
-            <SelectItem value="COMPLETED">Selesai</SelectItem>
-            <SelectItem value="CANCELLED">Dibatalkan</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <DialogFooter className="gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Batal
-        </Button>
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-          Simpan
-        </Button>
-      </DialogFooter>
-    </form>
-  )
-}

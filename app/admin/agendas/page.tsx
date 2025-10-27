@@ -28,9 +28,18 @@ import { cn } from "@/lib/utils"
 interface Agenda {
   id: string
   title: string
+  slug: string
+  description: string
   date: string
   time: string
   location: string
+  address?: string
+  organizer: string
+  capacity: number
+  category: string
+  registrationFee: string
+  contactPerson?: string
+  imageUrl?: string
   status: 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED'
   createdAt: string
   updatedAt: string
@@ -60,9 +69,18 @@ export default function AgendaManagement() {
   const [editingAgenda, setEditingAgenda] = useState<Agenda | null>(null)
   const [formData, setFormData] = useState({
     title: "",
+    slug: "",
+    description: "",
     date: "",
     time: "",
     location: "",
+    address: "",
+    organizer: "Dinas Pendidikan Kota Banjarmasin",
+    capacity: 0,
+    category: "Lainnya",
+    registrationFee: "Gratis",
+    contactPerson: "",
+    imageUrl: "",
     status: "SCHEDULED" as 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED',
   })
 
@@ -122,9 +140,18 @@ export default function AgendaManagement() {
         setEditingAgenda(null)
         setFormData({
           title: "",
+          slug: "",
+          description: "",
           date: "",
           time: "",
           location: "",
+          address: "",
+          organizer: "Dinas Pendidikan Kota Banjarmasin",
+          capacity: 0,
+          category: "Lainnya",
+          registrationFee: "Gratis",
+          contactPerson: "",
+          imageUrl: "",
           status: "SCHEDULED" as 'SCHEDULED' | 'ONGOING' | 'COMPLETED' | 'CANCELLED',
         })
       } else {
@@ -142,9 +169,18 @@ export default function AgendaManagement() {
     setEditingAgenda(agenda)
     setFormData({
       title: agenda.title,
+      slug: agenda.slug,
+      description: agenda.description,
       date: agenda.date.split('T')[0], // Convert to YYYY-MM-DD format
       time: agenda.time,
       location: agenda.location,
+      address: agenda.address || "",
+      organizer: agenda.organizer,
+      capacity: agenda.capacity,
+      category: agenda.category,
+      registrationFee: agenda.registrationFee,
+      contactPerson: agenda.contactPerson || "",
+      imageUrl: agenda.imageUrl || "",
       status: agenda.status,
     })
     setIsEditDialogOpen(true)
@@ -281,11 +317,12 @@ export default function AgendaManagement() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>ID</TableHead>
                     <TableHead>Judul</TableHead>
+                    <TableHead>Kategori</TableHead>
                     <TableHead>Tanggal</TableHead>
                     <TableHead>Waktu</TableHead>
                     <TableHead>Lokasi</TableHead>
+                    <TableHead>Kapasitas</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Aksi</TableHead>
                   </TableRow>
@@ -293,13 +330,16 @@ export default function AgendaManagement() {
                 <TableBody>
                   {filteredAgendas.map((agenda, index) => (
                     <TableRow key={agenda.id}>
-                      <TableCell className="font-medium">
-                        AGD-{String(index + 1).padStart(3, "0")}
+                      <TableCell className="font-medium">{agenda.title}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {agenda.category}
+                        </Badge>
                       </TableCell>
-                      <TableCell>{agenda.title}</TableCell>
                       <TableCell>{new Date(agenda.date).toLocaleDateString('id-ID')}</TableCell>
                       <TableCell>{agenda.time}</TableCell>
                       <TableCell>{agenda.location}</TableCell>
+                      <TableCell>{agenda.capacity > 0 ? `${agenda.capacity} orang` : 'Tidak terbatas'}</TableCell>
                       <TableCell>
                         <Badge className={cn(statusColors[agenda.status])}>
                           {statusLabels[agenda.status]}
@@ -307,7 +347,12 @@ export default function AgendaManagement() {
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.open(`/agenda/${agenda.slug}`, '_blank')}
+                            title="Lihat di Frontend"
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button 
@@ -337,14 +382,14 @@ export default function AgendaManagement() {
 
         {/* Add Agenda Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Tambah Agenda Baru</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="title">Judul Agenda</Label>
+                  <Label htmlFor="title">Judul Agenda *</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -353,32 +398,123 @@ export default function AgendaManagement() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="date">Tanggal</Label>
+                  <Label htmlFor="slug">Slug (URL)</Label>
                   <Input
-                    id="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
+                    id="slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    placeholder="Akan dibuat otomatis jika kosong"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="time">Waktu</Label>
-                  <Input
-                    id="time"
-                    type="time"
-                    value={formData.time}
-                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                    required
+                  <Label htmlFor="description">Deskripsi</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
                   />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="date">Tanggal *</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="time">Waktu *</Label>
+                    <Input
+                      id="time"
+                      type="time"
+                      value={formData.time}
+                      onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="location">Lokasi</Label>
+                  <Label htmlFor="location">Lokasi *</Label>
                   <Input
                     id="location"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="address">Alamat Lengkap</Label>
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="organizer">Penyelenggara</Label>
+                    <Input
+                      id="organizer"
+                      value={formData.organizer}
+                      onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="capacity">Kapasitas</Label>
+                    <Input
+                      id="capacity"
+                      type="number"
+                      value={formData.capacity}
+                      onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="category">Kategori</Label>
+                    <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Workshop">Workshop</SelectItem>
+                        <SelectItem value="Seminar">Seminar</SelectItem>
+                        <SelectItem value="Pelatihan">Pelatihan</SelectItem>
+                        <SelectItem value="Kompetisi">Kompetisi</SelectItem>
+                        <SelectItem value="Rapat">Rapat</SelectItem>
+                        <SelectItem value="Lainnya">Lainnya</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="registrationFee">Biaya Pendaftaran</Label>
+                    <Input
+                      id="registrationFee"
+                      value={formData.registrationFee}
+                      onChange={(e) => setFormData({ ...formData, registrationFee: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="contactPerson">Kontak</Label>
+                  <Input
+                    id="contactPerson"
+                    value={formData.contactPerson}
+                    onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+                    placeholder="Email atau nomor telepon"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="imageUrl">URL Gambar</Label>
+                  <Input
+                    id="imageUrl"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -405,14 +541,14 @@ export default function AgendaManagement() {
 
         {/* Edit Agenda Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Agenda</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-title">Judul Agenda</Label>
+                  <Label htmlFor="edit-title">Judul Agenda *</Label>
                   <Input
                     id="edit-title"
                     value={formData.title}
@@ -421,32 +557,123 @@ export default function AgendaManagement() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-date">Tanggal</Label>
+                  <Label htmlFor="edit-slug">Slug (URL)</Label>
                   <Input
-                    id="edit-date"
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
+                    id="edit-slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    placeholder="Akan dibuat otomatis jika kosong"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-time">Waktu</Label>
-                  <Input
-                    id="edit-time"
-                    type="time"
-                    value={formData.time}
-                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                    required
+                  <Label htmlFor="edit-description">Deskripsi</Label>
+                  <Textarea
+                    id="edit-description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
                   />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-date">Tanggal *</Label>
+                    <Input
+                      id="edit-date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-time">Waktu *</Label>
+                    <Input
+                      id="edit-time"
+                      type="time"
+                      value={formData.time}
+                      onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-location">Lokasi</Label>
+                  <Label htmlFor="edit-location">Lokasi *</Label>
                   <Input
                     id="edit-location"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-address">Alamat Lengkap</Label>
+                  <Input
+                    id="edit-address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-organizer">Penyelenggara</Label>
+                    <Input
+                      id="edit-organizer"
+                      value={formData.organizer}
+                      onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-capacity">Kapasitas</Label>
+                    <Input
+                      id="edit-capacity"
+                      type="number"
+                      value={formData.capacity}
+                      onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-category">Kategori</Label>
+                    <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Workshop">Workshop</SelectItem>
+                        <SelectItem value="Seminar">Seminar</SelectItem>
+                        <SelectItem value="Pelatihan">Pelatihan</SelectItem>
+                        <SelectItem value="Kompetisi">Kompetisi</SelectItem>
+                        <SelectItem value="Rapat">Rapat</SelectItem>
+                        <SelectItem value="Lainnya">Lainnya</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="edit-registrationFee">Biaya Pendaftaran</Label>
+                    <Input
+                      id="edit-registrationFee"
+                      value={formData.registrationFee}
+                      onChange={(e) => setFormData({ ...formData, registrationFee: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-contactPerson">Kontak</Label>
+                  <Input
+                    id="edit-contactPerson"
+                    value={formData.contactPerson}
+                    onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+                    placeholder="Email atau nomor telepon"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-imageUrl">URL Gambar</Label>
+                  <Input
+                    id="edit-imageUrl"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
                   />
                 </div>
                 <div className="grid gap-2">

@@ -35,8 +35,27 @@ export default function Component() {
   // Staggered animations for news cards
   const [setNewsRef, newsVisible] = useStaggeredScrollAnimation(3, { delay: 200, triggerOnce: true })
 
-  // Staggered animations for agenda cards
-  const [setAgendaRef, agendaVisible] = useStaggeredScrollAnimation(3, { delay: 200, triggerOnce: true })
+  const [agendas, setAgendas] = useState<any[]>([])
+  const [agendaLoading, setAgendaLoading] = useState(true)
+
+  // Fetch agendas from API
+  useEffect(() => {
+    const fetchAgendas = async () => {
+      try {
+        const response = await fetch('/api/agendas?limit=3')
+        const result = await response.json()
+        if (result.success) {
+          setAgendas(result.data)
+        }
+      } catch (error) {
+        console.error('Error fetching agendas:', error)
+      } finally {
+        setAgendaLoading(false)
+      }
+    }
+
+    fetchAgendas()
+  }, [])
 
   useEffect(() => {
     // Trigger initial animations
@@ -396,63 +415,44 @@ export default function Component() {
             <h2 className="text-3xl font-bold text-center text-foreground mb-12">Agenda Mendatang</h2>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Workshop Kurikulum Merdeka",
-                date: "15 Agustus 2025",
-                location: "Aula Dinas Pendidikan",
-                description: "Workshop untuk guru-guru SD dan SMP mengenai implementasi Kurikulum Merdeka.",
-              },
-              {
-                title: "Lomba Inovasi Pembelajaran",
-                date: "20 September 2025",
-                location: "Online",
-                description: "Kompetisi bagi tenaga pendidik untuk mengembangkan metode pembelajaran inovatif.",
-              },
-              {
-                title: "Seminar Nasional Pendidikan",
-                date: "5 Oktober 2025",
-                location: "Hotel Banjarmasin",
-                description:
-                  "Seminar dengan pembicara nasional membahas tantangan dan peluang pendidikan di era digital.",
-              },
-            ].map((agenda, index) => (
-              <div
-                key={index}
-                ref={setAgendaRef(index)}
-                className={`transform transition-all duration-700 ease-out ${
-                  agendaVisible[index] ? "opacity-100 translate-y-0 rotate-0" : "opacity-0 translate-y-8 rotate-1"
-                }`}
-              >
-                <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600">
-                      {agenda.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-2">
-                      <span className="font-semibold">Tanggal:</span> {agenda.date}
-                    </p>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      <span className="font-semibold">Lokasi:</span> {agenda.location}
-                    </p>
-                    <p className="text-muted-foreground mb-4 line-clamp-3">{agenda.description}</p>
-                    <Link
-                      href={`/agenda/${
-                        index === 0
-                          ? "workshop-kurikulum-merdeka"
-                          : index === 1
-                            ? "lomba-inovasi-pembelajaran"
-                            : "seminar-nasional-pendidikan"
-                      }`}
-                      className="text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
-                    >
-                      Lihat Detail
-                      <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>
-                    </Link>
-                  </CardContent>
-                </Card>
+            {agendaLoading ? (
+              <div className="col-span-full flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
-            ))}
+            ) : agendas.length > 0 ? (
+              agendas.map((agenda, index) => (
+                <div
+                  key={agenda.id}
+                  className="transform transition-all duration-700 ease-out opacity-100 translate-y-0 rotate-0"
+                >
+                  <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400">
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600">
+                        {agenda.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-2">
+                        <span className="font-semibold">Tanggal:</span> {new Date(agenda.date).toLocaleDateString('id-ID')}
+                      </p>
+                      <p className="text-muted-foreground text-sm mb-4">
+                        <span className="font-semibold">Lokasi:</span> {agenda.location}
+                      </p>
+                      <p className="text-muted-foreground mb-4 line-clamp-3">{agenda.description}</p>
+                      <Link
+                        href={`/agenda/${agenda.slug}`}
+                        className="text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
+                      >
+                        Lihat Detail
+                        <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">Belum ada agenda tersedia</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
