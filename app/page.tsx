@@ -24,6 +24,7 @@ import { useStaggeredScrollAnimation } from "@/hooks/use-scroll-animation"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
 import { ScrollingNewsCarousel } from "@/components/scrolling-news-carousel"
+import { ScrollingAgendaCarousel } from "@/components/scrolling-agenda-carousel"
 
 export default function Component() {
   const [isVisible, setIsVisible] = useState(false)
@@ -42,7 +43,7 @@ export default function Component() {
   useEffect(() => {
     const fetchAgendas = async () => {
       try {
-        const response = await fetch('/api/agendas?limit=3')
+        const response = await fetch('/api/agendas')
         const result = await response.json()
         if (result.success) {
           setAgendas(result.data)
@@ -414,46 +415,19 @@ export default function Component() {
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
             <h2 className="text-3xl font-bold text-center text-foreground mb-12">Agenda Mendatang</h2>
           </ScrollReveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {agendaLoading ? (
-              <div className="col-span-full flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            ) : agendas.length > 0 ? (
-              agendas.map((agenda, index) => (
-                <div
-                  key={agenda.id}
-                  className="transform transition-all duration-700 ease-out opacity-100 translate-y-0 rotate-0"
-                >
-                  <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400">
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600">
-                        {agenda.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm mb-2">
-                        <span className="font-semibold">Tanggal:</span> {new Date(agenda.date).toLocaleDateString('id-ID')}
-                      </p>
-                      <p className="text-muted-foreground text-sm mb-4">
-                        <span className="font-semibold">Lokasi:</span> {agenda.location}
-                      </p>
-                      <p className="text-muted-foreground mb-4 line-clamp-3">{agenda.description}</p>
-                      <Link
-                        href={`/agenda/${agenda.slug}`}
-                        className="text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
-                      >
-                        Lihat Detail
-                        <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>
-                      </Link>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-8">
-                <p className="text-muted-foreground">Belum ada agenda tersedia</p>
-              </div>
-            )}
-          </div>
+          {agendaLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : agendas.length > 0 ? (
+            <ScrollReveal animation="fade-up" delay={200} duration={800}>
+              <ScrollingAgendaCarousel agendas={agendas} />
+            </ScrollReveal>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Belum ada agenda tersedia</p>
+            </div>
+          )}
         </div>
       </section>
 

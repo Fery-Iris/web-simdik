@@ -201,7 +201,7 @@ export default function AgendaDetailPage({ params }: AgendaDetailPageProps) {
                   <div className="prose prose-lg max-w-none text-foreground">
                     <p className="mb-4 leading-relaxed text-muted-foreground">
                       {agenda.description}
-                    </p>
+                      </p>
                   </div>
                 </CardContent>
               </Card>
@@ -236,7 +236,7 @@ export default function AgendaDetailPage({ params }: AgendaDetailPageProps) {
                         <p className="font-medium text-foreground">Lokasi</p>
                         <p className="text-sm text-muted-foreground">{agenda.location}</p>
                         {agenda.address && (
-                          <p className="text-xs text-muted-foreground mt-1">{agenda.address}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{agenda.address}</p>
                         )}
                       </div>
                     </div>
@@ -273,30 +273,16 @@ export default function AgendaDetailPage({ params }: AgendaDetailPageProps) {
                     </div>
 
                     {agenda.contactPerson && (
-                      <div>
-                        <p className="font-medium text-foreground mb-1">Kontak</p>
+                    <div>
+                      <p className="font-medium text-foreground mb-1">Kontak</p>
                         <p className="text-sm text-muted-foreground">{agenda.contactPerson}</p>
-                      </div>
+                    </div>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Map Placeholder */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-foreground mb-4">Lokasi</h3>
-                  <div className="aspect-video relative bg-muted rounded-lg overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground">
-                      <div className="text-center">
-                        <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">Peta Lokasi</p>
-                        <p className="text-xs mt-1">{agenda.address || agenda.location}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Map section removed as requested */}
             </div>
           </div>
         </div>

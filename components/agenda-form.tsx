@@ -56,17 +56,20 @@ export function AgendaForm({ formData, setFormData, onSubmit, onCancel, initialI
   const handleFileUpload = async (file: File) => {
     setUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('file', file)
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', file)
 
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData,
+        body: uploadFormData,
       })
 
       const result = await response.json()
 
       if (result.success) {
+        console.log('✅ File uploaded successfully:', result.data.url)
+        console.log('📦 Updating formData.imageUrl to:', result.data.url)
+        console.log('📦 Current formData:', formData)
         setFormData({ ...formData, imageUrl: result.data.url })
         setUploadedFile(file)
         setPreviewUrl(result.data.url)

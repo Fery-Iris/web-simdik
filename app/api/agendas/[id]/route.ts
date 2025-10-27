@@ -3,12 +3,12 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const agendaSchema = z.object({
-  title: z.string().min(1, 'Judul agenda harus diisi').max(255, 'Judul agenda terlalu panjang'),
+  title: z.string().min(1, 'Judul agenda harus diisi').max(255, 'Judul agenda terlalu panjang').optional(),
   slug: z.string().min(1, 'Slug harus diisi').max(255, 'Slug terlalu panjang').optional(),
   description: z.string().optional(),
-  date: z.string().min(1, 'Tanggal harus diisi'),
-  time: z.string().min(1, 'Waktu harus diisi'),
-  location: z.string().min(1, 'Lokasi harus diisi').max(255, 'Lokasi terlalu panjang'),
+  date: z.string().min(1, 'Tanggal harus diisi').optional(),
+  time: z.string().min(1, 'Waktu harus diisi').optional(),
+  location: z.string().min(1, 'Lokasi harus diisi').max(255, 'Lokasi terlalu panjang').optional(),
   address: z.string().optional(),
   organizer: z.string().optional(),
   capacity: z.union([z.number().int().min(0), z.string().transform(val => parseInt(val) || 0)]).optional(),
@@ -85,6 +85,8 @@ export async function PUT(
     }
     
     const validatedData = agendaSchema.parse(processedBody)
+    
+    console.log('🔍 Updating agenda with data:', JSON.stringify(validatedData, null, 2))
 
     // Check if agenda exists
     const existingAgenda = await prisma.agenda.findUnique({
@@ -98,12 +100,28 @@ export async function PUT(
       )
     }
 
+    // Only update fields that are provided
+    const updateData: any = {}
+    
+    if (validatedData.title !== undefined) updateData.title = validatedData.title
+    if (validatedData.description !== undefined) updateData.description = validatedData.description
+    if (validatedData.date !== undefined) updateData.date = new Date(validatedData.date)
+    if (validatedData.time !== undefined) updateData.time = validatedData.time
+    if (validatedData.location !== undefined) updateData.location = validatedData.location
+    if (validatedData.address !== undefined) updateData.address = validatedData.address
+    if (validatedData.organizer !== undefined) updateData.organizer = validatedData.organizer
+    if (validatedData.capacity !== undefined) updateData.capacity = validatedData.capacity
+    if (validatedData.category !== undefined) updateData.category = validatedData.category
+    if (validatedData.registrationFee !== undefined) updateData.registrationFee = validatedData.registrationFee
+    if (validatedData.contactPerson !== undefined) updateData.contactPerson = validatedData.contactPerson
+    if (validatedData.imageUrl !== undefined) updateData.imageUrl = validatedData.imageUrl
+    if (validatedData.status !== undefined) updateData.status = validatedData.status
+
+    console.log('📝 Update data to save:', JSON.stringify(updateData, null, 2))
+
     const agenda = await prisma.agenda.update({
       where: { id: params.id },
-      data: {
-        ...validatedData,
-        date: new Date(validatedData.date),
-      },
+      data: updateData,
     })
 
     return NextResponse.json({

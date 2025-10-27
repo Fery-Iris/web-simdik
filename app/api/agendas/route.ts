@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     console.log('🔍 Received body:', JSON.stringify(body, null, 2))
+    console.log('📝 Body.title:', body.title)
+    console.log('📝 Body.category:', body.category)
     
     // Preprocess data to handle different formats
     const processedBody = {
@@ -93,25 +95,23 @@ export async function POST(request: NextRequest) {
     }
     
     const validatedData = agendaSchema.parse(processedBody)
+    console.log('✅ Validated data:', JSON.stringify(validatedData, null, 2))
+    console.log('📝 Validated.title:', validatedData.title)
 
     // Generate slug if not provided
     let slug = validatedData.slug
     if (!slug) {
-      const title = validatedData.title || 'Agenda Baru'
-      slug = title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim()
+      // Get the count of existing agendas to generate a sequential slug
+      const agendaCount = await prisma.agenda.count()
+      slug = (agendaCount + 1).toString()
     }
 
     // Use slug as is for now (can be improved later)
     const finalSlug = slug
 
-    // Prepare data for Prisma
+    // Prepare data for Prisma - only use fields that exist in schema
     const agendaData = {
-      title: validatedData.title || 'Agenda Baru',
+      title: validatedData.title || `Agenda ${validatedData.date ? new Date(validatedData.date).toLocaleDateString('id-ID') : new Date().toLocaleDateString('id-ID')}`,
       slug: finalSlug,
       description: validatedData.description || '',
       date: validatedData.date ? new Date(validatedData.date) : new Date(),
