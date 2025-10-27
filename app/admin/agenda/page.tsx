@@ -518,13 +518,7 @@ export default function AgendaPage() {
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
-              <Button 
-                variant="outline" 
-                onClick={() => router.push('/admin')}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Kembali ke Dashboard
-              </Button>
+          
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Manajemen Agenda</h1>
                 <p className="text-gray-600">Kelola agenda dan kegiatan pendidikan</p>

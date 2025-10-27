@@ -278,8 +278,6 @@ export default function AgendaDetailPage({ params }: AgendaDetailPageProps) {
                         <p className="text-sm text-muted-foreground">{agenda.contactPerson}</p>
                       </div>
                     )}
-
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Daftar Sekarang</Button>
                   </div>
                 </CardContent>
               </Card>
