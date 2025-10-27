@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Upload, X, Image as ImageIcon } from "lucide-react"
 
 interface AgendaFormProps {
   formData: {
@@ -44,9 +45,55 @@ interface AgendaFormProps {
   }>>
   onSubmit: (e: React.FormEvent) => void
   onCancel: () => void
+  initialImageUrl?: string
 }
 
-export function AgendaForm({ formData, setFormData, onSubmit, onCancel }: AgendaFormProps) {
+export function AgendaForm({ formData, setFormData, onSubmit, onCancel, initialImageUrl }: AgendaFormProps) {
+  const [uploading, setUploading] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null)
+
+  const handleFileUpload = async (file: File) => {
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setFormData({ ...formData, imageUrl: result.data.url })
+        setUploadedFile(file)
+        setPreviewUrl(result.data.url)
+      } else {
+        alert(result.message || 'Gagal mengupload file')
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Gagal mengupload file')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      handleFileUpload(file)
+    }
+  }
+
+  const removeImage = () => {
+    setFormData({ ...formData, imageUrl: '' })
+    setUploadedFile(null)
+    setPreviewUrl(null)
+  }
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid gap-2">
@@ -179,13 +226,53 @@ export function AgendaForm({ formData, setFormData, onSubmit, onCancel }: Agenda
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="imageUrl">URL Gambar</Label>
-        <Input
-          id="imageUrl"
-          value={formData.imageUrl}
-          onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-          placeholder="https://example.com/image.jpg"
-        />
+        <Label htmlFor="image">Foto Agenda</Label>
+        <div className="space-y-3">
+          {/* File Upload Input */}
+          <div className="flex items-center gap-4">
+            <Input
+              id="image"
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              onChange={handleFileChange}
+              disabled={uploading}
+              className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            {uploading && (
+              <div className="text-sm text-blue-600 flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                Mengupload...
+              </div>
+            )}
+          </div>
+
+          {/* Preview Image */}
+          {(previewUrl || formData.imageUrl) && (
+            <div className="relative inline-block">
+              <img
+                src={previewUrl || formData.imageUrl}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded-lg border"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                onClick={removeImage}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+
+          {/* Upload Instructions */}
+          <div className="text-sm text-muted-foreground">
+            <p>• Format yang didukung: JPG, PNG, WebP</p>
+            <p>• Ukuran maksimal: 5MB</p>
+            <p>• Resolusi disarankan: minimal 400x300px</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-2">

@@ -546,6 +546,7 @@ export default function AgendaPage() {
                     setIsAddDialogOpen(false)
                     resetForm()
                   }}
+                  initialImageUrl=""
                 />
               </DialogContent>
             </Dialog>
@@ -715,6 +716,7 @@ export default function AgendaPage() {
                 setIsEditDialogOpen(false)
                 resetForm()
               }}
+              initialImageUrl={formData.imageUrl}
             />
           </DialogContent>
         </Dialog>

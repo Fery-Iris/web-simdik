@@ -3,12 +3,12 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const agendaSchema = z.object({
-  title: z.string().min(1, 'Judul agenda harus diisi').max(255, 'Judul agenda terlalu panjang'),
+  title: z.string().min(1, 'Judul agenda harus diisi').max(255, 'Judul agenda terlalu panjang').optional(),
   slug: z.string().min(1, 'Slug harus diisi').max(255, 'Slug terlalu panjang').optional(),
   description: z.string().optional(),
-  date: z.string().min(1, 'Tanggal harus diisi'),
-  time: z.string().min(1, 'Waktu harus diisi'),
-  location: z.string().min(1, 'Lokasi harus diisi').max(255, 'Lokasi terlalu panjang'),
+  date: z.string().min(1, 'Tanggal harus diisi').optional(),
+  time: z.string().min(1, 'Waktu harus diisi').optional(),
+  location: z.string().min(1, 'Lokasi harus diisi').max(255, 'Lokasi terlalu panjang').optional(),
   address: z.string().optional(),
   organizer: z.string().optional(),
   capacity: z.union([z.number().int().min(0), z.string().transform(val => parseInt(val) || 0)]).optional(),
@@ -63,6 +63,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('🔍 Received body:', JSON.stringify(body, null, 2))
     
     // Preprocess data to handle different formats
     const processedBody = {
@@ -96,7 +97,8 @@ export async function POST(request: NextRequest) {
     // Generate slug if not provided
     let slug = validatedData.slug
     if (!slug) {
-      slug = validatedData.title
+      const title = validatedData.title || 'Agenda Baru'
+      slug = title
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
         .replace(/\s+/g, '-')
@@ -109,12 +111,12 @@ export async function POST(request: NextRequest) {
 
     // Prepare data for Prisma
     const agendaData = {
-      title: validatedData.title,
+      title: validatedData.title || 'Agenda Baru',
       slug: finalSlug,
       description: validatedData.description || '',
-      date: new Date(validatedData.date),
-      time: validatedData.time,
-      location: validatedData.location,
+      date: validatedData.date ? new Date(validatedData.date) : new Date(),
+      time: validatedData.time || '09:00',
+      location: validatedData.location || 'Lokasi belum ditentukan',
       address: validatedData.address || null,
       organizer: validatedData.organizer || 'Dinas Pendidikan Kota Banjarmasin',
       capacity: validatedData.capacity || 0,
