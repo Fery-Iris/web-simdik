@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -22,37 +22,32 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
 import { generateTicketPDF, type ReservationTicketData } from "@/lib/pdf-generator"
 
-// Static data for services and time slots
-const services = [
-  {
-    id: "ptk",
-    name: "PTK (Pendidik dan Tenaga Kependidikan)",
-    icon: Users,
-    description: "Layanan untuk guru, kepala sekolah, dan tenaga kependidikan",
-    color: "bg-blue-500",
-  },
-  {
-    id: "sd",
-    name: "SD Umum",
-    icon: School,
-    description: "Layanan untuk Sekolah Dasar",
-    color: "bg-green-500",
-  },
-  {
-    id: "smp",
-    name: "SMP Umum",
-    icon: GraduationCap,
-    description: "Layanan untuk Sekolah Menengah Pertama",
-    color: "bg-purple-500",
-  },
-  {
-    id: "paud",
-    name: "PAUD",
-    icon: Baby,
-    description: "Layanan untuk Pendidikan Anak Usia Dini",
-    color: "bg-orange-500",
-  },
-]
+// Icon mapping
+const iconMap: { [key: string]: any } = {
+  Users,
+  School,
+  GraduationCap,
+  Baby,
+}
+
+interface LayananFromAPI {
+  id: string
+  name: string
+  description: string | null
+  icon: string | null
+  color: string | null
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+interface ServiceDisplay {
+  id: string
+  name: string
+  icon: any
+  description: string
+  color: string
+}
 
 // Format a JS Date to local YYYY-MM-DD (no timezone shift)
 const formatLocalYmd = (d: Date) => {
@@ -107,6 +102,7 @@ const getTimeSlots = async (selectedDate: Date | undefined) => {
 
 interface ReservationData {
   service: string
+  idLayanan: string
   date: Date | undefined
   timeSlot: string
   name: string
@@ -121,6 +117,7 @@ export default function ReservasiPage() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [reservationData, setReservationData] = useState<ReservationData>({
     service: "",
+    idLayanan: "",
     date: undefined,
     timeSlot: "",
     name: "",
@@ -133,9 +130,75 @@ export default function ReservasiPage() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
   const [timeSlots, setTimeSlots] = useState<Array<{id: string, time: string, capacity: number, booked: number}>>([])
   const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false)
+  const [services, setServices] = useState<ServiceDisplay[]>([])
+  const [isLoadingServices, setIsLoadingServices] = useState(true)
 
-  const handleServiceSelect = (serviceId: string) => {
-    setReservationData({ ...reservationData, service: serviceId })
+  // Fetch layanans from API
+  useEffect(() => {
+    const fetchLayanans = async () => {
+      try {
+        const response = await fetch('/api/layanans')
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success) {
+            // Transform API data to ServiceDisplay format
+            const transformedServices: ServiceDisplay[] = result.data.map((layanan: LayananFromAPI) => ({
+              id: layanan.id,
+              name: layanan.name,
+              description: layanan.description || "Layanan pendidikan",
+              icon: iconMap[layanan.icon || 'School'] || School,
+              color: layanan.color || 'bg-blue-500',
+            }))
+            setServices(transformedServices)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching layanans:', error)
+        // Fallback to default services if API fails
+        setServices([
+          {
+            id: "default-1",
+            name: "PTK (Pendidik dan Tenaga Kependidikan)",
+            icon: Users,
+            description: "Layanan untuk guru, kepala sekolah, dan tenaga kependidikan",
+            color: "bg-blue-500",
+          },
+          {
+            id: "default-2",
+            name: "SD Umum",
+            icon: School,
+            description: "Layanan untuk Sekolah Dasar",
+            color: "bg-green-500",
+          },
+          {
+            id: "default-3",
+            name: "SMP Umum",
+            icon: GraduationCap,
+            description: "Layanan untuk Sekolah Menengah Pertama",
+            color: "bg-purple-500",
+          },
+          {
+            id: "default-4",
+            name: "PAUD",
+            icon: Baby,
+            description: "Layanan untuk Pendidikan Anak Usia Dini",
+            color: "bg-orange-500",
+          },
+        ])
+      } finally {
+        setIsLoadingServices(false)
+      }
+    }
+
+    fetchLayanans()
+  }, [])
+
+  const handleServiceSelect = (serviceId: string, serviceName: string) => {
+    setReservationData({ 
+      ...reservationData, 
+      service: serviceName,
+      idLayanan: serviceId 
+    })
     setStep(2)
   }
 
@@ -165,6 +228,7 @@ export default function ReservasiPage() {
     try {
       console.log('Submitting reservation data:', {
         service: reservationData.service,
+        idLayanan: reservationData.idLayanan,
         date: reservationData.date?.toISOString().split('T')[0],
         timeSlot: reservationData.timeSlot,
         name: reservationData.name,
@@ -180,6 +244,7 @@ export default function ReservasiPage() {
         },
         body: JSON.stringify({
           service: reservationData.service,
+          idLayanan: reservationData.idLayanan,
                 date: reservationData.date ? formatLocalYmd(reservationData.date) : undefined,
           timeSlot: reservationData.timeSlot,
           name: reservationData.name,
@@ -210,7 +275,8 @@ export default function ReservasiPage() {
       }
     } catch (error) {
       console.error('Error creating reservation:', error)
-      alert(`Terjadi kesalahan saat membuat reservasi: ${error.message}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      alert(`Terjadi kesalahan saat membuat reservasi: ${errorMessage}`)
     }
   }
 
@@ -247,6 +313,7 @@ export default function ReservasiPage() {
     setIsCalendarOpen(false)
     setReservationData({
       service: "",
+      idLayanan: "",
       date: undefined,
       timeSlot: "",
       name: "",
@@ -258,7 +325,7 @@ export default function ReservasiPage() {
     setEstimatedTime("")
   }
 
-  const selectedService = services.find((s) => s.id === reservationData.service)
+  const selectedService = services.find((s) => s.id === reservationData.idLayanan)
   const selectedTimeSlot = timeSlots.find((t) => t.id === reservationData.timeSlot)
 
   return (
@@ -321,33 +388,39 @@ export default function ReservasiPage() {
                 </p>
               </CardHeader>
               <CardContent className="p-4 sm:p-8 bg-card dark:bg-card">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {services.map((service) => {
-                    const Icon = service.icon
-                    return (
-                      <Card
-                        key={service.id}
-                        className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-blue-400 group bg-card dark:bg-card touch-manipulation"
-                        onClick={() => handleServiceSelect(service.id)}
-                      >
-                        <CardContent className="p-4 sm:p-6 text-center bg-card dark:bg-card">
-                          <div
-                            className={cn(
-                              "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110",
-                              service.color,
-                            )}
-                          >
-                            <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                          </div>
-                          <h3 className="font-semibold text-base sm:text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-foreground">
-                            {service.name}
-                          </h3>
-                          <p className="text-xs sm:text-sm text-muted-foreground">{service.description}</p>
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
+                {isLoadingServices ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    {services.map((service) => {
+                      const Icon = service.icon
+                      return (
+                        <Card
+                          key={service.id}
+                          className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-blue-400 group bg-card dark:bg-card touch-manipulation"
+                          onClick={() => handleServiceSelect(service.id, service.name)}
+                        >
+                          <CardContent className="p-4 sm:p-6 text-center bg-card dark:bg-card">
+                            <div
+                              className={cn(
+                                "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110",
+                                service.color,
+                              )}
+                            >
+                              <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                            </div>
+                            <h3 className="font-semibold text-base sm:text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-foreground">
+                              {service.name}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{service.description}</p>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </ScrollReveal>

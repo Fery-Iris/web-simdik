@@ -37,10 +37,20 @@ import {
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
+interface Layanan {
+  id: string
+  name: string
+  description?: string
+  icon?: string
+  color?: string
+}
+
 interface Reservation {
   id: string
   queueNumber: string
   service: string
+  idLayanan?: string
+  layanan?: Layanan | null
   name: string
   phone: string
   nik?: string
@@ -99,7 +109,11 @@ export default function AdminReservationsPage() {
   // Filter reservations based on selected filters
   const filteredReservations = reservations.filter(reservation => {
     const statusMatch = statusFilter === "all" || reservation.status === statusFilter
-    const serviceMatch = serviceFilter === "all" || reservation.service === serviceFilter
+    // Check both service field and layanan relation for service filter
+    const serviceMatch = serviceFilter === "all" || 
+      reservation.service === serviceFilter || 
+      reservation.idLayanan === serviceFilter ||
+      (reservation.layanan && reservation.layanan.id === serviceFilter)
     return statusMatch && serviceMatch
   })
 
@@ -118,27 +132,77 @@ export default function AdminReservationsPage() {
 
   const handleStatusUpdate = async (reservationId: string, newStatus: string) => {
     try {
+      // Find the reservation to get all its data
+      const reservation = reservations.find(r => r.id === reservationId)
+      if (!reservation) {
+        alert('Reservasi tidak ditemukan')
+        return
+      }
+
       const response = await fetch(`/api/reservations/${reservationId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: newStatus.toUpperCase() }),
+        body: JSON.stringify({
+          name: reservation.name,
+          phone: reservation.phone,
+          nik: reservation.nik || '',
+          purpose: reservation.purpose,
+          service: reservation.service,
+          date: reservation.date,
+          timeSlot: reservation.timeSlot,
+          status: newStatus.toUpperCase(),
+          idLayanan: reservation.idLayanan || null,
+        }),
       })
 
       if (response.ok) {
-        // Update local state
-        setReservations(prev => 
-          prev.map(res => 
-            res.id === reservationId 
-              ? { ...res, status: newStatus }
-              : res
+        const result = await response.json()
+        
+        // Refresh data from server to get updated info
+        const refreshResponse = await fetch('/api/reservations')
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json()
+          setReservations(refreshData.data || [])
+        } else {
+          // Fallback: Update local state
+          setReservations(prev => 
+            prev.map(res => 
+              res.id === reservationId 
+                ? { ...res, status: newStatus.toLowerCase() }
+                : res
+            )
           )
-        )
+        }
+        
+        // Update selected reservation if detail is open
+        if (selectedReservation?.id === reservationId) {
+          setSelectedReservation({
+            ...selectedReservation,
+            status: newStatus.toLowerCase()
+          })
+        }
+        
+        // Show success message with better formatting
+        const statusMessages: { [key: string]: string } = {
+          'called': 'Dipanggil',
+          'completed': 'Selesai',
+          'cancelled': 'Dibatalkan',
+          'waiting': 'Menunggu'
+        }
+        
+        alert(`✅ Status berhasil diubah menjadi "${statusMessages[newStatus.toLowerCase()] || newStatus}"`)
+        
+        // Close detail dialog after update
         setIsDetailOpen(false)
+      } else {
+        const error = await response.json()
+        alert(`❌ Gagal mengubah status: ${error.error || error.message || 'Terjadi kesalahan'}`)
       }
     } catch (error) {
       console.error('Error updating status:', error)
+      alert('Terjadi kesalahan saat mengubah status')
     }
   }
 
@@ -211,14 +275,19 @@ export default function AdminReservationsPage() {
     }
   }
 
-  const getServiceName = (service: string) => {
+  const getServiceName = (reservation: Reservation) => {
+    // Prioritize layanan relation if available
+    if (reservation.layanan && reservation.layanan.name) {
+      return reservation.layanan.name
+    }
+    // Fallback to service field with static mapping
     const serviceNames: Record<string, string> = {
       ptk: "PTK (Pendidik dan Tenaga Kependidikan)",
       sd: "SD Umum",
       smp: "SMP Umum",
       paud: "PAUD",
     }
-    return serviceNames[service] || service
+    return serviceNames[reservation.service] || reservation.service
   }
 
   const getStatusColor = (status: string) => {
@@ -524,7 +593,7 @@ export default function AdminReservationsPage() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate">
-                              {getServiceName(reservation.service)}
+                              {getServiceName(reservation)}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -634,7 +703,7 @@ export default function AdminReservationsPage() {
 
               <div>
                 <Label className="text-sm font-medium text-muted-foreground">Layanan</Label>
-                <p className="text-sm">{getServiceName(selectedReservation.service)}</p>
+                <p className="text-sm">{getServiceName(selectedReservation)}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -704,6 +773,21 @@ export default function AdminReservationsPage() {
                       className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
                     >
                       Batalkan
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {(selectedReservation.status === "completed" || selectedReservation.status === "cancelled") && (
+                <div className="border-t pt-4">
+                  <Label className="text-sm font-medium text-muted-foreground mb-3 block">Ubah Status</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleStatusUpdate(selectedReservation.id, "waiting")}
+                      variant="outline"
+                      className="border-blue-200 hover:border-blue-400"
+                    >
+                      Kembalikan ke Menunggu
                     </Button>
                   </div>
                 </div>
@@ -858,7 +942,7 @@ export default function AdminReservationsPage() {
               <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
                 <p className="font-medium">{deleteReservation.queueNumber}</p>
                 <p className="text-sm text-muted-foreground">{deleteReservation.name}</p>
-                <p className="text-sm text-muted-foreground">{getServiceName(deleteReservation.service)}</p>
+                <p className="text-sm text-muted-foreground">{getServiceName(deleteReservation)}</p>
               </div>
               <p className="text-sm text-red-600">
                 Tindakan ini tidak dapat dibatalkan.

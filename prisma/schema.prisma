@@ -30,20 +30,38 @@ model Agenda {
   @@map("agendas")
 }
 
+model Layanan {
+  id          BigInt      @id @default(autoincrement()) @map("id_layanans")
+  name        String      @db.VarChar(255)
+  description String?     @db.Text
+  icon        String?     @db.VarChar(100)
+  color       String?     @db.VarChar(50)
+  isActive    Boolean     @default(true) @map("isActive")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  
+  reservations Reservasi[]
+
+  @@map("layanans")
+}
+
 model Reservasi {
   id                String            @id @default(cuid())
   queueNumber       String            @unique @db.VarChar(20)
-  service           String            @db.VarChar(10)
+  service           String            @db.VarChar(255) // Kept for backward compatibility
+  idLayanan         BigInt?           @map("id_layanans") // Foreign key to Layanan
   name              String            @db.VarChar(255)
   phone             String            @db.VarChar(20)
   nik               String?           @db.VarChar(20)
-  purpose           String
+  purpose           String            @db.Text
   date              DateTime          @db.Date
-  timeSlot          String            @db.VarChar(10)
+  timeSlot          String            @db.VarChar(255)
   status            ReservationStatus @default(WAITING)
-  estimatedCallTime String?           @db.VarChar(10)
+  estimatedCallTime String?           @db.VarChar(255)
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  layanan Layanan? @relation(fields: [idLayanan], references: [id], onDelete: SetNull)
 
   @@map("reservations")
 }

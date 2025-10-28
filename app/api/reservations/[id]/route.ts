@@ -10,6 +10,9 @@ export async function GET(
       where: {
         id: params.id,
       },
+      include: {
+        layanan: true, // Include layanan relation
+      },
     })
 
     if (!reservation) {
@@ -22,6 +25,11 @@ export async function GET(
         id: reservation.id,
         queueNumber: reservation.queueNumber,
         service: reservation.service,
+        idLayanan: reservation.idLayanan ? reservation.idLayanan.toString() : null,
+        layanan: reservation.layanan ? {
+          ...reservation.layanan,
+          id: reservation.layanan.id.toString(),
+        } : null,
         name: reservation.name,
         phone: reservation.phone,
         nik: reservation.nik,
@@ -54,7 +62,8 @@ export async function PUT(
       service, 
       date, 
       timeSlot, 
-      status 
+      status,
+      idLayanan
     } = body
 
     // Validate required fields
@@ -67,6 +76,28 @@ export async function PUT(
       return NextResponse.json({ error: "Invalid status" }, { status: 400 })
     }
 
+    // If idLayanan provided, validate it exists and convert to BigInt
+    let layananId: bigint | null = null
+    if (idLayanan) {
+      try {
+        layananId = BigInt(idLayanan)
+        
+        const layananExists = await prisma.layanan.findUnique({
+          where: { id: layananId }
+        })
+        
+        if (!layananExists) {
+          return NextResponse.json({ 
+            success: false,
+            error: "Layanan tidak ditemukan" 
+          }, { status: 400 })
+        }
+      } catch (err) {
+        console.log("Error validating layanan:", err)
+        layananId = null
+      }
+    }
+
     const reservation = await prisma.reservasi.update({
       where: {
         id: params.id,
@@ -77,10 +108,14 @@ export async function PUT(
         nik: nik || null,
         purpose,
         service,
+        idLayanan: layananId,
         // Parse as local date (YYYY-MM-DD)
         date: (() => { const [y,m,d] = date.split('-').map(Number); return new Date(y, m-1, d) })(),
         timeSlot,
         status,
+      },
+      include: {
+        layanan: true,
       },
     })
 
@@ -90,6 +125,11 @@ export async function PUT(
         id: reservation.id,
         queueNumber: reservation.queueNumber,
         service: reservation.service,
+        idLayanan: reservation.idLayanan ? reservation.idLayanan.toString() : null,
+        layanan: reservation.layanan ? {
+          ...reservation.layanan,
+          id: reservation.layanan.id.toString(),
+        } : null,
         name: reservation.name,
         phone: reservation.phone,
         nik: reservation.nik,

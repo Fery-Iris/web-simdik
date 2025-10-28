@@ -7,7 +7,18 @@ let reservations: any[] = []
 // Helper function to generate queue number
 function generateQueueNumber(service: string): string {
   const timestamp = Date.now().toString().slice(-6)
-  const serviceCode = service.toUpperCase()
+  
+  // Map service name to short code
+  const serviceCodeMap: { [key: string]: string } = {
+    'PTK (Pendidik dan Tenaga Kependidikan)': 'PTK',
+    'SD Umum': 'SD',
+    'SMP Umum': 'SMP',
+    'PAUD': 'PAUD',
+  }
+  
+  // Get short code or use first 3 chars of service name
+  const serviceCode = serviceCodeMap[service] || service.substring(0, 3).toUpperCase()
+  
   return `${serviceCode}-${timestamp}`
 }
 
@@ -28,10 +39,33 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 
     // Validate required fields
-    const { service, date, timeSlot, name, phone, purpose } = body
+    const { service, date, timeSlot, name, phone, purpose, idLayanan } = body
 
     if (!service || !date || !timeSlot || !name || !phone || !purpose) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    // If idLayanan provided, validate it exists and convert to BigInt
+    let layananId: bigint | null = null
+    if (idLayanan) {
+      try {
+        // Convert string to BigInt
+        layananId = BigInt(idLayanan)
+        
+        const layananExists = await prisma.layanan.findUnique({
+          where: { id: layananId }
+        })
+        
+        if (!layananExists) {
+          return NextResponse.json({ 
+            success: false,
+            error: "Layanan tidak ditemukan" 
+          }, { status: 400 })
+        }
+      } catch (err) {
+        console.log("Error validating layanan:", err)
+        layananId = null
+      }
     }
 
     // Generate queue number and estimated call time
@@ -41,20 +75,24 @@ export async function POST(request: NextRequest) {
     // Create new reservation in database (with fallback)
     let reservation: any
     
-            try {
+    try {
       reservation = await prisma.reservasi.create({
         data: {
           queueNumber,
           service,
+          idLayanan: layananId, // Use converted BigInt
           name,
           phone,
           nik: body.nik || null,
           purpose,
-                  // Parse YYYY-MM-DD as local date (avoid UTC shift)
-                  date: (() => { const [y,m,d] = date.split('-').map(Number); return new Date(y, m-1, d) })(),
+          // Parse YYYY-MM-DD as local date (avoid UTC shift)
+          date: (() => { const [y,m,d] = date.split('-').map(Number); return new Date(y, m-1, d) })(),
           timeSlot,
           estimatedCallTime,
           status: "WAITING",
+        },
+        include: {
+          layanan: true, // Include layanan relation
         },
       })
     } catch (dbError) {
@@ -64,6 +102,7 @@ export async function POST(request: NextRequest) {
         id: Date.now().toString(),
         queueNumber,
         service,
+        idLayanan: idLayanan || null,
         name,
         phone,
         nik: body.nik || null,
@@ -83,6 +122,11 @@ export async function POST(request: NextRequest) {
         id: reservation.id,
         queueNumber: reservation.queueNumber,
         service: reservation.service,
+        idLayanan: reservation.idLayanan ? reservation.idLayanan.toString() : null,
+        layanan: reservation.layanan ? {
+          ...reservation.layanan,
+          id: reservation.layanan.id.toString(),
+        } : null,
         name: reservation.name,
         phone: reservation.phone,
         nik: reservation.nik,
@@ -106,6 +150,9 @@ export async function GET() {
     
     try {
       const dbReservations = await prisma.reservasi.findMany({
+        include: {
+          layanan: true, // Include layanan relation
+        },
         orderBy: {
           createdAt: 'desc',
         },
@@ -115,6 +162,11 @@ export async function GET() {
         id: reservation.id,
         queueNumber: reservation.queueNumber,
         service: reservation.service,
+        idLayanan: reservation.idLayanan ? reservation.idLayanan.toString() : null,
+        layanan: reservation.layanan ? {
+          ...reservation.layanan,
+          id: reservation.layanan.id.toString(),
+        } : null,
         name: reservation.name,
         phone: reservation.phone,
         nik: reservation.nik,
