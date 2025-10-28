@@ -46,7 +46,7 @@ model Layanan {
 }
 
 model Reservasi {
-  id                String            @id @default(cuid())
+  id                String            @id @default(cuid()) @map("id_reservations")
   queueNumber       String            @unique @db.VarChar(20)
   service           String            @db.VarChar(255) // Kept for backward compatibility
   idLayanan         BigInt?           @map("id_layanans") // Foreign key to Layanan
