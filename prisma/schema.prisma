@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Agenda {
-  id               String   @id @default(cuid())
+  id               String   @id @default(cuid()) @map("id_agendas")
   title            String   @db.VarChar(255)
   slug             String   @unique @db.VarChar(255)
   description      String   @db.Text
@@ -78,4 +78,21 @@ enum ReservationStatus {
   CALLED    @map("Dipanggil")
   COMPLETED @map("Selesai")
   CANCELLED @map("Dibatalkan")
+}
+
+model Pengguna {
+  id        BigInt   @id @default(autoincrement()) @map("id_penggunas")
+  nama      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(150)
+  passwordHash String @map("password_hash") @db.VarChar(255)
+  peran     RoleType @default(ADMIN)
+  createdAt DateTime @default(now()) @map("dibuat_pada")
+  updatedAt DateTime @updatedAt @map("diperbarui_pada")
+
+  @@map("penggunas")
+}
+
+enum RoleType {
+  ADMIN
+  USER
 }

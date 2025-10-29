@@ -81,6 +81,7 @@ export default function AgendaPage() {
   const [viewLoading, setViewLoading] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -258,6 +259,26 @@ export default function AgendaPage() {
   }
 
   // Reset form
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        router.push('/login')
+      } else {
+        alert('Gagal logout. Silakan coba lagi.')
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      alert('Terjadi kesalahan saat logout.')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       title: "",
@@ -342,10 +363,12 @@ export default function AgendaPage() {
           <div className="p-4 border-t border-sidebar-border">
             <Button
               variant="ghost"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
               className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200"
             >
               <LogOut className="w-5 h-5" />
-              {!sidebarCollapsed && <span className="ml-3">Logout</span>}
+              {!sidebarCollapsed && <span className="ml-3">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
             </Button>
           </div>
         </div>
@@ -468,10 +491,12 @@ export default function AgendaPage() {
         <div className="p-4 border-t border-sidebar-border">
           <Button
             variant="ghost"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
             className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200"
           >
             <LogOut className="w-5 h-5" />
-            {!sidebarCollapsed && <span className="ml-3">Logout</span>}
+            {!sidebarCollapsed && <span className="ml-3">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
           </Button>
         </div>
       </div>

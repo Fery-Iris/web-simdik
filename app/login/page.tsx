@@ -3,36 +3,61 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Shield, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { Shield, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react"
 import Link from "next/link"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle login logic here
-    console.log("Login attempt:", { email, password, rememberMe })
+    setError("")
+    setIsLoading(true)
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || "Terjadi kesalahan saat login")
+        setIsLoading(false)
+        return
+      }
+
+      // Login successful - redirect to admin dashboard
+      router.push("/admin/dashboard")
+      router.refresh()
+    } catch (err) {
+      console.error("Login error:", err)
+      setError("Terjadi kesalahan saat login")
+      setIsLoading(false)
+    }
   }
 
   const demoAccounts = [
     {
-      type: "Super Admin",
-      email: "admin@simdik.com",
-      password: "password",
-    },
-    {
-      type: "Regular User",
-      email: "user@simdik.com",
-      password: "password",
+      type: "Admin Disdik",
+      email: "disdikbanjarmasin@gmail.com",
+      password: "disdik123",
     },
   ]
 
@@ -61,6 +86,13 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <form onSubmit={handleLogin} className="space-y-6">
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    {error}
+                  </div>
+                )}
+
                 {/* Email Field */}
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-medium text-gray-700">
@@ -122,24 +154,35 @@ export default function LoginPage() {
                 {/* Sign In Button */}
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                  disabled={isLoading}
+                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Shield className="w-5 h-5 mr-2" />
-                  Sign In
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Signing In...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-5 h-5 mr-2" />
+                      Sign In
+                    </>
+                  )}
                 </Button>
               </form>
 
               {/* Demo Accounts */}
               <div className="pt-6 border-t border-gray-200">
-                <p className="text-center text-sm text-gray-500 mb-4">Demo Accounts</p>
-                <div className="grid grid-cols-2 gap-3">
+                <p className="text-center text-sm text-gray-500 mb-4">Demo Account</p>
+                <div className="flex justify-center">
                   {demoAccounts.map((account, index) => (
                     <div
                       key={index}
-                      className="text-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                      className="text-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors w-full max-w-xs"
                       onClick={() => {
                         setEmail(account.email)
                         setPassword(account.password)
+                        setError("")
                       }}
                     >
                       <p className="text-sm font-medium text-gray-700">{account.type}</p>

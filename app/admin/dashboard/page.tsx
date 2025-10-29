@@ -28,8 +28,30 @@ import { cn } from "@/lib/utils"
 export default function AdminDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        // Redirect to login page
+        router.push('/login')
+      } else {
+        alert('Gagal logout. Silakan coba lagi.')
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      alert('Terjadi kesalahan saat logout.')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
 
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/admin/dashboard", active: true },
@@ -210,10 +232,12 @@ export default function AdminDashboard() {
         <div className="p-4 border-t border-sidebar-border">
           <Button
             variant="ghost"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
             className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200"
           >
             <LogOut className="w-5 h-5" />
-            {!sidebarCollapsed && <span className="ml-3">Logout</span>}
+            {!sidebarCollapsed && <span className="ml-3">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
           </Button>
         </div>
       </div>
