@@ -31,6 +31,7 @@ import {
   Newspaper,
   Calendar,
   FileText,
+  Search,
 } from "lucide-react"
 
 interface Agenda {
@@ -322,7 +323,7 @@ export default function AgendaPage() {
           </div>
 
           {/* Logo */}
-          <div className="p-4 border-b border-sidebar-border">
+          <div className="px-4 py-4 border-b border-sidebar-border">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <School className="w-5 h-5 text-white" />
@@ -450,7 +451,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Logo */}
-        <div className="p-4 border-b border-sidebar-border">
+        <div className="px-4 py-4 border-b border-sidebar-border">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <School className="w-5 h-5 text-white" />
@@ -541,52 +542,37 @@ export default function AgendaPage() {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
-          
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Manajemen Agenda</h1>
-                <p className="text-gray-600">Kelola agenda dan kegiatan pendidikan</p>
-              </div>
-            </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  className="bg-blue-600 hover:bg-blue-700"
-                  onClick={resetForm}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Tambah Agenda
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Tambah Agenda Baru</DialogTitle>
-                </DialogHeader>
-                <AgendaForm 
-                  formData={formData}
-                  setFormData={setFormData}
-                  onSubmit={handleSubmit}
-                  onCancel={() => {
-                    setIsAddDialogOpen(false)
-                    resetForm()
-                  }}
-                  initialImageUrl=""
-                />
-              </DialogContent>
-            </Dialog>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Manajemen Agenda</h1>
+            <p className="text-gray-600">Kelola agenda dan kegiatan</p>
           </div>
 
         {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Total Agenda</p>
-                  <p className="text-2xl font-bold text-gray-900">{agendas.length}</p>
+                  <p className="text-sm text-gray-500 mb-1">Total Agenda</p>
+                  <p className="text-3xl font-bold text-blue-600">{agendas.length}</p>
                 </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <div className="bg-blue-100 p-3 rounded-lg">
+                  <Calendar className="w-6 h-6 text-blue-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Terjadwal</p>
+                  <p className="text-3xl font-bold text-orange-600">
+                    {agendas.filter(a => a.status === 'SCHEDULED').length}
+                  </p>
+                </div>
+                <div className="bg-orange-100 p-3 rounded-lg">
                   <Clock className="w-6 h-6 text-orange-600" />
                 </div>
               </div>
@@ -597,13 +583,13 @@ export default function AgendaPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Berlangsung</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-gray-500 mb-1">Berlangsung</p>
+                  <p className="text-3xl font-bold text-green-600">
                     {agendas.filter(a => a.status === 'ONGOING').length}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <AlertCircle className="w-6 h-6 text-blue-600" />
+                <div className="bg-green-100 p-3 rounded-lg">
+                  <AlertCircle className="w-6 h-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
@@ -613,24 +599,55 @@ export default function AgendaPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Selesai</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm text-gray-500 mb-1">Selesai</p>
+                  <p className="text-3xl font-bold text-gray-600">
                     {agendas.filter(a => a.status === 'COMPLETED').length}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
+                <div className="bg-gray-100 p-3 rounded-lg">
+                  <CheckCircle className="w-6 h-6 text-gray-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Filters */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
+        {/* Filters and Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <CardTitle>Daftar Agenda</CardTitle>
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={resetForm}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Tambah Agenda
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Tambah Agenda Baru</DialogTitle>
+                  </DialogHeader>
+                  <AgendaForm 
+                    formData={formData}
+                    setFormData={setFormData}
+                    onSubmit={handleSubmit}
+                    onCancel={() => {
+                      setIsAddDialogOpen(false)
+                      resetForm()
+                    }}
+                    initialImageUrl=""
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="relative">
                 <Input
                   placeholder="Cari berdasarkan judul atau lokasi..."
                   value={searchTerm}
@@ -639,7 +656,7 @@ export default function AgendaPage() {
                 />
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-48">
+                <SelectTrigger>
                   <SelectValue placeholder="Filter Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -651,79 +668,96 @@ export default function AgendaPage() {
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Agenda Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Daftar Agenda</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Judul</TableHead>
-                  <TableHead>Kategori</TableHead>
-                  <TableHead>Tanggal</TableHead>
-                  <TableHead>Waktu</TableHead>
-                  <TableHead>Lokasi</TableHead>
-                  <TableHead>Kapasitas</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredAgendas.map((agenda) => (
-                  <TableRow key={agenda.id}>
-                    <TableCell className="font-medium">{agenda.title}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="text-xs">
-                        {agenda.category}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(agenda.date).toLocaleDateString('id-ID')}</TableCell>
-                    <TableCell>{agenda.time}</TableCell>
-                    <TableCell>{agenda.location}</TableCell>
-                    <TableCell>{agenda.capacity > 0 ? `${agenda.capacity} orang` : 'Tidak terbatas'}</TableCell>
-                    <TableCell>
-                      <Badge className={statusColors[agenda.status]}>
-                        {statusLabels[agenda.status]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-700 bg-transparent"
-                          onClick={() => window.open(`/agenda/${agenda.slug}`, '_blank')}
-                          title="Lihat di Frontend"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-green-600 hover:text-green-700 bg-transparent"
-                          onClick={() => handleEdit(agenda)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 bg-transparent"
-                          onClick={() => handleDelete(agenda.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {/* Table */}
+            {loading ? (
+              <div className="text-center py-8 text-gray-500">Memuat data...</div>
+            ) : filteredAgendas.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">Tidak ada agenda ditemukan</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Judul
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Kategori
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Kapasitas
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tanggal
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Aksi
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredAgendas.map((agenda) => (
+                      <tr key={agenda.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-4">
+                          <div className="flex items-center">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{agenda.title}</div>
+                              <div className="text-sm text-gray-500">{agenda.location}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <Badge variant="outline">{agenda.category}</Badge>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <Badge className={statusColors[agenda.status]}>
+                            {statusLabels[agenda.status]}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {agenda.capacity > 0 ? `${agenda.capacity} orang` : 'Tidak terbatas'}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {new Date(agenda.date).toLocaleDateString('id-ID')}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleView(agenda.id)}
+                              className="hover:bg-blue-50 hover:text-blue-600"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(agenda)}
+                              className="hover:bg-green-50 hover:text-green-600"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDelete(agenda.id)}
+                              className="hover:bg-red-50 hover:text-red-600"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -751,37 +785,99 @@ export default function AgendaPage() {
           setIsViewDialogOpen(open)
           if (!open) setViewingAgenda(null)
         }}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Detail Agenda</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">Detail Agenda</DialogTitle>
             </DialogHeader>
             {viewLoading ? (
               <div className="py-8 text-center text-gray-600">Memuat detail...</div>
             ) : viewingAgenda ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-6">
+                {/* Image */}
+                {viewingAgenda.imageUrl && (
+                  <div className="w-full aspect-video relative rounded-lg overflow-hidden bg-gray-100">
+                    <img 
+                      src={viewingAgenda.imageUrl} 
+                      alt={viewingAgenda.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                {/* Title & Status */}
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-gray-900">{viewingAgenda.title}</h2>
+                  <div className="flex items-center gap-2">
+                    <Badge className={statusColors[viewingAgenda.status]}>
+                      {statusLabels[viewingAgenda.status]}
+                    </Badge>
+                    <Badge variant="outline" className="text-sm">
+                      {viewingAgenda.category}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Info Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
                   <div>
-                    <Label className="text-gray-600">Judul</Label>
-                    <div className="font-semibold text-gray-900">{viewingAgenda.title}</div>
+                    <Label className="text-gray-600 text-xs">📅 Tanggal</Label>
+                    <div className="font-medium text-gray-900">{new Date(viewingAgenda.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
                   </div>
                   <div>
-                    <Label className="text-gray-600">Tanggal</Label>
-                    <div className="text-gray-900">{new Date(viewingAgenda.date).toLocaleDateString('id-ID')}</div>
+                    <Label className="text-gray-600 text-xs">🕐 Waktu</Label>
+                    <div className="font-medium text-gray-900">{viewingAgenda.time} WITA</div>
                   </div>
                   <div>
-                    <Label className="text-gray-600">Waktu</Label>
-                    <div className="text-gray-900">{viewingAgenda.time}</div>
+                    <Label className="text-gray-600 text-xs">📍 Lokasi</Label>
+                    <div className="font-medium text-gray-900">{viewingAgenda.location}</div>
                   </div>
-                  <div>
-                    <Label className="text-gray-600">Lokasi</Label>
-                    <div className="text-gray-900">{viewingAgenda.location}</div>
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label className="text-gray-600">Status</Label>
+                  {viewingAgenda.address && (
                     <div>
-                      <Badge className={statusColors[viewingAgenda.status]}>
-                        {statusLabels[viewingAgenda.status]}
-                      </Badge>
+                      <Label className="text-gray-600 text-xs">🏢 Alamat Lengkap</Label>
+                      <div className="font-medium text-gray-900">{viewingAgenda.address}</div>
+                    </div>
+                  )}
+                  <div>
+                    <Label className="text-gray-600 text-xs">👥 Kapasitas</Label>
+                    <div className="font-medium text-gray-900">
+                      {viewingAgenda.capacity > 0 ? `${viewingAgenda.capacity} orang` : 'Tidak terbatas'}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600 text-xs">🏛️ Penyelenggara</Label>
+                    <div className="font-medium text-gray-900">{viewingAgenda.organizer}</div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600 text-xs">💰 Biaya Pendaftaran</Label>
+                    <div className="font-medium text-gray-900">{viewingAgenda.registrationFee}</div>
+                  </div>
+                  {viewingAgenda.contactPerson && (
+                    <div>
+                      <Label className="text-gray-600 text-xs">📞 Kontak Person</Label>
+                      <div className="font-medium text-gray-900">{viewingAgenda.contactPerson}</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div>
+                  <Label className="text-gray-600 text-sm font-semibold">Deskripsi</Label>
+                  <div className="mt-2 text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {viewingAgenda.description}
+                  </div>
+                </div>
+
+                {/* Metadata */}
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-500">
+                    <div>
+                      <span className="font-medium">Slug:</span> {viewingAgenda.slug}
+                    </div>
+                    <div>
+                      <span className="font-medium">Dibuat:</span> {new Date(viewingAgenda.createdAt).toLocaleString('id-ID')}
+                    </div>
+                    <div>
+                      <span className="font-medium">Diperbarui:</span> {new Date(viewingAgenda.updatedAt).toLocaleString('id-ID')}
                     </div>
                   </div>
                 </div>
@@ -794,10 +890,14 @@ export default function AgendaPage() {
                 Tutup
               </Button>
               {viewingAgenda && (
-                <Button type="button" className="bg-blue-600 hover:bg-blue-700" onClick={() => {
-                  setIsViewDialogOpen(false)
-                  handleEdit(viewingAgenda)
-                }}>
+                <Button 
+                  type="button" 
+                  className="bg-blue-600 hover:bg-blue-700" 
+                  onClick={() => {
+                    setIsViewDialogOpen(false)
+                    handleEdit(viewingAgenda)
+                  }}
+                >
                   Edit
                 </Button>
               )}

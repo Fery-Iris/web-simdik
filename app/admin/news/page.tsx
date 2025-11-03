@@ -309,7 +309,7 @@ export default function AdminNewsPage() {
         </div>
 
         {/* Logo */}
-        <div className="p-4 border-b border-sidebar-border">
+        <div className="px-4 py-4 border-b border-sidebar-border">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <School className="w-5 h-5 text-white" />
@@ -395,6 +395,12 @@ export default function AdminNewsPage() {
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">Manajemen Berita</h1>
+              <p className="text-gray-600">Kelola berita dan publikasi</p>
+            </div>
+
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <Card>

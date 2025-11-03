@@ -10,35 +10,35 @@ datasource db {
 
 model Agenda {
   id               String   @id @default(cuid()) @map("id_agendas")
-  title            String   @db.VarChar(255)
+  title            String   @map("judul") @db.VarChar(255)
   slug             String   @unique @db.VarChar(255)
-  description      String   @db.Text
-  date             DateTime @db.Date
-  time             String   @db.VarChar(10)
-  location         String   @db.VarChar(255)
-  address          String?  // TAMBAHKAN: Untuk alamat lengkap di bawah lokasi
-  organizer        String   @default("Dinas Pendidikan Kota Banjarmasin") @db.VarChar(255)
-  capacity         Int      @default(0)
-  category         String   @default("Lainnya") @db.VarChar(50) // TAMBAHKAN: e.g., Workshop, Seminar
-  registrationFee  String   @default("Gratis") @db.VarChar(100) // TAMBAHKAN: e.g., Gratis, Rp 150.000
-  contactPerson    String?  // TAMBAHKAN: e.g., disdik@banjarmasinkota.go.id
-  imageUrl         String?
+  description      String   @map("deskripsi") @db.Text
+  date             DateTime @map("tanggal") @db.Date
+  time             String   @map("waktu") @db.VarChar(10)
+  location         String   @map("lokasi") @db.VarChar(255)
+  address          String?  @map("alamat")
+  organizer        String   @default("Dinas Pendidikan Kota Banjarmasin") @map("penyelenggara") @db.VarChar(255)
+  capacity         Int      @default(0) @map("kapasitas")
+  category         String   @default("Lainnya") @map("kategori") @db.VarChar(50)
+  registrationFee  String   @default("Gratis") @map("biaya_pendaftaran") @db.VarChar(100)
+  contactPerson    String?  @map("kontak_person")
+  imageUrl         String?  @map("gambar_url")
   status           Status   @default(SCHEDULED)
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  createdAt        DateTime @default(now()) @map("dibuat_pada")
+  updatedAt        DateTime @updatedAt @map("diperbarui_pada")
 
   @@map("agendas")
 }
 
 model Layanan {
   id          BigInt      @id @default(autoincrement()) @map("id_layanans")
-  name        String      @db.VarChar(255)
-  description String?     @db.Text
-  icon        String?     @db.VarChar(100)
-  color       String?     @db.VarChar(50)
-  isActive    Boolean     @default(true) @map("isActive")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  name        String      @map("nama") @db.VarChar(255)
+  description String?     @map("deskripsi") @db.Text
+  icon        String?     @map("ikon") @db.VarChar(100)
+  color       String?     @map("warna") @db.VarChar(50)
+  isActive    Boolean     @default(true) @map("aktif")
+  createdAt   DateTime    @default(now()) @map("dibuat_pada")
+  updatedAt   DateTime    @updatedAt @map("diperbarui_pada")
   
   reservations Reservasi[]
 
@@ -47,19 +47,19 @@ model Layanan {
 
 model Reservasi {
   id                String            @id @default(cuid()) @map("id_reservations")
-  queueNumber       String            @unique @db.VarChar(20)
-  service           String            @db.VarChar(255) // Kept for backward compatibility
-  idLayanan         BigInt?           @map("id_layanans") // Foreign key to Layanan
-  name              String            @db.VarChar(255)
-  phone             String            @db.VarChar(20)
+  queueNumber       String            @unique @map("nomor_antrian") @db.VarChar(20)
+  service           String            @map("layanan") @db.VarChar(255)
+  idLayanan         BigInt?           @map("id_layanans")
+  name              String            @map("nama") @db.VarChar(255)
+  phone             String            @map("telepon") @db.VarChar(20)
   nik               String?           @db.VarChar(20)
-  purpose           String            @db.Text
-  date              DateTime          @db.Date
-  timeSlot          String            @db.VarChar(255)
+  purpose           String            @map("keperluan") @db.Text
+  date              DateTime          @map("tanggal") @db.Date
+  timeSlot          String            @map("waktu_kedatangan") @db.VarChar(255)
   status            ReservationStatus @default(WAITING)
-  estimatedCallTime String?           @db.VarChar(255)
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
+  estimatedCallTime String?           @map("estimasi_waktu_panggilan") @db.VarChar(255)
+  createdAt         DateTime          @default(now()) @map("dibuat_pada")
+  updatedAt         DateTime          @updatedAt @map("diperbarui_pada")
 
   layanan Layanan? @relation(fields: [idLayanan], references: [id], onDelete: SetNull)
 
@@ -108,12 +108,12 @@ model Berita {
   tanggalTerbit DateTime? @map("tanggal_terbit") @db.Date
   unggulan    Boolean     @default(false)
   gambarUtama String?     @map("gambar_utama") @db.VarChar(255)
-  views       Int         @default(0)
+  views       Int         @map("dilihat") @default(0)
   tags        String?     @db.VarChar(255)
   idPenggunas BigInt?     @map("id_penggunas")
   sekolahId   BigInt?     @map("sekolah_id")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  createdAt   DateTime    @default(now()) @map("dibuat_pada")
+  updatedAt   DateTime    @updatedAt @map("diperbarui_pada")
 
   @@map("beritas")
   @@index([status])
