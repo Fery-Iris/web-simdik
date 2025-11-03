@@ -96,3 +96,42 @@ enum RoleType {
   ADMIN
   USER
 }
+
+model Berita {
+  id          BigInt      @id @default(autoincrement()) @map("id_beritas")
+  judul       String      @db.VarChar(200)
+  slug        String      @unique @db.VarChar(255)
+  ringkasan   String?     @db.Text
+  konten      String      @db.Text
+  kategori    NewsCategory
+  status      NewsStatus  @default(DRAFT)
+  tanggalTerbit DateTime? @map("tanggal_terbit") @db.Date
+  unggulan    Boolean     @default(false)
+  gambarUtama String?     @map("gambar_utama") @db.VarChar(255)
+  views       Int         @default(0)
+  tags        String?     @db.VarChar(255)
+  idPenggunas BigInt?     @map("id_penggunas")
+  sekolahId   BigInt?     @map("sekolah_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("beritas")
+  @@index([status])
+  @@index([kategori])
+  @@index([slug])
+}
+
+enum NewsCategory {
+  PENGUMUMAN
+  KEGIATAN
+  PENDAFTARAN
+  KEUANGAN
+  KERJASAMA
+  BEASISWA
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}

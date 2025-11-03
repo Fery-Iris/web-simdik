@@ -8,9 +8,29 @@ import Image from "next/image"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
+import { useState, useEffect } from "react"
 
-// Sample news data dengan slug
-const newsData = {
+interface News {
+  id: string
+  judul: string
+  slug: string
+  ringkasan?: string
+  konten: string
+  kategori: string
+  status: string
+  tanggalTerbit?: string
+  unggulan: boolean
+  gambarUtama?: string
+  views: number
+  tags?: string
+  tagsArray?: string[]
+  idPenggunas?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// Sample fallback news data untuk backward compatibility
+const newsDataFallback = {
   "pembangunan-sekolah-baru-banjarmasin-timur": {
     id: 1,
     title: "Pembangunan Sekolah Baru di Banjarmasin Timur",
@@ -108,7 +128,60 @@ interface NewsDetailPageProps {
 }
 
 export default function NewsDetailPage({ params }: NewsDetailPageProps) {
-  const news = newsData[params.slug as keyof typeof newsData]
+  const [news, setNews] = useState<News | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [relatedNews, setRelatedNews] = useState<News[]>([])
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/news/slug/${params.slug}`)
+        if (response.ok) {
+          const data = await response.json()
+          setNews(data)
+
+          // Fetch related news (same category, excluding current)
+          const relatedResponse = await fetch("/api/news")
+          if (relatedResponse.ok) {
+            const allNews = await relatedResponse.json()
+            const related = allNews.filter(
+              (item: News) => item.category === data.category && item.slug !== data.slug
+            ).slice(0, 2)
+            setRelatedNews(related)
+          }
+        } else {
+          // Try fallback for backward compatibility
+          const fallback = newsDataFallback[params.slug as keyof typeof newsDataFallback]
+          if (fallback) {
+            setNews(fallback as any)
+          } else {
+            setNews(null)
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching news:", error)
+        setNews(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchNews()
+  }, [params.slug])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">Memuat berita...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!news) {
     return (
@@ -125,12 +198,12 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      Infrastruktur: "bg-chart-1/10 text-chart-1",
-      Teknologi: "bg-chart-2/10 text-chart-2",
-      Pelatihan: "bg-chart-3/10 text-chart-3",
-      Kompetisi: "bg-chart-4/10 text-chart-4",
-      Kerjasama: "bg-chart-5/10 text-chart-5",
-      Beasiswa: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300",
+      PENGUMUMAN: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300",
+      KEGIATAN: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300",
+      PENDAFTARAN: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300",
+      KEUANGAN: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300",
+      KERJASAMA: "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300",
+      BEASISWA: "bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-300",
     }
     return colors[category as keyof typeof colors] || "bg-muted text-muted-foreground"
   }
@@ -143,6 +216,9 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
       day: "numeric",
     })
   }
+
+  // Format content paragraphs
+  const contentParagraphs = news.konten.split("\n\n").filter((p) => p.trim() !== "")
 
   return (
     <div className="min-h-screen bg-background">
@@ -165,20 +241,25 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
         <div className="max-w-4xl mx-auto">
           {/* Article Header */}
           <div className="mb-8">
-            <div className="mb-4">
-              <Badge className={getCategoryColor(news.category)}>{news.category}</Badge>
+            <div className="mb-4 flex items-center gap-2">
+              <Badge className={getCategoryColor(news.kategori)}>{news.kategori}</Badge>
+              {news.unggulan && (
+                <Badge className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+                  ⭐ Unggulan
+                </Badge>
+              )}
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">{news.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">{news.judul}</h1>
+
+            {news.ringkasan && (
+              <p className="text-lg text-muted-foreground mb-6 italic">{news.ringkasan}</p>
+            )}
 
             <div className="flex flex-wrap items-center gap-6 text-muted-foreground mb-6">
               <div className="flex items-center space-x-2">
-                <User className="w-4 h-4" />
-                <span>{news.author}</span>
-              </div>
-              <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4" />
-                <span>{formatDate(news.date)}</span>
+                <span>{formatDate(news.createdAt)}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Eye className="w-4 h-4" />
@@ -207,15 +288,23 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
           </div>
 
           {/* Featured Image */}
-          <div className="aspect-video relative mb-8 rounded-lg overflow-hidden">
-            <Image src={news.image || "/placeholder.svg"} alt={news.title} fill className="object-cover" priority />
-          </div>
+          {news.gambarUtama && (
+            <div className="aspect-video relative mb-8 rounded-lg overflow-hidden">
+              <Image
+                src={news.gambarUtama}
+                alt={news.judul}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
 
           {/* Article Content */}
           <Card className="mb-8">
             <CardContent className="p-8">
               <div className="prose prose-lg max-w-none text-foreground">
-                {news.content.split("\n\n").map((paragraph, index) => (
+                {contentParagraphs.map((paragraph, index) => (
                   <p key={index} className="mb-4 leading-relaxed text-muted-foreground">
                     {paragraph}
                   </p>
@@ -225,11 +314,11 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
           </Card>
 
           {/* Tags */}
-          {news.tags && (
+          {news.tagsArray && news.tagsArray.length > 0 && (
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-foreground mb-3">Tags:</h3>
               <div className="flex flex-wrap gap-2">
-                {news.tags.map((tag, index) => (
+                {news.tagsArray.map((tag, index) => (
                   <Badge key={index} variant="secondary" className="bg-muted text-muted-foreground">
                     #{tag}
                   </Badge>
@@ -239,36 +328,37 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
           )}
 
           {/* Related Articles */}
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">Berita Terkait</h3>
-              <div className="space-y-4">
-                {Object.values(newsData)
-                  .filter((item) => item.slug !== news.slug)
-                  .slice(0, 2)
-                  .map((relatedNews) => (
-                    <Link key={relatedNews.slug} href={`/berita/${relatedNews.slug}`}>
+          {relatedNews.length > 0 && (
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-foreground mb-4">Berita Terkait</h3>
+                <div className="space-y-4">
+                  {relatedNews.map((item) => (
+                    <Link key={item.slug} href={`/berita/${item.slug}`}>
                       <div className="flex items-start space-x-4 p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                         <div className="w-20 h-20 bg-muted rounded-lg flex-shrink-0 relative overflow-hidden">
                           <Image
-                            src={relatedNews.image || "/placeholder.svg"}
-                            alt={relatedNews.title}
+                            src={item.gambarUtama || "/placeholder.svg"}
+                            alt={item.judul}
                             fill
                             className="object-cover"
                           />
                         </div>
                         <div>
                           <h4 className="font-semibold text-foreground mb-1 hover:text-blue-600 transition-colors">
-                            {relatedNews.title}
+                            {item.judul}
                           </h4>
-                          <p className="text-sm text-muted-foreground line-clamp-2">{relatedNews.excerpt}</p>
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {item.ringkasan || item.konten.substring(0, 100) + "..."}
+                          </p>
                         </div>
                       </div>
                     </Link>
                   ))}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

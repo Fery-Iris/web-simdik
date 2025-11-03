@@ -428,6 +428,21 @@ export default function Component() {
               <p className="text-muted-foreground">Belum ada agenda tersedia</p>
             </div>
           )}
+          
+          {/* View All Button */}
+          <ScrollReveal animation="fade-up" delay={400} duration={800}>
+            <div className="flex justify-center mt-12">
+              <Link href="/agenda">
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                >
+                  Lihat Semua Agenda
+                  <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
+                </Button>
+              </Link>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
