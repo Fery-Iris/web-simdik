@@ -9,25 +9,32 @@ datasource db {
 }
 
 model Agenda {
-  id               String   @id @default(cuid()) @map("id_agendas")
-  title            String   @map("judul") @db.VarChar(255)
-  slug             String   @unique @db.VarChar(255)
-  description      String   @map("deskripsi") @db.Text
-  date             DateTime @map("tanggal") @db.Date
-  time             String   @map("waktu") @db.VarChar(10)
-  location         String   @map("lokasi") @db.VarChar(255)
-  address          String?  @map("alamat")
-  organizer        String   @default("Dinas Pendidikan Kota Banjarmasin") @map("penyelenggara") @db.VarChar(255)
-  capacity         Int      @default(0) @map("kapasitas")
-  category         String   @default("Lainnya") @map("kategori") @db.VarChar(50)
-  registrationFee  String   @default("Gratis") @map("biaya_pendaftaran") @db.VarChar(100)
-  contactPerson    String?  @map("kontak_person")
-  imageUrl         String?  @map("gambar_url")
-  status           Status   @default(SCHEDULED)
-  createdAt        DateTime @default(now()) @map("dibuat_pada")
-  updatedAt        DateTime @updatedAt @map("diperbarui_pada")
+  id               String    @id @default(cuid()) @map("id_agendas")
+  title            String    @map("judul") @db.VarChar(255)
+  slug             String    @unique @db.VarChar(255)
+  description      String    @map("deskripsi") @db.Text
+  date             DateTime  @map("tanggal") @db.Date
+  time             String    @map("waktu") @db.VarChar(10)
+  location         String    @map("lokasi") @db.VarChar(255)
+  address          String?   @map("alamat")
+  organizer        String    @default("Dinas Pendidikan Kota Banjarmasin") @map("penyelenggara") @db.VarChar(255)
+  capacity         Int       @default(0) @map("kapasitas")
+  category         String    @default("Lainnya") @map("kategori") @db.VarChar(50)
+  registrationFee  String    @default("Gratis") @map("biaya_pendaftaran") @db.VarChar(100)
+  contactPerson    String?   @map("kontak_person")
+  imageUrl         String?   @map("gambar_url")
+  status           Status    @default(SCHEDULED)
+  idPenggunas      BigInt?   @map("id_penggunas")
+  idSekolahs       BigInt?   @map("id_sekolahs")
+  createdAt        DateTime  @default(now()) @map("dibuat_pada")
+  updatedAt        DateTime  @updatedAt @map("diperbarui_pada")
+
+  pengguna Pengguna? @relation(fields: [idPenggunas], references: [id], onDelete: SetNull)
+  sekolah  Sekolah?  @relation(fields: [idSekolahs], references: [id], onDelete: SetNull)
 
   @@map("agendas")
+  @@index([idPenggunas])
+  @@index([idSekolahs])
 }
 
 model Layanan {
@@ -89,6 +96,9 @@ model Pengguna {
   createdAt DateTime @default(now()) @map("dibuat_pada")
   updatedAt DateTime @updatedAt @map("diperbarui_pada")
 
+  agendas Agenda[]
+  beritas Berita[]
+
   @@map("penggunas")
 }
 
@@ -111,14 +121,19 @@ model Berita {
   views       Int         @map("dilihat") @default(0)
   tags        String?     @db.VarChar(255)
   idPenggunas BigInt?     @map("id_penggunas")
-  sekolahId   BigInt?     @map("sekolah_id")
+  idSekolahs  BigInt?     @map("id_sekolahs")
   createdAt   DateTime    @default(now()) @map("dibuat_pada")
   updatedAt   DateTime    @updatedAt @map("diperbarui_pada")
+
+  pengguna Pengguna? @relation(fields: [idPenggunas], references: [id], onDelete: SetNull)
+  sekolah  Sekolah?  @relation(fields: [idSekolahs], references: [id], onDelete: SetNull)
 
   @@map("beritas")
   @@index([status])
   @@index([kategori])
   @@index([slug])
+  @@index([idPenggunas])
+  @@index([idSekolahs])
 }
 
 enum NewsCategory {
@@ -153,6 +168,9 @@ model Sekolah {
   foto2        String?  @map("foto_2") @db.VarChar(255)
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
+
+  beritas Berita[]
+  agendas Agenda[]
 
   @@map("sekolahs")
   @@index([jenjang])
