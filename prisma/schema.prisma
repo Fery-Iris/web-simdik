@@ -135,3 +135,29 @@ enum NewsStatus {
   PUBLISHED
   ARCHIVED
 }
+
+model Sekolah {
+  id           BigInt   @id @default(autoincrement()) @map("id_sekolahs")
+  nama         String   @db.VarChar(255)
+  alamat       String?  @db.Text
+  kecamatan    String?  @db.VarChar(100)
+  jenjang      String?  @db.VarChar(50)
+  akreditasi   String?  @db.VarChar(10)
+  status       String?  @db.VarChar(50)
+  telepon      String?  @db.VarChar(20)
+  email        String?  @db.VarChar(150)
+  tahunBerdiri String?  @map("tahun_berdiri") @db.VarChar(10)
+  deskripsi    String?  @db.Text
+  gambarUtama  String?  @map("gambar_utama") @db.VarChar(255)
+  foto1        String?  @map("foto_1") @db.VarChar(255)
+  foto2        String?  @map("foto_2") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("sekolahs")
+  @@index([jenjang])
+  @@index([kecamatan])
+  @@index([akreditasi])
+  @@index([status])
+  @@index([nama])
+}

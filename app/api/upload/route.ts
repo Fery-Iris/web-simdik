@@ -36,8 +36,21 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
+    // Deteksi folder berdasarkan referer atau default ke 'agendas'
+    const referer = request.headers.get('referer') || ''
+    let folder = 'agendas'
+    let prefix = 'agenda'
+    
+    if (referer.includes('/admin/schools')) {
+      folder = 'sekolahs'
+      prefix = 'sekolah'
+    } else if (referer.includes('/admin/news')) {
+      folder = 'beritas'
+      prefix = 'berita'
+    }
+
     // Buat direktori uploads jika belum ada
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'agendas')
+    const uploadsDir = join(process.cwd(), 'public', 'uploads', folder)
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true })
     }
@@ -46,13 +59,13 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now()
     const randomString = Math.random().toString(36).substring(2, 8)
     const fileExtension = file.name.split('.').pop()
-    const fileName = `agenda-${timestamp}-${randomString}.${fileExtension}`
+    const fileName = `${prefix}-${timestamp}-${randomString}.${fileExtension}`
 
     const filePath = join(uploadsDir, fileName)
     await writeFile(filePath, buffer)
 
     // Return URL relatif untuk frontend
-    const fileUrl = `/uploads/agendas/${fileName}`
+    const fileUrl = `/uploads/${folder}/${fileName}`
 
     return NextResponse.json({
       success: true,

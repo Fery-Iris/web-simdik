@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -9,168 +9,81 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { Search, ArrowLeft, School, Menu, Instagram, Facebook, Youtube } from "lucide-react"
+import { Search, School, MapPin, Phone, Mail, ArrowLeft } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { ScrollReveal } from "@/components/scroll-reveal"
 import { SiteHeader } from "@/components/site-header"
 
-// Sample school data
-const schoolsData = [
-  {
-    id: 1,
-    name: "SDN Sungai Miai 5",
-    address: "Jl. Sungai Miai No. 45, Banjarmasin Utara",
-    level: "SD",
-    district: "Banjarmasin Utara",
-    accreditation: "A",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SDN+Sungai+Miai+5",
-  },
-  {
-    id: 2,
-    name: "SMPN 1 Banjarmasin",
-    address: "Jl. Lambung Mangkurat No. 1, Banjarmasin Tengah",
-    level: "SMP",
-    district: "Banjarmasin Tengah",
-    accreditation: "A",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SMPN+1+Banjarmasin",
-  },
-  {
-    id: 3,
-    name: "SD Islam Al-Azhar",
-    address: "Jl. A. Yani Km. 4.5, Banjarmasin Selatan",
-    level: "SD",
-    district: "Banjarmasin Selatan",
-    accreditation: "A",
-    status: "Swasta",
-    image: "/placeholder.svg?height=200&width=300&text=SD+Islam+Al-Azhar",
-  },
-  {
-    id: 4,
-    name: "SDN Kelayan Tengah 1",
-    address: "Jl. Kelayan Tengah No. 12, Banjarmasin Selatan",
-    level: "SD",
-    district: "Banjarmasin Selatan",
-    accreditation: "B",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SDN+Kelayan+Tengah+1",
-  },
-  {
-    id: 5,
-    name: "SMPN 5 Banjarmasin",
-    address: "Jl. Veteran No. 128, Banjarmasin Tengah",
-    level: "SMP",
-    district: "Banjarmasin Tengah",
-    accreditation: "A",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SMPN+5+Banjarmasin",
-  },
-  {
-    id: 6,
-    name: "SD Muhammadiyah 1",
-    address: "Jl. S. Parman No. 88, Banjarmasin Utara",
-    level: "SD",
-    district: "Banjarmasin Utara",
-    accreditation: "A",
-    status: "Swasta",
-    image: "/placeholder.svg?height=200&width=300&text=SD+Muhammadiyah+1",
-  },
-  {
-    id: 7,
-    name: "SDN Antasan Kecil Timur 1",
-    address: "Jl. Antasan Kecil Timur No. 25, Banjarmasin Tengah",
-    level: "SD",
-    district: "Banjarmasin Tengah",
-    accreditation: "B",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SDN+Antasan+Kecil+Timur+1",
-  },
-  {
-    id: 8,
-    name: "SMP Islam Sabilal Muhtadin",
-    address: "Jl. Veteran No. 24, Banjarmasin Tengah",
-    level: "SMP",
-    district: "Banjarmasin Tengah",
-    accreditation: "A",
-    status: "Swasta",
-    image: "/placeholder.svg?height=200&width=300&text=SMP+Islam+Sabilal+Muhtadin",
-  },
-  {
-    id: 9,
-    name: "SDN Pemurus Baru 5",
-    address: "Jl. Pemurus Baru No. 67, Banjarmasin Selatan",
-    level: "SD",
-    district: "Banjarmasin Selatan",
-    accreditation: "B",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SDN+Pemurus+Baru+5",
-  },
-  {
-    id: 10,
-    name: "SMPN 12 Banjarmasin",
-    address: "Jl. Banjarbaru No. 45, Banjarmasin Barat",
-    level: "SMP",
-    district: "Banjarmasin Barat",
-    accreditation: "B",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SMPN+12+Banjarmasin",
-  },
-  {
-    id: 11,
-    name: "SD Katolik Santo Antonius",
-    address: "Jl. Pangeran Samudera No. 98, Banjarmasin Tengah",
-    level: "SD",
-    district: "Banjarmasin Tengah",
-    accreditation: "A",
-    status: "Swasta",
-    image: "/placeholder.svg?height=200&width=300&text=SD+Katolik+Santo+Antonius",
-  },
-  {
-    id: 12,
-    name: "SDN Gadang 2",
-    address: "Jl. Gadang No. 34, Banjarmasin Tengah",
-    level: "SD",
-    district: "Banjarmasin Tengah",
-    accreditation: "B",
-    status: "Negeri",
-    image: "/placeholder.svg?height=200&width=300&text=SDN+Gadang+2",
-  },
-]
+interface Sekolah {
+  id: string
+  nama: string
+  alamat?: string
+  kecamatan?: string
+  jenjang?: string
+  akreditasi?: string
+  status?: string
+  telepon?: string
+  email?: string
+  tahunBerdiri?: string
+  deskripsi?: string
+  gambarUtama?: string
+  foto1?: string
+  foto2?: string
+}
 
 export default function SchoolDirectory() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedLevel, setSelectedLevel] = useState("")
   const [selectedDistrict, setSelectedDistrict] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const [filteredSchools, setFilteredSchools] = useState(schoolsData)
+  const [schools, setSchools] = useState<Sekolah[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   const schoolsPerPage = 9
-  const totalSchools = 150 // Total schools in database
-  const displayedSchools = filteredSchools.length
 
-  // Filter function
-  const applyFilters = () => {
-    const filtered = schoolsData.filter((school) => {
-      const matchesSearch = school.name.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesLevel = !selectedLevel || selectedLevel === "Semua Jenjang" || school.level === selectedLevel
+  // Fetch schools from API
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch("/api/sekolahs")
+        
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data sekolah")
+        }
+
+        const result = await response.json()
+        if (result.success && result.data) {
+          setSchools(result.data)
+        } else {
+          setError("Tidak ada data sekolah")
+        }
+      } catch (err) {
+        console.error("Error fetching schools:", err)
+        setError("Gagal memuat data sekolah")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSchools()
+  }, [])
+
+  // Filter schools
+  const filteredSchools = schools.filter((school) => {
+    const matchesSearch = school.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesLevel = !selectedLevel || selectedLevel === "Semua Jenjang" || school.jenjang === selectedLevel
       const matchesDistrict =
-        !selectedDistrict || selectedDistrict === "Semua Kecamatan" || school.district === selectedDistrict
+      !selectedDistrict || selectedDistrict === "Semua Kecamatan" || school.kecamatan === selectedDistrict
 
       return matchesSearch && matchesLevel && matchesDistrict
     })
-
-    setFilteredSchools(filtered)
-    setCurrentPage(1)
-  }
 
   // Pagination
   const indexOfLastSchool = currentPage * schoolsPerPage
@@ -178,40 +91,63 @@ export default function SchoolDirectory() {
   const currentSchools = filteredSchools.slice(indexOfFirstSchool, indexOfLastSchool)
   const totalPages = Math.ceil(filteredSchools.length / schoolsPerPage)
 
-  const getAccreditationColor = (accreditation: string) => {
+  // Get unique districts from data
+  const uniqueDistricts = Array.from(new Set(schools.map((s) => s.kecamatan).filter(Boolean))).sort()
+
+  // Get badge color based on accreditation
+  const getAccreditationColor = (accreditation?: string) => {
     switch (accreditation) {
       case "A":
-        return "bg-chart-2/10 text-chart-2"
+        return "bg-green-100 text-green-800"
       case "B":
-        return "bg-chart-1/10 text-chart-1"
+        return "bg-blue-100 text-blue-800"
       case "C":
-        return "bg-chart-3/10 text-chart-3"
+        return "bg-yellow-100 text-yellow-800"
       default:
-        return "bg-muted text-muted-foreground"
+        return "bg-gray-100 text-gray-800"
     }
   }
 
-  const getStatusColor = (status: string) => {
-    return status === "Negeri" ? "bg-chart-4/10 text-chart-4" : "bg-chart-5/10 text-chart-5"
+  // Get badge color based on status
+  const getStatusColor = (status?: string) => {
+    return status === "Negeri" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"
   }
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      {/* Page Title Header */}
-      <div className="bg-card border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h1 className="text-3xl font-bold text-foreground">Direktori Sekolah di Kota Banjarmasin</h1>
-          </ScrollReveal>
-        </div>
+      {/* Hero Section with Cover Image */}
+      <section className="py-20 relative overflow-hidden">
+        {/* Background Image and Overlay */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src="/images/dinas-pendidikan-banjarmasin-real.jpeg"
+            alt="Kantor Dinas Pendidikan Kota Banjarmasin"
+            fill
+            className="object-cover object-center animate-bg-pan"
+            priority
+          />
+          <div className="absolute inset-0 bg-blue-900 opacity-60 pointer-events-none"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back to Home Button */}
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <School className="w-16 h-16 mx-auto mb-6 text-white" />
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+            Direktori Sekolah
+          </h1>
+          <p className="text-xl text-gray-100 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
+            Temukan informasi lengkap sekolah di Kota Banjarmasin
+          </p>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Back Button */}
         <div className="mb-6">
-          <ScrollReveal animation="fade-right" delay={100} duration={800}>
             <Link href="/">
               <Button
                 variant="outline"
@@ -221,282 +157,300 @@ export default function SchoolDirectory() {
                 <span>Kembali ke Beranda</span>
               </Button>
             </Link>
-          </ScrollReveal>
+          </div>
+
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Semua Sekolah</h1>
+            <p className="text-muted-foreground text-lg">
+              Temukan informasi lengkap sekolah di Kota Banjarmasin
+            </p>
         </div>
 
-        {/* Filter Section */}
-        <ScrollReveal animation="fade-up" delay={200} duration={800}>
-          <Card className="mb-8 bg-card">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Search Input */}
-                <div className="relative">
+          {/* Search and Filters */}
+          <div className="mb-8 space-y-4">
+            {/* Search Bar */}
+            <div className="relative max-w-md">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
-                    placeholder="Cari berdasarkan nama sekolah..."
+                type="text"
+                placeholder="Cari nama sekolah..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1)
+                }}
                     className="pl-10"
                   />
                 </div>
 
-                {/* Level Select */}
-                <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih Jenjang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Semua Jenjang">Semua Jenjang</SelectItem>
-                    <SelectItem value="SD">SD</SelectItem>
-                    <SelectItem value="SMP">SMP</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2">
+              {/* Jenjang Filters */}
+              <Button
+                variant={selectedLevel === "" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setSelectedLevel("")
+                  setCurrentPage(1)
+                }}
+                className={`transition-all duration-300 ${
+                  selectedLevel === ""
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-transparent hover:bg-blue-50 hover:border-blue-300"
+                }`}
+              >
+                Semua Jenjang
+              </Button>
+              <Button
+                variant={selectedLevel === "PAUD" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setSelectedLevel("PAUD")
+                  setCurrentPage(1)
+                }}
+                className={`transition-all duration-300 ${
+                  selectedLevel === "PAUD"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-transparent hover:bg-blue-50 hover:border-blue-300"
+                }`}
+              >
+                PAUD
+              </Button>
+              <Button
+                variant={selectedLevel === "SD" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setSelectedLevel("SD")
+                  setCurrentPage(1)
+                }}
+                className={`transition-all duration-300 ${
+                  selectedLevel === "SD"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-transparent hover:bg-blue-50 hover:border-blue-300"
+                }`}
+              >
+                SD
+              </Button>
+              <Button
+                variant={selectedLevel === "SMP" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setSelectedLevel("SMP")
+                  setCurrentPage(1)
+                }}
+                className={`transition-all duration-300 ${
+                  selectedLevel === "SMP"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-transparent hover:bg-blue-50 hover:border-blue-300"
+                }`}
+              >
+                SMP
+              </Button>
 
-                {/* District Select */}
-                <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-                  <SelectTrigger>
+              {/* Kecamatan Filter (Dropdown) */}
+              {uniqueDistricts.length > 0 && (
+                <Select
+                  value={selectedDistrict}
+                  onValueChange={(value) => {
+                    setSelectedDistrict(value === "Semua Kecamatan" ? "" : value)
+                    setCurrentPage(1)
+                  }}
+                >
+                  <SelectTrigger className="w-48">
                     <SelectValue placeholder="Pilih Kecamatan" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Semua Kecamatan">Semua Kecamatan</SelectItem>
-                    <SelectItem value="Banjarmasin Timur">Banjarmasin Timur</SelectItem>
-                    <SelectItem value="Banjarmasin Barat">Banjarmasin Barat</SelectItem>
-                    <SelectItem value="Banjarmasin Selatan">Banjarmasin Selatan</SelectItem>
-                    <SelectItem value="Banjarmasin Utara">Banjarmasin Utara</SelectItem>
-                    <SelectItem value="Banjarmasin Tengah">Banjarmasin Tengah</SelectItem>
+                    {uniqueDistricts.map((district) => (
+                      <SelectItem key={district} value={district!}>
+                        {district}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+              )}
+            </div>
 
-                {/* Filter Button */}
-                <Button onClick={applyFilters} className="bg-blue-600 hover:bg-blue-700">
-                  Terapkan Filter
+            {/* Results Count */}
+            <div className="text-sm text-muted-foreground">
+              Menampilkan <span className="font-semibold">{filteredSchools.length}</span> sekolah
+              {searchTerm && ` untuk pencarian "${searchTerm}"`}
+            </div>
+          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="mt-4 text-gray-600">Memuat data sekolah...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-12">
+              <School className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+              <p className="text-red-600 mb-2">{error}</p>
+              <Button onClick={() => window.location.reload()} variant="outline">
+                Muat Ulang
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        </ScrollReveal>
+          )}
 
-        {/* Results Counter */}
-        <ScrollReveal animation="fade-up" delay={300} duration={800}>
-          <div className="mb-6">
-            <p className="text-muted-foreground">
-              Menampilkan {Math.min(displayedSchools, schoolsPerPage)} dari {displayedSchools} Sekolah
-            </p>
+          {/* Empty State */}
+          {!loading && !error && filteredSchools.length === 0 && (
+            <div className="text-center py-12">
+              <School className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">Tidak ada sekolah ditemukan</h3>
+              <p className="text-gray-600 mb-4">Coba ubah filter pencarian Anda</p>
+              <Button
+                onClick={() => {
+                  setSearchTerm("")
+                  setSelectedLevel("")
+                  setSelectedDistrict("")
+                  setCurrentPage(1)
+                }}
+                variant="outline"
+              >
+                Reset Filter
+              </Button>
           </div>
-        </ScrollReveal>
+          )}
 
-        {/* School Grid */}
+          {/* Schools Grid */}
+          {!loading && !error && currentSchools.length > 0 && (
+            <>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {currentSchools.map((school, index) => (
-            <ScrollReveal key={school.id} animation="fade-up" delay={400 + index * 100} duration={800}>
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-card border-2 border-transparent hover:border-blue-400">
+                {currentSchools.map((school) => (
+                  <Card key={school.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 {/* School Image */}
-                <div className="aspect-video relative overflow-hidden">
+                    <div className="relative h-48 bg-gray-200">
+                      {school.gambarUtama ? (
                   <Image
-                    src={school.image || "/placeholder.svg"}
-                    alt={school.name}
-                    fill
-                    className="object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                          src={school.gambarUtama}
+                          alt={school.nama}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-100 to-blue-200">
+                          <School className="w-16 h-16 text-blue-400" />
+                        </div>
+                      )}
                 </div>
 
+                    {/* School Info */}
                 <CardContent className="p-6">
-                  {/* School Name */}
-                  <h3 className="text-xl font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600">
-                    {school.name}
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2">
+                          {school.nama}
                   </h3>
-
-                  {/* Address */}
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{school.address}</p>
+                      </div>
 
                   {/* Badges */}
-                  <div className="flex gap-2 mb-4">
-                    <Badge className={getAccreditationColor(school.accreditation)}>
-                      Akreditasi {school.accreditation}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {school.jenjang && (
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                            {school.jenjang}
+                          </Badge>
+                        )}
+                        {school.akreditasi && (
+                          <Badge className={getAccreditationColor(school.akreditasi)}>
+                            Akreditasi {school.akreditasi}
                     </Badge>
-                    <Badge className={getStatusColor(school.status)}>Status: {school.status}</Badge>
+                        )}
+                        {school.status && (
+                          <Badge className={getStatusColor(school.status)}>{school.status}</Badge>
+                        )}
                   </div>
 
-                  {/* Detail Button */}
+                      {/* Address */}
+                      {school.alamat && (
+                        <div className="flex items-start gap-2 text-sm text-gray-600 mb-2">
+                          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                          <span className="line-clamp-2">{school.alamat}</span>
+                        </div>
+                      )}
+
+                      {/* Phone */}
+                      {school.telepon && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                          <Phone className="w-4 h-4 flex-shrink-0" />
+                          <span>{school.telepon}</span>
+                        </div>
+                      )}
+
+                      {/* Email */}
+                      {school.email && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{school.email}</span>
+                        </div>
+                      )}
+
+                      {/* View Detail Button */}
                   <Link href={`/direktori-sekolah/${school.id}`}>
-                    <Button
-                      variant="outline"
-                      className="w-full bg-transparent hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 transform group-hover:scale-105"
-                    >
-                      Lihat Detail
-                      <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>
-                    </Button>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700">Lihat Detail</Button>
                   </Link>
                 </CardContent>
               </Card>
-            </ScrollReveal>
           ))}
         </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <ScrollReveal animation="fade-up" delay={600} duration={800}>
-            <div className="flex justify-center">
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage > 1) setCurrentPage(currentPage - 1)
-                      }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                     />
                   </PaginationItem>
 
-                  {[...Array(Math.min(5, totalPages))].map((_, index) => {
+                    {[...Array(totalPages)].map((_, index) => {
                     const pageNumber = index + 1
+                      // Show first page, last page, current page, and pages around current
+                      if (
+                        pageNumber === 1 ||
+                        pageNumber === totalPages ||
+                        (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                      ) {
                     return (
                       <PaginationItem key={pageNumber}>
                         <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            setCurrentPage(pageNumber)
-                          }}
+                              onClick={() => setCurrentPage(pageNumber)}
                           isActive={currentPage === pageNumber}
+                              className="cursor-pointer"
                         >
                           {pageNumber}
                         </PaginationLink>
                       </PaginationItem>
                     )
-                  })}
-
-                  {totalPages > 5 && (
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  )}
+                      }
+                      // Show ellipsis
+                      if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+                        return <PaginationItem key={pageNumber}>...</PaginationItem>
+                      }
+                      return null
+                    })}
 
                   <PaginationItem>
                     <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage < totalPages) setCurrentPage(currentPage + 1)
-                      }}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        className={
+                          currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"
+                        }
                     />
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          </ScrollReveal>
+              )}
+            </>
         )}
       </div>
-
-      {/* Footer Section */}
-      <footer className="bg-blue-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Column 1: Logo and Mission */}
-            <ScrollReveal animation="fade-up" delay={0} duration={800}>
-              <div>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-12">
-                    <School className="w-6 h-6 text-white" />
-                  </div>
-                  <span className="text-xl font-bold text-white">SIMDIK</span>
-                </div>
-                <p className="text-blue-200 leading-relaxed">
-                  Membangun masa depan pendidikan Banjarmasin melalui inovasi, kolaborasi, dan komitmen untuk
-                  mencerdaskan generasi bangsa.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            {/* Column 2: Quick Links */}
-            <ScrollReveal animation="fade-up" delay={200} duration={800}>
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Tautan Cepat</h3>
-                <ul className="space-y-2">
-                  {["Beranda", "Tentang SIMDIK", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map(
-                    (item, index) => (
-                      <li key={index}>
-                        <Link
-                          href={
-                            item === "Direktori Sekolah"
-                              ? "/direktori-sekolah"
-                              : item === "Tentang SIMDIK"
-                                ? "/tentang-simdik"
-                                : item === "Berita"
-                                  ? "/#berita"
-                                  : item === "Agenda"
-                                    ? "/#agenda"
-                                    : item === "Kontak"
-                                      ? "/#kontak"
-                                      : "/"
-                          }
-                          className="text-blue-200 hover:text-white transition-all duration-300 hover:translate-x-2 inline-block"
-                        >
-                          {item}
-                        </Link>
-                      </li>
-                    ),
-                  )}
-                </ul>
-              </div>
-            </ScrollReveal>
-
-            {/* Column 3: Contact Info */}
-            <ScrollReveal animation="fade-up" delay={400} duration={800}>
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Kontak Kami</h3>
-                <div className="space-y-3 text-blue-200">
-                  <p className="transition-all duration-300 hover:text-white">
-                    Jl. Kapten Piere Tendean No.29, RT.40
-                    <br />
-                    Gadang, Kec. Banjarmasin Tengah
-                    <br />
-                    Kota Banjarmasin, Kalimantan Selatan 70231
-                  </p>
-                  <p className="transition-all duration-300 hover:text-white">Telepon: (0511) 3252732</p>
-                  <p className="transition-all duration-300 hover:text-white">Email: disdik@banjarmasinkota.go.id</p>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* Column 4: Social Media */}
-            <ScrollReveal animation="fade-up" delay={600} duration={800}>
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Media Sosial</h3>
-                <div className="flex space-x-4">
-                  {[
-                    { icon: Instagram, color: "hover:bg-pink-600" },
-                    { icon: Facebook, color: "hover:bg-blue-600" },
-                    { icon: Youtube, color: "hover:bg-red-600" },
-                  ].map((social, index) => {
-                    const Icon = social.icon
-                    return (
-                      <Link
-                        key={index}
-                        href="#"
-                        className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Copyright */}
-          <ScrollReveal animation="fade-up" delay={800} duration={800}>
-            <div className="border-t border-blue-800 mt-8 pt-8 text-center text-blue-200">
-              <p>&copy; {new Date().getFullYear()} Dinas Pendidikan Kota Banjarmasin. Semua hak dilindungi.</p>
-            </div>
-          </ScrollReveal>
-        </div>
-      </footer>
+      </section>
     </div>
   )
 }
