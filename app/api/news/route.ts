@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       ...item,
       id: item.id.toString(),
       idPenggunas: item.idPenggunas ? item.idPenggunas.toString() : null,
-      sekolahId: item.sekolahId ? item.sekolahId.toString() : null,
+      idSekolahs: item.idSekolahs ? item.idSekolahs.toString() : null,
     }))
 
     // Set cache headers to prevent stale data
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       views: 0,
       tags: validatedData.tags || null,
       idPenggunas: validatedData.idPenggunas ? BigInt(validatedData.idPenggunas) : defaultPenggunaId,
-      sekolahId: null,
+      idSekolahs: null,
     }
 
     console.log("💾 Creating berita with data:", beritaData)
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
       ...berita,
       id: berita.id.toString(),
       idPenggunas: berita.idPenggunas ? berita.idPenggunas.toString() : null,
-      sekolahId: berita.sekolahId ? berita.sekolahId.toString() : null,
+      idSekolahs: berita.idSekolahs ? berita.idSekolahs.toString() : null,
     }
 
     return NextResponse.json(serialized, { status: 201 })

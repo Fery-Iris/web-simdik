@@ -37,8 +37,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const serialized = {
       ...berita,
       id: berita.id.toString(),
-      dibuatOleh: berita.dibuatOleh.toString(),
-      sekolahId: berita.sekolahId ? berita.sekolahId.toString() : null,
+      idPenggunas: berita.idPenggunas ? berita.idPenggunas.toString() : null,
+      idSekolahs: berita.idSekolahs ? berita.idSekolahs.toString() : null,
     }
 
     return NextResponse.json(serialized)
@@ -80,14 +80,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     console.log("✅ Berita updated successfully")
 
-    console.log("✅ Berita updated successfully")
-
     // Convert BigInt to string for JSON
     const serialized = {
       ...berita,
       id: berita.id.toString(),
-      idPenggunas: berita.idPenggunas.toString(),
-      sekolahId: berita.sekolahId ? berita.sekolahId.toString() : null,
+      idPenggunas: berita.idPenggunas ? berita.idPenggunas.toString() : null,
+      idSekolahs: berita.idSekolahs ? berita.idSekolahs.toString() : null,
     }
 
     return NextResponse.json(serialized)
