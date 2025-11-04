@@ -143,12 +143,16 @@ enum NewsCategory {
   KEUANGAN
   KERJASAMA
   BEASISWA
+
+  @@map("NewsCategory")
 }
 
 enum NewsStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+
+  @@map("NewsStatus")
 }
 
 model Sekolah {

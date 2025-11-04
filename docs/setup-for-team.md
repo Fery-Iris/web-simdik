@@ -44,19 +44,39 @@ npx prisma generate
 
 Jika ada file baru di folder `scripts/`, check apakah perlu dijalankan:
 
-### **Untuk Update Terakhir (Januari 2025):**
+### **Untuk Update Terakhir (November 2025):**
 
-#### **1. Seed Admin User** (jika belum punya akun admin)
+#### **🚨 1. FIX TRIGGER BERITA (WAJIB!)** ⭐
+**File:** `scripts/FIX-TRIGGER-ONLY.sql`
+
+**Masalah:** Error saat update berita: "The column 'new' does not exist"
+
+**Solusi:**
+1. Buka Supabase SQL Editor
+2. Copy & run `scripts/FIX-TRIGGER-ONLY.sql`
+3. Atau jalankan manual:
+```sql
+DROP TRIGGER IF EXISTS beritas_updated_at_trigger ON beritas CASCADE;
+DROP FUNCTION IF EXISTS update_beritas_updated_at() CASCADE;
+```
+
+**Verifikasi:**
+```sql
+SELECT trigger_name FROM information_schema.triggers WHERE event_object_table = 'beritas';
+```
+Result harusnya: **No rows** ✅
+
+#### **2. Seed Admin User** (jika belum punya akun admin)
 File: `scripts/seed-admin-v2.sql`
 ```
 Login: disdikbanjarmasin@gmail.com
 Password: Admin@Disdik2024
 ```
 
-#### **2. Seed Layanan** (jika tabel layanans kosong)
+#### **3. Seed Layanan** (jika tabel layanans kosong)
 File: `scripts/seed-layanans-bigint.sql`
 
-#### **3. Rename Agendas ID Column** (jika error "column id not found")
+#### **4. Rename Agendas ID Column** (jika error "column id not found")
 File: `scripts/rename-agendas-id-column.sql`
 
 ---
@@ -80,6 +100,12 @@ npm run dev
 5. ✅ Logout berfungsi
 
 ### **Jika Ada Error:**
+
+#### **Error: "The column 'new' does not exist" atau "record 'new' has no field 'updated_at'"** 🔥
+**Solution:**
+- Run SQL script: `scripts/FIX-TRIGGER-ONLY.sql` di Supabase ⭐ WAJIB!
+- Ini akan drop trigger yang bikin error update berita
+- Detail: Lihat `URGENT-FIX-BERITA-UPDATE.md`
 
 #### **Error: "Cannot read properties of undefined (reading 'findUnique')"**
 **Solution:**
@@ -182,6 +208,9 @@ npm run dev
 
 ## 📚 Dokumentasi Lengkap
 
+- **`SETUP-UNTUK-TIM.md`** - ⭐ Setup lengkap untuk developer baru
+- **`URGENT-FIX-BERITA-UPDATE.md`** - 🔥 Fix error update berita (PENTING!)
+- `docs/berita-update-fix.md` - Dokumentasi teknis fix berita
 - `docs/authentication-setup.md` - Setup login/logout
 - `docs/rename-agendas-id.md` - Rename kolom ID agendas
 - `docs/logout-functionality.md` - Fitur logout
@@ -189,7 +218,7 @@ npm run dev
 
 ---
 
-**Last Updated:** Januari 2025
+**Last Updated:** November 2025
 
 
 

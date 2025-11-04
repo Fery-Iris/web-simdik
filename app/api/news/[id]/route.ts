@@ -52,70 +52,66 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const body = await request.json()
-    console.log("📝 Updating berita:", params.id, body)
+    console.log("📝 Updating berita with ID:", params.id)
+    console.log("📝 Request body:", body)
 
     // Validate with Zod
     const validatedData = beritaSchema.parse(body)
+    console.log("✅ Validation passed")
 
-    // Prepare update data (only include fields that are provided)
-    // IMPORTANT: Use exact Prisma model field names (camelCase with @map)
-    const updateData: any = {}
+    // Build the update data object
+    // Using explicit property assignment to avoid any issues
+    const prismaUpdateData: {
+      judul?: string
+      slug?: string
+      ringkasan?: string
+      konten?: string
+      kategori?: "PENGUMUMAN" | "KEGIATAN" | "PENDAFTARAN" | "KEUANGAN" | "KERJASAMA" | "BEASISWA"
+      status?: "DRAFT" | "PUBLISHED" | "ARCHIVED"
+      tanggalTerbit?: Date
+      unggulan?: boolean
+      gambarUtama?: string | null
+      tags?: string | null
+    } = {}
 
-    if (validatedData.judul !== undefined) updateData.judul = validatedData.judul
-    if (validatedData.slug !== undefined) updateData.slug = validatedData.slug
-    if (validatedData.ringkasan !== undefined) updateData.ringkasan = validatedData.ringkasan
-    if (validatedData.konten !== undefined) updateData.konten = validatedData.konten
-    if (validatedData.kategori !== undefined) updateData.kategori = validatedData.kategori
-    if (validatedData.status !== undefined) updateData.status = validatedData.status
-    if (validatedData.tanggalTerbit !== undefined) {
-      updateData.tanggalTerbit = new Date(validatedData.tanggalTerbit)
+    // Manually assign each field if it exists
+    if (validatedData.judul) prismaUpdateData.judul = validatedData.judul
+    if (validatedData.slug) prismaUpdateData.slug = validatedData.slug
+    if (validatedData.ringkasan !== undefined) prismaUpdateData.ringkasan = validatedData.ringkasan
+    if (validatedData.konten) prismaUpdateData.konten = validatedData.konten
+    if (validatedData.kategori) prismaUpdateData.kategori = validatedData.kategori
+    if (validatedData.status) prismaUpdateData.status = validatedData.status
+    if (validatedData.tanggalTerbit) {
+      prismaUpdateData.tanggalTerbit = new Date(validatedData.tanggalTerbit)
     }
-    if (validatedData.unggulan !== undefined) updateData.unggulan = validatedData.unggulan
+    if (validatedData.unggulan !== undefined) prismaUpdateData.unggulan = validatedData.unggulan
     if (validatedData.gambarUtama !== undefined) {
-      updateData.gambarUtama = validatedData.gambarUtama || null
+      prismaUpdateData.gambarUtama = validatedData.gambarUtama || null
     }
     if (validatedData.tags !== undefined) {
-      updateData.tags = validatedData.tags || null
+      prismaUpdateData.tags = validatedData.tags || null
     }
 
-    // Don't set updatedAt - Prisma @updatedAt will handle it automatically
+    console.log("💾 Update data prepared:", JSON.stringify(prismaUpdateData, (key, value) => {
+      return value instanceof Date ? value.toISOString() : value
+    }, 2))
 
-    console.log("💾 Update data:", JSON.stringify(updateData, null, 2))
-    console.log("💾 Update data keys:", Object.keys(updateData))
-    console.log("💾 Update data values:", Object.values(updateData))
-
-    // Use select to only get needed fields (avoiding potential RETURNING clause issues)
-    const berita = await prisma.berita.update({
-      where: { id: BigInt(params.id) },
-      data: updateData,
-      select: {
-        id: true,
-        judul: true,
-        slug: true,
-        ringkasan: true,
-        konten: true,
-        kategori: true,
-        status: true,
-        tanggalTerbit: true,
-        unggulan: true,
-        gambarUtama: true,
-        views: true,
-        tags: true,
-        idPenggunas: true,
-        idSekolahs: true,
-        createdAt: true,
-        updatedAt: true,
+    // Execute the update
+    const updatedBerita = await prisma.berita.update({
+      where: { 
+        id: BigInt(params.id) 
       },
+      data: prismaUpdateData,
     })
 
     console.log("✅ Berita updated successfully")
 
     // Convert BigInt to string for JSON
     const serialized = {
-      ...berita,
-      id: berita.id.toString(),
-      idPenggunas: berita.idPenggunas ? berita.idPenggunas.toString() : null,
-      idSekolahs: berita.idSekolahs ? berita.idSekolahs.toString() : null,
+      ...updatedBerita,
+      id: updatedBerita.id.toString(),
+      idPenggunas: updatedBerita.idPenggunas ? updatedBerita.idPenggunas.toString() : null,
+      idSekolahs: updatedBerita.idSekolahs ? updatedBerita.idSekolahs.toString() : null,
     }
 
     return NextResponse.json(serialized)
