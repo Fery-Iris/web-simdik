@@ -34,18 +34,124 @@ npm install
 
 **Tunggu sampai selesai** (5-10 menit tergantung internet).
 
-### 2. Setup Database di Supabase
+---
 
-#### A. Jalankan Migration (Jika Belum)
+## 🔐 3. Minta Credentials dari Lead Developer
 
+**⚠️ PENTING:** Jangan skip step ini!
+
+Minta credentials berikut dari **Lead Developer / Project Owner**:
+
+### Yang Perlu Diminta:
+
+1. **Database URL** (2 string):
+   - `DATABASE_URL`
+   - `DIRECT_URL`
+
+2. **Supabase Storage** (3 string):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_SUPABASE_BUCKET` (biasanya: `SIMDIK-Uploads`)
+
+3. **Akses Supabase Dashboard** (optional tapi recommended):
+   - Email untuk diinvite ke Supabase project
+   - Untuk bisa lihat database dan storage
+
+### Cara Lead Developer Bisa Share:
+
+**Opsi 1: Via File (Secure)**
 ```bash
-npx prisma migrate deploy
+# Lead developer bisa share file .env.local via secure method
+# (Slack DM, Teams, encrypted email, etc)
 ```
 
-#### B. **PENTING: Drop Trigger yang Bermasalah**
+**Opsi 2: Via Documentation**
+```
+Lead developer share credentials via Google Docs / Notion (private link)
+```
 
-1. **Buka Supabase Dashboard** → Pilih project Anda
-2. **Klik "SQL Editor"** di sidebar
+❌ **JANGAN share via:**
+- Public chat
+- Screenshot di grup
+- Commit ke Git
+- Share screen recording
+
+---
+
+## 🔧 4. Setup Environment Variables
+
+### A. Buat File `.env.local`
+
+Di **root project** (sejajar dengan `package.json`), buat file bernama `.env.local`:
+
+```
+web-simdik/
+├── .env.local          ← BUAT FILE INI
+├── package.json
+├── app/
+└── ...
+```
+
+### B. Isi File `.env.local`
+
+Copy-paste credentials yang diberikan lead developer:
+
+```env
+# Database (WAJIB)
+DATABASE_URL="postgresql://postgres.xxx:password@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.xxx:password@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+
+# Supabase Storage (WAJIB untuk upload foto)
+NEXT_PUBLIC_SUPABASE_URL="https://vqirqjfmypfwysfmfcjl.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+NEXT_PUBLIC_SUPABASE_BUCKET="SIMDIK-Uploads"
+```
+
+**⚠️ Ganti dengan credentials ASLI yang diberikan lead developer!**
+
+### C. Verify File
+
+**Check:**
+- ✅ File bernama `.env.local` (ada titik di depan)
+- ✅ Lokasi di root project
+- ✅ Tidak ada di `git status` (sudah di-gitignore)
+
+```bash
+# Cek apakah file di-gitignore
+git status
+
+# .env.local TIDAK boleh muncul di list!
+```
+
+---
+
+## 🗄️ 5. Setup Database
+
+### A. Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### B. Verifikasi Database Connection
+
+Test koneksi database (optional tapi recommended):
+
+```bash
+npx prisma db pull
+```
+
+**Jika berhasil:** Tidak ada error  
+**Jika gagal:** Cek `.env.local`, pastikan `DATABASE_URL` benar
+
+### C. Drop Trigger yang Bermasalah (PENTING!)
+
+**⚠️ Skip step ini jika sudah pernah dijalankan oleh orang lain**
+
+Jika ini **first time setup untuk tim**, salah satu orang perlu jalankan ini:
+
+1. **Buka Supabase Dashboard** (minta akses dari lead developer)
+2. **SQL Editor** (sidebar kiri)
 3. **Copy dan jalankan SQL ini:**
 
 ```sql
@@ -54,11 +160,7 @@ DROP TRIGGER IF EXISTS beritas_updated_at_trigger ON beritas CASCADE;
 DROP FUNCTION IF EXISTS update_beritas_updated_at() CASCADE;
 ```
 
-**ATAU** jalankan file: `scripts/FIX-TRIGGER-ONLY.sql`
-
-#### C. Verifikasi Trigger Sudah Terhapus
-
-Jalankan di Supabase SQL Editor:
+4. **Verify:**
 
 ```sql
 SELECT trigger_name 
@@ -66,65 +168,40 @@ FROM information_schema.triggers
 WHERE event_object_table = 'beritas';
 ```
 
-**Harusnya tidak ada rows** (trigger berhasil dihapus) ✅
+**Expected:** Tidak ada rows (trigger berhasil dihapus) ✅
 
-### 3. Setup Environment Variables
+---
 
-#### A. Buat file `.env.local`
-
-Buat file `.env.local` di root project (sudah di-gitignore):
-
-```env
-# Database (WAJIB)
-DATABASE_URL="postgresql://postgres.[project-id]:[password]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.[project-id]:[password]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
-
-# Supabase Storage (OPSIONAL untuk development, WAJIB untuk production)
-NEXT_PUBLIC_SUPABASE_URL="https://[project-id].supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-NEXT_PUBLIC_SUPABASE_BUCKET="SIMDIK-Uploads"
-```
-
-**Catatan:**
-- Database URL: Wajib untuk koneksi database
-- Supabase Storage: Opsional untuk development (gunakan local storage)
-- Untuk production/hosting: Wajib setup Supabase Storage
-
-📖 **Panduan lengkap**: Lihat `docs/environment-variables.md`
-
-#### B. Setup Supabase Storage (Opsional untuk Development)
-
-Jika ingin test Supabase Storage di lokal:
-
-1. **Buka Supabase Dashboard** → Storage
-2. **Buat bucket**: `SIMDIK-Uploads` (Public)
-3. **Copy credentials** dari Project Settings → API
-4. **Update `.env.local`** dengan Supabase credentials
-
-📖 **Panduan lengkap**: Lihat `docs/supabase-storage-setup.md`
-
-**Jika tidak setup Supabase Storage:**
-- ✅ Upload foto akan otomatis menggunakan local storage (`public/uploads/`)
-- ✅ Berfungsi untuk development
-- ⚠️  Tidak akan berfungsi di production hosting (Vercel/Netlify)
-
-### 4. Generate Prisma Client
-
-```bash
-npx prisma generate
-```
-
-### 5. Jalankan Development Server
+## 🚀 6. Jalankan Development Server
 
 ```bash
 npm run dev
 ```
 
-Server akan berjalan di: http://localhost:3000
+### Output yang Diharapkan:
+
+```
+🔍 DEBUG Environment Variables:
+  NEXT_PUBLIC_SUPABASE_URL: ✅ Set
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ✅ Set
+  NEXT_PUBLIC_SUPABASE_BUCKET: SIMDIK-Uploads
+✅ Supabase Storage enabled
+   URL: https://vqirqjfmypfwysfmfcjl.supabase.co
+   Bucket: SIMDIK-Uploads
+
+Ready in 3.5s
+```
+
+**✅ Jika muncul "Supabase Storage enabled"** → Setup berhasil!  
+**⚠️ Jika muncul "Supabase not configured"** → Cek `.env.local`, ada yang salah
+
+### Buka Browser:
+
+http://localhost:3000
 
 ---
 
-## 🔐 Login Admin
+## 🔐 7. Login Admin
 
 Default admin credentials (jika sudah seed):
 - Email: Lihat di `scripts/seed-admin-v2.sql`
@@ -134,60 +211,144 @@ Atau buat admin baru dengan menjalankan script seed.
 
 ---
 
-## ✅ Testing
+---
 
-### Test Update Berita
-1. Login sebagai admin
-2. Buka http://localhost:3000/admin/news
-3. Edit salah satu berita
-4. Klik Save
-5. **Harusnya berhasil tanpa error!** ✅
+## ✅ 8. Testing
+
+### Test 1: Login
+1. Buka http://localhost:3000/login
+2. Login dengan credentials admin
+3. **Harusnya redirect ke dashboard** ✅
+
+### Test 2: Upload Foto
+1. Buka http://localhost:3000/admin/agenda
+2. Klik "Tambah Agenda"
+3. Upload foto
+4. **Cek Console browser** (F12 → Console tab)
+5. **Expected:**
+   ```javascript
+   ✅ Uploaded to Supabase: https://xxx.supabase.co/storage/...
+   storage: "supabase"
+   ```
+6. **NOT this:**
+   ```javascript
+   ✅ Uploaded to local: /uploads/...
+   storage: "local"
+   ```
+
+### Test 3: CRUD Operations
+1. **Create:** Tambah agenda/berita/sekolah → ✅ Berhasil
+2. **Read:** Lihat list data → ✅ Muncul
+3. **Update:** Edit data → ✅ Berhasil update
+4. **Delete:** Hapus data → ✅ Berhasil delete
+
+---
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Error: "The column 'new' does not exist"
+### ❌ Error: Environment variables tidak terbaca
 
-**Penyebab:** Trigger di database belum di-drop.
+**Gejala:**
+```
+⚠️ Supabase not configured, using local storage
+```
 
 **Solusi:**
-1. Pastikan sudah jalankan `scripts/FIX-TRIGGER-ONLY.sql` di Supabase
-2. Verifikasi dengan query di Step 2.C
-3. Restart dev server jika perlu
+1. Cek file bernama **`.env.local`** (ada titik di depan!)
+2. Cek lokasi file di **root project** (sejajar dengan `package.json`)
+3. **Restart dev server** (Ctrl+C, lalu `npm run dev`)
+4. **Hard refresh browser** (Ctrl+Shift+R)
 
-### Error: Prisma Client tidak found
+---
 
-```bash
-npx prisma generate
+### ❌ Error: Database connection failed
+
+**Gejala:**
+```
+Error: connect ECONNREFUSED
 ```
 
-### Error: Database connection
-
-1. Cek `.env.local` file - pastikan `DATABASE_URL` benar
+**Solusi:**
+1. Cek `DATABASE_URL` di `.env.local` benar
 2. Cek koneksi internet
-3. Cek apakah Supabase project masih aktif
+3. Test connection: `npx prisma db pull`
+4. Minta credentials ulang dari lead developer
 
-### Error: Port 3000 sudah dipakai
+---
 
-```bash
-# Stop proses yang pakai port 3000, atau:
-npm run dev -- -p 3001
+### ❌ Error: Upload foto masih ke local
+
+**Gejala:**
+```
+✅ Uploaded to local: /uploads/...
+storage: "local"
 ```
 
-### Error: Upload foto tidak berfungsi
+**Solusi:**
+1. Cek `.env.local` ada 3 variable Supabase (URL, KEY, BUCKET)
+2. **Restart dev server** setelah edit `.env.local`
+3. Cek terminal, harus ada "✅ Supabase Storage enabled"
+4. Jika masih error, cek policies di Supabase (lihat docs)
 
-**Development:**
-1. Cek apakah folder `public/uploads/` ada
-2. Jika pakai Supabase: cek `.env.local` untuk credentials
-3. Cek console log untuk error message
+---
 
-**Production:**
-1. Pastikan Supabase Storage sudah setup
-2. Verify env variables di Vercel/Netlify
-3. Cek bucket `SIMDIK-Uploads` ada dan public
+### ❌ Error: Row Level Security Policy
 
-📖 **Troubleshooting lengkap**: Lihat `docs/supabase-storage-setup.md`
+**Gejala:**
+```
+StorageApiError: new row violates row-level security policy
+```
+
+**Solusi:**
+1. Buka **Supabase Dashboard** → Storage → SIMDIK-Uploads → Policies
+2. Pastikan ada policies untuk INSERT, SELECT, UPDATE, DELETE
+3. Jika belum ada, jalankan SQL di `docs/supabase-storage-setup.md`
+
+---
+
+### ❌ Error: Port 3000 sudah dipakai
+
+**Solusi:**
+```bash
+# Opsi 1: Pakai port lain
+npm run dev -- -p 3001
+
+# Opsi 2: Kill process di port 3000 (Windows)
+npx kill-port 3000
+```
+
+---
+
+### ❌ Error: Module not found
+
+**Solusi:**
+```bash
+# Delete node_modules dan install ulang
+rm -rf node_modules
+npm install
+
+# Atau
+npm ci
+```
+
+---
+
+### 🆘 Masih Error?
+
+1. **Check docs lengkap:**
+   - `docs/supabase-storage-setup.md` - Setup storage
+   - `docs/environment-variables.md` - Env variables
+   
+2. **Tanya Lead Developer:**
+   - Share screenshot error
+   - Share terminal output
+   - Share `.env.local` (SENSOR credentials!)
+
+3. **Check Git Issues:**
+   - Lihat apakah ada issue serupa
+   - Buat issue baru jika perlu
 
 ---
 
