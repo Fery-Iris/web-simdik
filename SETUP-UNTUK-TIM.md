@@ -1,19 +1,38 @@
 # 🚀 Setup untuk Tim / Developer Baru
 
-## Prerequisites
-- [x] Sudah clone repository dari GitHub
-- [x] Sudah setup `.env` file dengan database credentials
-- [x] Node.js sudah terinstall
+> **Updated:** 5 November 2025  
+> Panduan lengkap setup project SIMDIK untuk developer baru.
 
 ---
 
-## 📋 Langkah-Langkah Setup
+## ✅ Prerequisites
 
-### 1. Install Dependencies
+Pastikan sudah terinstall:
+- ✅ **Node.js** (versi 18+) - [Download](https://nodejs.org/)
+- ✅ **Git** - [Download](https://git-scm.com/)
+- ✅ **VS Code** (recommended) - [Download](https://code.visualstudio.com/)
+
+---
+
+## 📥 1. Clone Repository
+
+```bash
+# Clone dari GitHub
+git clone https://github.com/Fery-Iris/web-simdik.git
+
+# Masuk ke folder project
+cd web-simdik
+```
+
+---
+
+## 📦 2. Install Dependencies
 
 ```bash
 npm install
 ```
+
+**Tunggu sampai selesai** (5-10 menit tergantung internet).
 
 ### 2. Setup Database di Supabase
 
@@ -49,13 +68,53 @@ WHERE event_object_table = 'beritas';
 
 **Harusnya tidak ada rows** (trigger berhasil dihapus) ✅
 
-### 3. Generate Prisma Client
+### 3. Setup Environment Variables
+
+#### A. Buat file `.env.local`
+
+Buat file `.env.local` di root project (sudah di-gitignore):
+
+```env
+# Database (WAJIB)
+DATABASE_URL="postgresql://postgres.[project-id]:[password]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[project-id]:[password]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+
+# Supabase Storage (OPSIONAL untuk development, WAJIB untuk production)
+NEXT_PUBLIC_SUPABASE_URL="https://[project-id].supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+NEXT_PUBLIC_SUPABASE_BUCKET="SIMDIK-Uploads"
+```
+
+**Catatan:**
+- Database URL: Wajib untuk koneksi database
+- Supabase Storage: Opsional untuk development (gunakan local storage)
+- Untuk production/hosting: Wajib setup Supabase Storage
+
+📖 **Panduan lengkap**: Lihat `docs/environment-variables.md`
+
+#### B. Setup Supabase Storage (Opsional untuk Development)
+
+Jika ingin test Supabase Storage di lokal:
+
+1. **Buka Supabase Dashboard** → Storage
+2. **Buat bucket**: `SIMDIK-Uploads` (Public)
+3. **Copy credentials** dari Project Settings → API
+4. **Update `.env.local`** dengan Supabase credentials
+
+📖 **Panduan lengkap**: Lihat `docs/supabase-storage-setup.md`
+
+**Jika tidak setup Supabase Storage:**
+- ✅ Upload foto akan otomatis menggunakan local storage (`public/uploads/`)
+- ✅ Berfungsi untuk development
+- ⚠️  Tidak akan berfungsi di production hosting (Vercel/Netlify)
+
+### 4. Generate Prisma Client
 
 ```bash
 npx prisma generate
 ```
 
-### 4. Jalankan Development Server
+### 5. Jalankan Development Server
 
 ```bash
 npm run dev
@@ -105,7 +164,7 @@ npx prisma generate
 
 ### Error: Database connection
 
-1. Cek `.env` file - pastikan `DATABASE_URL` benar
+1. Cek `.env.local` file - pastikan `DATABASE_URL` benar
 2. Cek koneksi internet
 3. Cek apakah Supabase project masih aktif
 
@@ -115,6 +174,20 @@ npx prisma generate
 # Stop proses yang pakai port 3000, atau:
 npm run dev -- -p 3001
 ```
+
+### Error: Upload foto tidak berfungsi
+
+**Development:**
+1. Cek apakah folder `public/uploads/` ada
+2. Jika pakai Supabase: cek `.env.local` untuk credentials
+3. Cek console log untuk error message
+
+**Production:**
+1. Pastikan Supabase Storage sudah setup
+2. Verify env variables di Vercel/Netlify
+3. Cek bucket `SIMDIK-Uploads` ada dan public
+
+📖 **Troubleshooting lengkap**: Lihat `docs/supabase-storage-setup.md`
 
 ---
 
