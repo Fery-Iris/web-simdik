@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { School, Menu } from "lucide-react"
+import { School, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
 export function SiteHeader() {
   const pathname = usePathname()
   const [currentHash, setCurrentHash] = useState<string>("")
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const updateHash = () => setCurrentHash(window.location.hash)
@@ -33,6 +34,23 @@ export function SiteHeader() {
     window.addEventListener("hashchange", updateHash)
     return () => window.removeEventListener("hashchange", updateHash)
   }, [])
+
+  useEffect(() => {
+    // Close mobile menu when route changes
+    setIsMobileMenuOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    // Prevent body scroll when mobile menu is open
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileMenuOpen])
 
   const isActive = (item: NavItem) => {
     if (item.href === "/") return pathname === "/"
@@ -86,13 +104,44 @@ export function SiteHeader() {
 
           <ScrollReveal animation="fade-left" delay={200} triggerOnce={false}>
             <div className="flex items-center space-x-2">
-              <button className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-accent">
-                <Menu className="w-6 h-6 text-foreground" />
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-accent"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6 text-foreground" />
+                ) : (
+                  <Menu className="w-6 h-6 text-foreground" />
+                )}
               </button>
               <ThemeToggle />
             </div>
           </ScrollReveal>
         </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-border">
+            <nav className="px-4 py-6 space-y-4 bg-background">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "block px-4 py-3 rounded-lg font-medium transition-all duration-300",
+                    isActive(item)
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   )
