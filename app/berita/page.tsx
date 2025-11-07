@@ -106,7 +106,7 @@ export default function BeritaPage() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/">
@@ -122,8 +122,8 @@ export default function BeritaPage() {
 
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Semua Berita</h1>
-          <p className="text-muted-foreground text-lg">Temukan berita terbaru seputar pendidikan di Kota Banjarmasin</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-4">Semua Berita</h1>
+          <p className="text-muted-foreground text-base sm:text-lg">Temukan berita terbaru seputar pendidikan di Kota Banjarmasin</p>
         </div>
 
         {/* Search and Filter */}
@@ -160,13 +160,13 @@ export default function BeritaPage() {
         </div>
 
         {/* News Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
           {filteredNews.map((news) => (
             <Card
               key={news.id}
-              className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400"
+              className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border-2 border-transparent hover:border-blue-400 max-w-sm mx-auto w-full"
             >
-              <div className="aspect-video relative overflow-hidden">
+              <div className="relative overflow-hidden h-44 sm:h-48">
                 <Image
                   src={news.gambarUtama || "/placeholder.svg"}
                   alt={news.judul}
@@ -175,29 +175,29 @@ export default function BeritaPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
               </div>
-              <CardContent className="p-6">
-                <div className="mb-3 flex items-center gap-2">
-                  <Badge className={getCategoryColor(news.kategori)}>{news.kategori}</Badge>
+              <CardContent className="p-4">
+                <div className="mb-2 flex items-center gap-2 flex-wrap">
+                  <Badge className={`${getCategoryColor(news.kategori)} text-xs`}>{news.kategori}</Badge>
                   {news.unggulan && (
-                    <Badge className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+                    <Badge className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300 text-xs">
                       ⭐ Unggulan
                     </Badge>
                   )}
                 </div>
 
-                <h3 className="text-xl font-bold text-foreground mb-3 transition-all duration-300 group-hover:text-blue-600 line-clamp-2">
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600 line-clamp-2">
                   {news.judul}
                 </h3>
 
-                <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {news.ringkasan || news.konten.substring(0, 150) + "..."}
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  {news.ringkasan || news.konten.substring(0, 100) + "..."}
                 </p>
 
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                  <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                  <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3" />
-                      <span>{formatDate(news.createdAt)}</span>
+                      <span className="truncate">{formatDate(news.createdAt)}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-1">
@@ -208,7 +208,7 @@ export default function BeritaPage() {
 
                 <Link
                   href={`/berita/${news.slug}`}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
                 >
                   Baca Selengkapnya
                   <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>

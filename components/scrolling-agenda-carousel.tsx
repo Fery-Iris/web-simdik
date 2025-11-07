@@ -24,15 +24,47 @@ interface ScrollingAgendaCarouselProps {
 export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
+  const [cardsPerView, setCardsPerView] = useState(3)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const autoScrollRef = useRef<NodeJS.Timeout>()
   const resumeTimeoutRef = useRef<NodeJS.Timeout>()
 
+  // Update cards per view based on screen size
+  useEffect(() => {
+    const updateCardsPerView = () => {
+      if (window.innerWidth < 768) {
+        setCardsPerView(1) // Mobile: 1 card
+      } else if (window.innerWidth < 1024) {
+        setCardsPerView(2) // Tablet: 2 cards
+      } else {
+        setCardsPerView(3) // Desktop: 3 cards
+      }
+    }
+
+    updateCardsPerView()
+    window.addEventListener('resize', updateCardsPerView)
+    return () => window.removeEventListener('resize', updateCardsPerView)
+  }, [])
+
+  // Reset currentIndex when cardsPerView changes
+  useEffect(() => {
+    const maxIndex = Math.max(0, agendas.length - cardsPerView)
+    if (currentIndex > maxIndex) {
+      setCurrentIndex(0)
+    }
+  }, [cardsPerView, agendas.length, currentIndex])
+
   // Auto-scroll functionality
   useEffect(() => {
-    if (isAutoScrolling && agendas.length > 3) {
+    if (agendas.length === 0) return
+    const maxIndex = Math.max(0, agendas.length - cardsPerView)
+    
+    if (isAutoScrolling && maxIndex > 0) {
       autoScrollRef.current = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % Math.max(1, agendas.length - 2))
+        setCurrentIndex((prevIndex) => {
+          const nextIndex = prevIndex + 1
+          return nextIndex > maxIndex ? 0 : nextIndex
+        })
       }, 4000) // Change slide every 4 seconds
     } else {
       if (autoScrollRef.current) {
@@ -51,7 +83,7 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
         resumeTimeoutRef.current = undefined
       }
     }
-  }, [isAutoScrolling, agendas.length])
+  }, [isAutoScrolling, agendas.length, cardsPerView])
 
   // Handle manual navigation
   const goToSlide = (index: number) => {
@@ -72,14 +104,14 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
   }
 
   const goToPrevious = () => {
-    const maxIndex = Math.max(0, agendas.length - 3)
+    const maxIndex = Math.max(0, agendas.length - cardsPerView)
     const newIndex = currentIndex === 0 ? maxIndex : currentIndex - 1
     goToSlide(newIndex)
   }
 
   const goToNext = () => {
-    const maxIndex = Math.max(0, agendas.length - 3)
-    const newIndex = (currentIndex + 1) % (maxIndex + 1)
+    const maxIndex = Math.max(0, agendas.length - cardsPerView)
+    const newIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1
     goToSlide(newIndex)
   }
 
@@ -95,24 +127,24 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
   // Don't show carousel if there are 3 or fewer agendas
   if (agendas.length <= 3) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-6xl mx-auto">
         {agendas.map((agenda) => (
           <div key={agenda.id}>
-            <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400 h-full">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600">
+            <Card className="card-glow card-glow-purple overflow-hidden group border-2 border-transparent h-full max-w-sm mx-auto">
+              <CardContent className="p-4 sm:p-5">
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600 line-clamp-2">
                   {agenda.title}
                 </h3>
-                <p className="text-muted-foreground text-sm mb-2">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-1.5">
                   <span className="font-semibold">Tanggal:</span> {new Date(agenda.date).toLocaleDateString('id-ID')}
                 </p>
-                <p className="text-muted-foreground text-sm mb-4">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-3">
                   <span className="font-semibold">Lokasi:</span> {agenda.location}
                 </p>
-                <p className="text-muted-foreground mb-4 line-clamp-3">{agenda.description}</p>
+                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{agenda.description}</p>
                 <Link
                   href={`/agenda/${agenda.slug}`}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
                 >
                   Lihat Detail
                   <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -126,6 +158,9 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
   }
 
   // Show carousel if there are more than 3 agendas
+  const cardWidthPercentage = 100 / cardsPerView
+  const maxIndex = Math.max(0, agendas.length - cardsPerView)
+
   return (
     <div className="relative overflow-hidden" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {/* Scrolling Container */}
@@ -133,27 +168,30 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
         ref={scrollContainerRef}
         className="flex transition-transform duration-700 ease-in-out will-change-transform"
         style={{
-          transform: `translateX(-${currentIndex * (100 / 3)}%)`,
-          width: `${(agendas.length * 100) / 3}%`,
+          transform: `translateX(-${currentIndex * cardWidthPercentage}%)`,
         }}
       >
         {agendas.map((agenda, index) => (
-          <div key={agenda.id} className="w-1/3 px-3 flex-shrink-0">
-            <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400 h-full">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600">
+          <div 
+            key={agenda.id} 
+            className="flex-shrink-0 px-2 md:px-3"
+            style={{ width: `${cardWidthPercentage}%` }}
+          >
+            <Card className="card-glow card-glow-purple overflow-hidden group border-2 border-transparent h-full">
+              <CardContent className="p-4 sm:p-5">
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600 line-clamp-2">
                   {agenda.title}
                 </h3>
-                <p className="text-muted-foreground text-sm mb-2">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-1.5">
                   <span className="font-semibold">Tanggal:</span> {new Date(agenda.date).toLocaleDateString('id-ID')}
                 </p>
-                <p className="text-muted-foreground text-sm mb-4">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-3">
                   <span className="font-semibold">Lokasi:</span> {agenda.location}
                 </p>
-                <p className="text-muted-foreground mb-4 line-clamp-3">{agenda.description}</p>
+                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{agenda.description}</p>
                 <Link
                   href={`/agenda/${agenda.slug}`}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
                 >
                   Lihat Detail
                   <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -168,7 +206,7 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
       <Button
         variant="outline"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700"
         onClick={goToPrevious}
       >
         <ChevronLeft className="w-4 h-4" />
@@ -177,7 +215,7 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
       <Button
         variant="outline"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700"
         onClick={goToNext}
       >
         <ChevronRight className="w-4 h-4" />
@@ -185,11 +223,11 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
 
       {/* Dots Indicator */}
       <div className="flex justify-center space-x-2 mt-6">
-        {Array.from({ length: Math.max(1, agendas.length - 2) }).map((_, index) => (
+        {Array.from({ length: maxIndex + 1 }).map((_, index) => (
           <button
             key={index}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentIndex ? "bg-blue-600 scale-125" : "bg-gray-300 hover:bg-gray-400"
+              index === currentIndex ? "bg-blue-600 scale-125" : "bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500"
             }`}
             onClick={() => goToSlide(index)}
           />

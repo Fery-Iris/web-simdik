@@ -165,7 +165,7 @@ export default function Component() {
       <SiteHeader />
 
       {/* Hero Section */}
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden">
         {/* Background Image and Overlay */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
@@ -210,7 +210,7 @@ export default function Component() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-lg">
               Selamat Datang di Portal Resmi
               <br />
               <span className="text-blue-300 animate-gradient-text-vibrant">Dinas Pendidikan Kota Banjarmasin</span>
@@ -218,35 +218,35 @@ export default function Component() {
           </ScrollReveal>
 
           <ScrollReveal animation="fade-up" delay={300} duration={800}>
-            <p className="text-xl text-gray-100 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
+            <p className="text-base sm:text-lg md:text-xl text-gray-100 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md px-2">
               Bersama membangun pendidikan berkualitas untuk generasi emas Banjarmasin. Kami berkomitmen menciptakan
               ekosistem pendidikan yang inovatif, inklusif, dan berdaya saing tinggi untuk masa depan yang lebih cerah.
             </p>
           </ScrollReveal>
 
           <ScrollReveal animation="fade-up" delay={600} duration={800}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/reservasi">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+              <Link href="/reservasi" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg border-0 font-semibold"
+                  className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-6 sm:px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg border-0 font-semibold text-sm sm:text-base"
                 >
                   Reservasi Online
                 </Button>
               </Link>
-              <Link href="/tentang-simdik">
+              <Link href="/tentang-simdik" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg border-0 font-semibold"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg border-0 font-semibold text-sm sm:text-base"
                 >
                   Tentang SIMDIK
                 </Button>
               </Link>
-              <Link href="/direktori-sekolah">
+              <Link href="/direktori-sekolah" className="w-full sm:w-auto">
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-slate-300 bg-slate-800/80 backdrop-blur-sm text-white hover:bg-slate-700/90 hover:text-white hover:border-slate-200 px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg font-semibold"
+                  className="w-full sm:w-auto border-2 border-slate-300 bg-slate-800/80 backdrop-blur-sm text-white hover:bg-slate-700/90 hover:text-white hover:border-slate-200 px-6 sm:px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg font-semibold text-sm sm:text-base"
                 >
                   Direktori Sekolah
                 </Button>
@@ -257,7 +257,7 @@ export default function Component() {
       </section>
 
       {/* Statistics Section */}
-      <section className="py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
+      <section className="py-8 sm:py-12 md:py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
         {/* Subtle background pattern */}
         <div className="lines">
           <div className="line"></div>
@@ -274,15 +274,19 @@ export default function Component() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-foreground mb-4">Data Pendidikan Kota Banjarmasin</h2>
-              <p className="text-muted-foreground text-lg">
+            <div className="text-center mb-8 sm:mb-12">
+              <div className="flex justify-center mb-3 sm:mb-4">
+                <div className="section-title-container">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Data Pendidikan Kota Banjarmasin</h2>
+                </div>
+              </div>
+              <p className="text-muted-foreground text-sm sm:text-base md:text-lg px-2">
                 Data terkini berdasarkan Dapodik Kemendikbudristek per Semester Genap 2024/2025
               </p>
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
             {statsData.map((stat, index) => {
               const Icon = stat.icon
               const chartColorClass = `bg-${stat.chartColor}/10 text-${stat.chartColor}`
@@ -294,7 +298,7 @@ export default function Component() {
                     statsVisible[index] ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"
                   }`}
                 >
-                  <Card className="text-center p-6 h-full hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group cursor-pointer border-2 border-transparent hover:border-blue-400">
+                  <Card className="card-glow card-glow-blue text-center p-6 h-full group cursor-pointer border-2 border-transparent">
                     <CardContent className="pt-6 h-full flex flex-col justify-center">
                       <div
                         className={`w-16 h-16 ${chartColorClass} rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 shadow-md`}
@@ -322,7 +326,7 @@ export default function Component() {
                 {detailedStats.map((category, categoryIndex) => (
                   <div
                     key={categoryIndex}
-                    className="bg-card/90 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50 hover:shadow-xl hover:border-blue-300/50 dark:hover:border-blue-600/50 transition-all duration-300"
+                    className="card-glow card-glow-purple bg-card/90 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
                   >
                     <h4 className="text-lg font-semibold text-foreground mb-4 text-center border-b border-border pb-2">
                       {category.category}
@@ -331,7 +335,7 @@ export default function Component() {
                       {category.data.map((item, itemIndex) => (
                         <div
                           key={itemIndex}
-                          className="flex justify-between items-center p-3 bg-muted/60 dark:bg-muted/40 rounded-lg hover:bg-muted/80 dark:hover:bg-muted/60 transition-all duration-300 hover:scale-[1.02] hover:shadow-md border border-transparent hover:border-blue-200/50 dark:hover:border-blue-700/50"
+                          className="card-glow-cyan flex justify-between items-center p-3 bg-muted/60 dark:bg-muted/40 rounded-lg hover:bg-muted/80 dark:hover:bg-muted/60 transition-all duration-300 border border-transparent"
                         >
                           <div>
                             <div className="font-medium text-foreground">{item.level}</div>
@@ -383,10 +387,14 @@ export default function Component() {
       </section>
 
       {/* News Section */}
-      <section id="berita" className="py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
+      <section id="berita" className="py-8 sm:py-12 md:py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-12">Berita Terkini</h2>
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <div className="section-title-container">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Berita Terkini</h2>
+              </div>
+            </div>
           </ScrollReveal>
 
           <ScrollReveal animation="fade-up" delay={200} duration={800}>
@@ -394,11 +402,11 @@ export default function Component() {
           </ScrollReveal>
 
           <ScrollReveal animation="fade-up" delay={600} duration={800}>
-            <div className="text-center mt-12">
+            <div className="text-center mt-8 sm:mt-12">
               <Link href="/berita">
                 <Button
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-sm sm:text-base"
                 >
                   Lihat Semua Berita
                   <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -410,10 +418,14 @@ export default function Component() {
       </section>
 
       {/* Agenda Section */}
-      <section id="agenda" className="py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
+      <section id="agenda" className="py-8 sm:py-12 md:py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-12">Agenda Mendatang</h2>
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <div className="section-title-container">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Agenda Mendatang</h2>
+              </div>
+            </div>
           </ScrollReveal>
           {agendaLoading ? (
             <div className="flex justify-center py-8">
@@ -431,11 +443,11 @@ export default function Component() {
           
           {/* View All Button */}
           <ScrollReveal animation="fade-up" delay={400} duration={800}>
-            <div className="flex justify-center mt-12">
+            <div className="flex justify-center mt-8 sm:mt-12">
               <Link href="/agenda">
                 <Button
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-xl text-sm sm:text-base"
                 >
                   Lihat Semua Agenda
                   <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -447,19 +459,23 @@ export default function Component() {
       </section>
 
       {/* Contact Section */}
-      <section id="kontak" className="py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
+      <section id="kontak" className="py-8 sm:py-12 md:py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-12">Hubungi Kami</h2>
+            <div className="flex justify-center mb-8 sm:mb-12">
+              <div className="section-title-container">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Hubungi Kami</h2>
+              </div>
+            </div>
           </ScrollReveal>
           {/* Contact Info */}
           <ScrollReveal animation="fade-up" delay={200} duration={800}>
             <div className="max-w-4xl mx-auto space-y-6 text-center">
-              <p className="text-muted-foreground text-lg leading-relaxed">
+              <p className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed px-4">
                 Jangan ragu untuk menghubungi kami jika Anda memiliki pertanyaan, saran, atau membutuhkan bantuan. Tim
                 kami siap melayani Anda.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <div className="flex flex-col items-center space-y-2 p-4 bg-muted/50 rounded-lg">
                   <MapPin className="w-8 h-8 text-blue-600" />
                   <p className="text-foreground text-center font-medium">Alamat</p>

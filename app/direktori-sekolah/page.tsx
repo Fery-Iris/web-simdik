@@ -118,7 +118,7 @@ export default function SchoolDirectory() {
       <SiteHeader />
 
       {/* Hero Section with Cover Image */}
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden">
         {/* Background Image and Overlay */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
@@ -133,25 +133,25 @@ export default function SchoolDirectory() {
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <School className="w-16 h-16 mx-auto mb-6 text-white" />
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+          <School className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6 text-white" />
+          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-lg">
             Direktori Sekolah
           </h1>
-          <p className="text-xl text-gray-100 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
+          <p className="text-base sm:text-lg md:text-xl text-gray-100 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md px-2">
             Temukan informasi lengkap sekolah di Kota Banjarmasin
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="py-16">
-        <div className="max-w-6xl mx-auto px-4">
+      <section className="py-8 sm:py-12 md:py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Back Button */}
         <div className="mb-6">
             <Link href="/">
               <Button
                 variant="outline"
-                className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 bg-transparent"
+                className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 bg-transparent text-sm sm:text-base"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Kembali ke Beranda</span>
@@ -161,8 +161,8 @@ export default function SchoolDirectory() {
 
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Semua Sekolah</h1>
-            <p className="text-muted-foreground text-lg">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">Semua Sekolah</h1>
+            <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
               Temukan informasi lengkap sekolah di Kota Banjarmasin
             </p>
         </div>
@@ -321,11 +321,11 @@ export default function SchoolDirectory() {
           {/* Schools Grid */}
           {!loading && !error && currentSchools.length > 0 && (
             <>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 {currentSchools.map((school) => (
                   <Card key={school.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 {/* School Image */}
-                    <div className="relative h-48 bg-gray-200">
+                    <div className="relative h-40 sm:h-48 bg-gray-200">
                       {school.gambarUtama ? (
                   <Image
                           src={school.gambarUtama}
@@ -341,15 +341,15 @@ export default function SchoolDirectory() {
                 </div>
 
                     {/* School Info */}
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                       <div className="flex items-start justify-between mb-3">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white line-clamp-2">
                           {school.nama}
                   </h3>
                       </div>
 
                   {/* Badges */}
-                      <div className="flex flex-wrap gap-2 mb-4">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
                         {school.jenjang && (
                           <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                             {school.jenjang}

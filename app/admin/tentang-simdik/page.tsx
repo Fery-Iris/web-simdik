@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { School, Menu, X, LogOut, Bell, ChevronDown, Home, Newspaper, Calendar, FileText } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -141,6 +142,7 @@ export default function AdminTentangSimdikPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4">
+              <ThemeToggle />
               <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
                 <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
               </Button>

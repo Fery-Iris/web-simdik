@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   School,
   FileText,
@@ -268,6 +269,7 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4">
+              <ThemeToggle />
               <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
                 <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
               </Button>

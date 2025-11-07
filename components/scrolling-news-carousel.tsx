@@ -27,9 +27,35 @@ export function ScrollingNewsCarousel() {
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
+  const [cardsPerView, setCardsPerView] = useState(3)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const autoScrollRef = useRef<NodeJS.Timeout>()
   const resumeTimeoutRef = useRef<NodeJS.Timeout>()
+
+  // Update cards per view based on screen size
+  useEffect(() => {
+    const updateCardsPerView = () => {
+      if (window.innerWidth < 768) {
+        setCardsPerView(1) // Mobile: 1 card
+      } else if (window.innerWidth < 1024) {
+        setCardsPerView(2) // Tablet: 2 cards
+      } else {
+        setCardsPerView(3) // Desktop: 3 cards
+      }
+    }
+
+    updateCardsPerView()
+    window.addEventListener('resize', updateCardsPerView)
+    return () => window.removeEventListener('resize', updateCardsPerView)
+  }, [])
+
+  // Reset currentIndex when cardsPerView changes to avoid invalid index
+  useEffect(() => {
+    const maxIndex = Math.max(0, allNewsData.length - cardsPerView)
+    if (currentIndex > maxIndex) {
+      setCurrentIndex(0)
+    }
+  }, [cardsPerView, allNewsData.length, currentIndex])
 
   // Fetch news from API
   useEffect(() => {
@@ -56,9 +82,14 @@ export function ScrollingNewsCarousel() {
   // Auto-scroll functionality
   useEffect(() => {
     if (allNewsData.length === 0) return
-    if (isAutoScrolling) {
+    const maxIndex = Math.max(0, allNewsData.length - cardsPerView)
+    
+    if (isAutoScrolling && maxIndex > 0) {
       autoScrollRef.current = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % allNewsData.length)
+        setCurrentIndex((prevIndex) => {
+          const nextIndex = prevIndex + 1
+          return nextIndex > maxIndex ? 0 : nextIndex
+        })
       }, 4000) // Change slide every 4 seconds
     } else {
       // Clear interval when auto-scrolling is disabled
@@ -78,7 +109,7 @@ export function ScrollingNewsCarousel() {
         resumeTimeoutRef.current = undefined
       }
     }
-  }, [isAutoScrolling, allNewsData.length])
+  }, [isAutoScrolling, allNewsData.length, cardsPerView])
 
   // Handle manual navigation
   const goToSlide = (index: number) => {
@@ -101,12 +132,14 @@ export function ScrollingNewsCarousel() {
   }
 
   const goToPrevious = () => {
-    const newIndex = currentIndex === 0 ? allNewsData.length - 1 : currentIndex - 1
+    const maxIndex = Math.max(0, allNewsData.length - cardsPerView)
+    const newIndex = currentIndex === 0 ? maxIndex : currentIndex - 1
     goToSlide(newIndex)
   }
 
   const goToNext = () => {
-    const newIndex = (currentIndex + 1) % allNewsData.length
+    const maxIndex = Math.max(0, allNewsData.length - cardsPerView)
+    const newIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1
     goToSlide(newIndex)
   }
 
@@ -147,6 +180,9 @@ export function ScrollingNewsCarousel() {
     )
   }
 
+  const cardWidthPercentage = 100 / cardsPerView
+  const maxIndex = Math.max(0, allNewsData.length - cardsPerView)
+
   return (
     <div className="relative overflow-hidden" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {/* Scrolling Container */}
@@ -154,14 +190,17 @@ export function ScrollingNewsCarousel() {
         ref={scrollContainerRef}
         className="flex transition-transform duration-700 ease-in-out will-change-transform"
         style={{
-          transform: `translateX(-${currentIndex * (100 / 3)}%)`,
-          width: `${(allNewsData.length * 100) / 3}%`,
+          transform: `translateX(-${currentIndex * cardWidthPercentage}%)`,
         }}
       >
         {allNewsData.map((news, index) => (
-          <div key={news.id} className="w-1/3 px-4 flex-shrink-0">
-            <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400 h-full">
-              <div className="aspect-video relative overflow-hidden">
+          <div 
+            key={news.id} 
+            className="flex-shrink-0 px-2 md:px-3"
+            style={{ width: `${cardWidthPercentage}%` }}
+          >
+            <Card className="card-glow card-glow-cyan overflow-hidden group border-2 border-transparent h-full">
+              <div className="relative overflow-hidden h-44 sm:h-48">
                 <Image
                   src={news.gambarUtama || "/placeholder.svg"}
                   alt={news.judul}
@@ -170,26 +209,26 @@ export function ScrollingNewsCarousel() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
               </div>
-              <CardContent className="p-6">
-                <div className="mb-3 flex items-center gap-2">
-                  <Badge className={getCategoryColor(news.kategori)}>
+              <CardContent className="p-4">
+                <div className="mb-2 flex items-center gap-2 flex-wrap">
+                  <Badge className={`${getCategoryColor(news.kategori)} text-xs`}>
                     {news.kategori}
                   </Badge>
                   {news.unggulan && (
-                    <Badge className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300">
+                    <Badge className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300 text-xs">
                       ⭐ Unggulan
                     </Badge>
                   )}
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3 transition-all duration-300 group-hover:text-blue-600 line-clamp-2">
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600 line-clamp-2">
                   {news.judul}
                 </h3>
-                <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {news.ringkasan || news.konten.substring(0, 150) + "..."}
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  {news.ringkasan || news.konten.substring(0, 100) + "..."}
                 </p>
                 <Link
                   href={`/berita/${news.slug}`}
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 relative group-hover:translate-x-2 inline-flex items-center"
                 >
                   Baca Selengkapnya
                   <span className="ml-1 transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -204,7 +243,7 @@ export function ScrollingNewsCarousel() {
       <Button
         variant="outline"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-700 shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300"
         onClick={goToPrevious}
       >
         <ChevronLeft className="w-4 h-4" />
@@ -213,7 +252,7 @@ export function ScrollingNewsCarousel() {
       <Button
         variant="outline"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-700 shadow-lg border-2 border-transparent hover:border-blue-400 transition-all duration-300"
         onClick={goToNext}
       >
         <ChevronRight className="w-4 h-4" />
@@ -221,11 +260,11 @@ export function ScrollingNewsCarousel() {
 
       {/* Dots Indicator */}
       <div className="flex justify-center space-x-2 mt-6">
-        {allNewsData.map((_, index) => (
+        {Array.from({ length: maxIndex + 1 }).map((_, index) => (
           <button
             key={index}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentIndex ? "bg-blue-600 scale-125" : "bg-gray-300 hover:bg-gray-400"
+              index === currentIndex ? "bg-blue-600 scale-125" : "bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500"
             }`}
             onClick={() => goToSlide(index)}
           />

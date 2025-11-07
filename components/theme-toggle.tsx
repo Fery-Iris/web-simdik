@@ -12,9 +12,18 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), [])
 
   const handleClick = () => {
-    const current = theme ?? "system"
-    const next = current === "light" ? "dark" : current === "dark" ? "system" : "light"
+    const next = (resolvedTheme ?? theme ?? "light") === "dark" ? "light" : "dark"
+    
+    // Add transition class for smoother change
+    document.documentElement.classList.add('theme-transitioning')
+    
+    // Change theme immediately
     setTheme(next)
+    
+    // Remove transition class after 1 second animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning')
+    }, 1000)
   }
 
   const label = !mounted ? "Toggle theme" : `Theme: ${(theme ?? "system").toString()}. Click to switch`
@@ -31,8 +40,8 @@ export function ThemeToggle() {
       disabled={!mounted}
     >
       {/* Show icon based on resolvedTheme so 'system' follows OS */}
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all duration-500 dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all duration-500 dark:rotate-0 dark:scale-100" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   )

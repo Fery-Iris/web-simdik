@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   Clock,
   Plus,
@@ -219,12 +220,15 @@ export default function AgendaManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Manajemen Agenda</h1>
-          <p className="text-gray-600">Kelola agenda dan kegiatan</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Manajemen Agenda</h1>
+            <p className="text-muted-foreground">Kelola agenda dan kegiatan</p>
+          </div>
+          <ThemeToggle />
         </div>
 
         {/* Action Bar */}
@@ -352,6 +356,7 @@ export default function AgendaManagement() {
                             size="sm"
                             onClick={() => window.open(`/agenda/${agenda.slug}`, '_blank')}
                             title="Lihat di Frontend"
+                            className="text-blue-600 hover:text-blue-700 bg-transparent"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -359,6 +364,7 @@ export default function AgendaManagement() {
                             variant="outline" 
                             size="sm"
                             onClick={() => handleEdit(agenda)}
+                            className="text-green-600 hover:text-green-700 bg-transparent"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -366,7 +372,7 @@ export default function AgendaManagement() {
                             variant="outline" 
                             size="sm"
                             onClick={() => handleDelete(agenda.id)}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 hover:text-red-700 bg-transparent"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -562,7 +568,7 @@ export default function AgendaManagement() {
                     id="edit-slug"
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    placeholder="Akan dibuat otomatis jika kosong"
+                    placeholder="Isi Sesuai Nomor Urut"
                   />
                 </div>
                 <div className="grid gap-2">

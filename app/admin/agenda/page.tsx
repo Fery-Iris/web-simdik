@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { AgendaForm } from "@/components/agenda-form"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   Plus,
   Edit,
@@ -526,6 +527,7 @@ export default function AgendaPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4">
+              <ThemeToggle />
               <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
                 <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
               </Button>
@@ -543,8 +545,8 @@ export default function AgendaPage() {
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Manajemen Agenda</h1>
-            <p className="text-gray-600">Kelola agenda dan kegiatan</p>
+            <h1 className="text-3xl font-bold text-foreground">Manajemen Agenda</h1>
+            <p className="text-muted-foreground">Kelola agenda dan kegiatan</p>
           </div>
 
         {/* Statistics */}
@@ -677,36 +679,36 @@ export default function AgendaPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Judul
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Kategori
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Kapasitas
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Tanggal
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Aksi
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
                     {filteredAgendas.map((agenda) => (
-                      <tr key={agenda.id} className="hover:bg-gray-50">
+                      <tr key={agenda.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
                         <td className="px-4 py-4">
                           <div className="flex items-center">
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{agenda.title}</div>
-                              <div className="text-sm text-gray-500">{agenda.location}</div>
+                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{agenda.title}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">{agenda.location}</div>
                             </div>
                           </div>
                         </td>
@@ -718,35 +720,35 @@ export default function AgendaPage() {
                             {statusLabels[agenda.status]}
                           </Badge>
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {agenda.capacity > 0 ? `${agenda.capacity} orang` : 'Tidak terbatas'}
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {new Date(agenda.date).toLocaleDateString('id-ID')}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end space-x-2">
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              size="sm"
+                              variant="outline"
                               onClick={() => handleView(agenda.id)}
-                              className="hover:bg-blue-50 hover:text-blue-600"
+                              className="text-blue-600 hover:text-blue-700 bg-transparent"
                             >
                               <Eye className="w-4 h-4" />
                             </Button>
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              size="sm"
+                              variant="outline"
                               onClick={() => handleEdit(agenda)}
-                              className="hover:bg-green-50 hover:text-green-600"
+                              className="text-green-600 hover:text-green-700 bg-transparent"
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              size="sm"
+                              variant="outline"
                               onClick={() => handleDelete(agenda.id)}
-                              className="hover:bg-red-50 hover:text-red-600"
+                              className="text-red-600 hover:text-red-700 bg-transparent"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>

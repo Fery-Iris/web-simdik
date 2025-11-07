@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   School,
   FileText,
@@ -443,6 +444,7 @@ export default function AdminReservationsPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4">
+              <ThemeToggle />
               <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
                 <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
               </Button>
@@ -484,9 +486,11 @@ export default function AdminReservationsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Total Reservasi</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+                    <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
                   </div>
-                  <Calendar className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
+                    <Calendar className="w-6 h-6 text-blue-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -496,9 +500,11 @@ export default function AdminReservationsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Selesai</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.completed}</p>
+                    <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
                   </div>
-                  <CheckCircle className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -508,9 +514,11 @@ export default function AdminReservationsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Menunggu</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.waiting}</p>
+                    <p className="text-3xl font-bold text-orange-600">{stats.waiting}</p>
                   </div>
-                  <Clock className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
+                    <Clock className="w-6 h-6 text-orange-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -520,9 +528,11 @@ export default function AdminReservationsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Dibatalkan</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.cancelled}</p>
+                    <p className="text-3xl font-bold text-red-600">{stats.cancelled}</p>
                   </div>
-                  <XCircle className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg">
+                    <XCircle className="w-6 h-6 text-red-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
