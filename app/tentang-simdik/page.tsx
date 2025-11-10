@@ -211,7 +211,7 @@ export default function AboutSIMDIKPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-8">Visi dan Misi Kami</h2>
+            <h2 className="text-3xl font-bold text-center text-foreground mb-8">Visi, Misi, dan Motto Kami</h2>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ScrollReveal animation="fade-right" delay={200} duration={800}>
@@ -235,6 +235,17 @@ export default function AboutSIMDIKPage() {
                 </ul>
               </div>
             </ScrollReveal>
+            <ScrollReveal animation="fade-up" delay={600} duration={800}>
+              <div>
+                <h3 className="text-2xl font-semibold text-primary mb-4">Moto Pelayananan : IQRA</h3>
+                <ul className="list-disc list-inside text-muted-foreground space-y-2 leading-relaxed">
+                  <li>Integrity (Integritas).</li>
+                  <li>Quality (Kualitas).</li>
+                  <li>Responsibility (Tanggung Jawab).</li>
+                  <li>Accountability (Akuntabilitas).</li>
+                </ul>
+              </div>
+              </ScrollReveal>
           </div>
         </div>
       </section>
