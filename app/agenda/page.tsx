@@ -5,10 +5,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Calendar, MapPin, Users, Clock, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import Image from "next/image"
 import Link from "next/link"
 import { SiteHeader } from "@/components/site-header"
 import { useState, useEffect } from "react"
+import Image from "next/image"
+import { resolveImageUrl } from "@/lib/utils"
 
 interface Agenda {
   id: string
@@ -207,7 +208,7 @@ export default function AgendaPage() {
             >
               <div className="aspect-video relative overflow-hidden">
                 <Image
-                  src={agenda.imageUrl || "/placeholder.svg"}
+                  src={resolveImageUrl(agenda.imageUrl)}
                   alt={agenda.title}
                   fill
                   className="object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"

@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Calendar, User, Eye, Share2, Facebook, Twitter, Linkedin, School, Menu } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
 import { useState, useEffect } from "react"
+import Image from "next/image"
+import { resolveImageUrl } from "@/lib/utils"
 
 interface News {
   id: string
@@ -57,6 +58,7 @@ Kepala Dinas Pendidikan menambahkan bahwa pembangunan sekolah ini merupakan bagi
     date: "2025-01-10",
     views: 1250,
     image: "/placeholder.svg?height=400&width=800&text=Pembangunan+Sekolah+Baru",
+    gambarUtama: "/placeholder.svg?height=400&width=800&text=Pembangunan+Sekolah+Baru",
     tags: ["pembangunan", "sekolah baru", "banjarmasin timur", "infrastruktur", "green building"],
   },
   "program-digitalisasi-pembelajaran": {
@@ -87,6 +89,7 @@ Platform ini juga dilengkapi dengan sistem keamanan berlapis untuk melindungi da
     date: "2025-01-08",
     views: 980,
     image: "/placeholder.svg?height=400&width=800&text=Digitalisasi+Pembelajaran",
+    gambarUtama: "/placeholder.svg?height=400&width=800&text=Digitalisasi+Pembelajaran",
     tags: ["digitalisasi", "teknologi", "simdik learning", "pembelajaran online", "transformasi digital"],
   },
   "pelatihan-guru-berkelanjutan-2024": {
@@ -117,6 +120,7 @@ Evaluasi program akan dilakukan secara berkala untuk memastikan efektivitas pela
     date: "2025-01-05",
     views: 750,
     image: "/placeholder.svg?height=400&width=800&text=Pelatihan+Guru",
+    gambarUtama: "/placeholder.svg?height=400&width=800&text=Pelatihan+Guru",
     tags: ["pelatihan", "guru", "kompetensi", "kurikulum merdeka", "teknologi pembelajaran"],
   },
 }
@@ -131,6 +135,7 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
   const [news, setNews] = useState<News | null>(null)
   const [loading, setLoading] = useState(true)
   const [relatedNews, setRelatedNews] = useState<News[]>([])
+  const [featuredImageSize, setFeaturedImageSize] = useState<{ width: number; height: number } | null>(null)
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -288,17 +293,28 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
           </div>
 
           {/* Featured Image */}
-          {news.gambarUtama && (
-            <div className="aspect-video relative mb-8 rounded-lg overflow-hidden">
-              <Image
-                src={news.gambarUtama}
-                alt={news.judul}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          )}
+          <div className="w-full mb-8 rounded-lg overflow-hidden bg-muted">
+            <Image
+              src={resolveImageUrl(news.gambarUtama)}
+              alt={news.judul}
+              width={featuredImageSize?.width ?? 1200}
+              height={featuredImageSize?.height ?? 675}
+              className="w-full h-auto object-contain bg-background"
+              priority
+              sizes="(min-width: 1024px) 768px, 100vw"
+              onLoadingComplete={(img) => {
+                const naturalWidth = img.naturalWidth || img.width
+                const naturalHeight = img.naturalHeight || img.height
+                if (
+                  naturalWidth > 0 &&
+                  naturalHeight > 0 &&
+                  (featuredImageSize?.width !== naturalWidth || featuredImageSize?.height !== naturalHeight)
+                ) {
+                  setFeaturedImageSize({ width: naturalWidth, height: naturalHeight })
+                }
+              }}
+            />
+          </div>
 
           {/* Article Content */}
           <Card className="mb-8">
@@ -338,7 +354,7 @@ export default function NewsDetailPage({ params }: NewsDetailPageProps) {
                       <div className="flex items-start space-x-4 p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                         <div className="w-20 h-20 bg-muted rounded-lg flex-shrink-0 relative overflow-hidden">
                           <Image
-                            src={item.gambarUtama || "/placeholder.svg"}
+                            src={resolveImageUrl(item.gambarUtama)}
                             alt={item.judul}
                             fill
                             className="object-cover"

@@ -5,11 +5,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Calendar, User, Eye, School, Menu, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import Image from "next/image"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
 import { useState, useEffect } from "react"
+import Image from "next/image"
+import { resolveImageUrl } from "@/lib/utils"
 
 interface News {
   id: string
@@ -168,7 +169,7 @@ export default function BeritaPage() {
             >
               <div className="relative overflow-hidden h-44 sm:h-48">
                 <Image
-                  src={news.gambarUtama || "/placeholder.svg"}
+                  src={resolveImageUrl(news.gambarUtama)}
                   alt={news.judul}
                   fill
                   className="object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
