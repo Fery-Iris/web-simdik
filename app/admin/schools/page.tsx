@@ -470,56 +470,56 @@ export default function AdminSchoolsPage() {
 
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Total Sekolah</p>
                       <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
                     </div>
-                    <div className="bg-blue-100 p-3 rounded-lg">
+                    <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-blue-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">PAUD</p>
                       <p className="text-3xl font-bold text-purple-600">{stats.paud}</p>
                     </div>
-                    <div className="bg-purple-100 p-3 rounded-lg">
+                    <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-purple-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">SD</p>
                       <p className="text-3xl font-bold text-green-600">{stats.sd}</p>
                     </div>
-                    <div className="bg-green-100 p-3 rounded-lg">
+                    <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-green-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">SMP</p>
                       <p className="text-3xl font-bold text-orange-600">{stats.smp}</p>
                     </div>
-                    <div className="bg-orange-100 p-3 rounded-lg">
+                    <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-orange-600" />
                     </div>
                   </div>
@@ -528,11 +528,11 @@ export default function AdminSchoolsPage() {
             </div>
 
             {/* Filters and Actions */}
-            <Card>
+            <Card className="admin-content-card">
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <CardTitle>Daftar Sekolah</CardTitle>
-                  <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
+                  <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700 admin-button-hover">
                     <Plus className="w-4 h-4 mr-2" />
                     Tambah Sekolah
                   </Button>
@@ -606,8 +606,8 @@ export default function AdminSchoolsPage() {
                         </tr>
                       </thead>
                       <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                        {filteredSekolah.map((sekolah) => (
-                          <tr key={sekolah.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
+                        {filteredSekolah.map((sekolah, index) => (
+                          <tr key={sekolah.id} className="admin-table-row">
                             <td className="px-4 py-4">
                               <div className="flex items-center">
                                 <div>
@@ -636,7 +636,7 @@ export default function AdminSchoolsPage() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleViewDetails(sekolah)}
-                                  className="text-blue-600 hover:text-blue-700 bg-transparent"
+                                  className="text-blue-600 hover:text-blue-700 bg-transparent admin-button-hover"
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
@@ -644,7 +644,7 @@ export default function AdminSchoolsPage() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleEdit(sekolah)}
-                                  className="text-green-600 hover:text-green-700 bg-transparent"
+                                  className="text-green-600 hover:text-green-700 bg-transparent admin-button-hover"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </Button>
@@ -652,7 +652,7 @@ export default function AdminSchoolsPage() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleDelete(sekolah)}
-                                  className="text-red-600 hover:text-red-700 bg-transparent"
+                                  className="text-red-600 hover:text-red-700 bg-transparent admin-button-hover"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>

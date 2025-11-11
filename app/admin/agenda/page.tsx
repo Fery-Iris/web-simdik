@@ -551,21 +551,21 @@ export default function AgendaPage() {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="admin-stats-card admin-card-interactive">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Total Agenda</p>
                   <p className="text-3xl font-bold text-blue-600">{agendas.length}</p>
                 </div>
-                <div className="bg-blue-100 p-3 rounded-lg">
+                <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
                   <Calendar className="w-6 h-6 text-blue-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="admin-stats-card admin-card-interactive">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -574,14 +574,14 @@ export default function AgendaPage() {
                     {agendas.filter(a => a.status === 'SCHEDULED').length}
                   </p>
                 </div>
-                <div className="bg-orange-100 p-3 rounded-lg">
+                <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
                   <Clock className="w-6 h-6 text-orange-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="admin-stats-card admin-card-interactive">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -590,14 +590,14 @@ export default function AgendaPage() {
                     {agendas.filter(a => a.status === 'ONGOING').length}
                   </p>
                 </div>
-                <div className="bg-green-100 p-3 rounded-lg">
+                <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
                   <AlertCircle className="w-6 h-6 text-green-600" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="admin-stats-card admin-card-interactive">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -606,7 +606,7 @@ export default function AgendaPage() {
                     {agendas.filter(a => a.status === 'COMPLETED').length}
                   </p>
                 </div>
-                <div className="bg-gray-100 p-3 rounded-lg">
+                <div className="bg-gray-100 p-3 rounded-lg admin-icon-hover">
                   <CheckCircle className="w-6 h-6 text-gray-600" />
                 </div>
               </div>
@@ -615,14 +615,14 @@ export default function AgendaPage() {
         </div>
 
         {/* Filters and Table */}
-        <Card>
+        <Card className="admin-content-card">
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <CardTitle>Daftar Agenda</CardTitle>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
                   <Button 
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 admin-button-hover"
                     onClick={resetForm}
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -702,8 +702,8 @@ export default function AgendaPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                    {filteredAgendas.map((agenda) => (
-                      <tr key={agenda.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
+                    {filteredAgendas.map((agenda, index) => (
+                      <tr key={agenda.id} className="admin-table-row">
                         <td className="px-4 py-4">
                           <div className="flex items-center">
                             <div>
@@ -732,7 +732,7 @@ export default function AgendaPage() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleView(agenda.id)}
-                              className="text-blue-600 hover:text-blue-700 bg-transparent"
+                              className="text-blue-600 hover:text-blue-700 bg-transparent admin-button-hover"
                             >
                               <Eye className="w-4 h-4" />
                             </Button>
@@ -740,7 +740,7 @@ export default function AgendaPage() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleEdit(agenda)}
-                              className="text-green-600 hover:text-green-700 bg-transparent"
+                              className="text-green-600 hover:text-green-700 bg-transparent admin-button-hover"
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -748,7 +748,7 @@ export default function AgendaPage() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleDelete(agenda.id)}
-                              className="text-red-600 hover:text-red-700 bg-transparent"
+                              className="text-red-600 hover:text-red-700 bg-transparent admin-button-hover"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>

@@ -16,8 +16,6 @@ import {
   Menu,
   X,
   Eye,
-  Download,
-  Filter,
   AlertCircle,
   CheckCircle,
   Clock,
@@ -460,77 +458,65 @@ export default function AdminReservationsPage() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 space-y-4 lg:space-y-0">
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Laporan Reservasi</h1>
-              <p className="text-muted-foreground mt-2">
-                Kelola dan tindak lanjuti reservasi layanan dari masyarakat
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Download className="w-4 h-4 mr-2" />
-                Export Data
-              </Button>
-              <Button variant="outline" className="border-blue-200 hover:border-blue-400 bg-transparent">
-                <Filter className="w-4 h-4 mr-2" />
-                Filter
-              </Button>
-            </div>
+          <div className="mb-6">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Laporan Reservasi</h1>
+            <p className="text-muted-foreground mt-2">
+              Kelola dan tindak lanjuti reservasi layanan dari masyarakat
+            </p>
           </div>
 
           {/* Reservation Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Total Reservasi</p>
                     <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
                   </div>
-                  <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg">
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg admin-icon-hover">
                     <Calendar className="w-6 h-6 text-blue-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Selesai</p>
                     <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
                   </div>
-                  <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                  <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg admin-icon-hover">
                     <CheckCircle className="w-6 h-6 text-green-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Menunggu</p>
                     <p className="text-3xl font-bold text-orange-600">{stats.waiting}</p>
                   </div>
-                  <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg">
+                  <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-lg admin-icon-hover">
                     <Clock className="w-6 h-6 text-orange-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card border-border admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Dibatalkan</p>
                     <p className="text-3xl font-bold text-red-600">{stats.cancelled}</p>
                   </div>
-                  <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg">
+                  <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg admin-icon-hover">
                     <XCircle className="w-6 h-6 text-red-600" />
                   </div>
                 </div>
@@ -573,7 +559,7 @@ export default function AdminReservationsPage() {
           </div>
 
           {/* Reservations Table */}
-          <Card className="shadow-lg border-0">
+          <Card className="shadow-lg border-0 admin-content-card">
             <CardHeader className="bg-muted">
               <CardTitle className="text-foreground">Daftar Reservasi</CardTitle>
             </CardHeader>
@@ -611,8 +597,8 @@ export default function AdminReservationsPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                      {filteredReservations.map((reservation) => (
-                        <tr key={reservation.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
+                      {filteredReservations.map((reservation, index) => (
+                        <tr key={reservation.id} className="admin-table-row">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400">
                             {reservation.queueNumber}
                           </td>
@@ -653,7 +639,7 @@ export default function AdminReservationsPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-blue-600 hover:text-blue-700 bg-transparent"
+                                className="text-blue-600 hover:text-blue-700 bg-transparent admin-button-hover"
                                 onClick={() => handleViewDetails(reservation)}
                               >
                                 <Eye className="w-4 h-4" />
@@ -661,7 +647,7 @@ export default function AdminReservationsPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-green-600 hover:text-green-700 bg-transparent"
+                                className="text-green-600 hover:text-green-700 bg-transparent admin-button-hover"
                                 onClick={() => handleEditReservation(reservation)}
                               >
                                 <Edit className="w-4 h-4" />
@@ -669,7 +655,7 @@ export default function AdminReservationsPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="text-red-600 hover:text-red-700 bg-transparent"
+                                className="text-red-600 hover:text-red-700 bg-transparent admin-button-hover"
                                 onClick={() => handleDeleteReservation(reservation)}
                               >
                                 <Trash2 className="w-4 h-4" />

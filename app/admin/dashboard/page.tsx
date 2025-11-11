@@ -291,11 +291,11 @@ export default function AdminDashboard() {
               <p className="text-muted-foreground mt-2">Ringkasan data dan statistik sistem pendidikan</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
-              <Button className="hover:scale-105 transition-all duration-200">
+              <Button className="admin-button-hover">
                 <Download className="w-4 h-4 mr-2" />
                 Export Laporan
               </Button>
-              <Button variant="outline" className="hover:scale-105 transition-all duration-200 bg-transparent">
+              <Button variant="outline" className="admin-button-hover bg-transparent">
                 <Upload className="w-4 h-4 mr-2" />
                 Import Data
               </Button>
@@ -331,7 +331,7 @@ export default function AdminDashboard() {
                   bgColor = "bg-gray-100"
               }
               return (
-                <Card key={index} className="hover:shadow-lg hover:scale-105 transition-all duration-200">
+                <Card key={index} className="admin-stats-card admin-card-interactive">
                   <CardContent className="p-4 lg:p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -339,7 +339,7 @@ export default function AdminDashboard() {
                         <p className="text-2xl lg:text-3xl font-bold text-foreground">{stat.value}</p>
                       </div>
                       <div
-                        className={`w-10 h-10 lg:w-12 lg:h-12 ${bgColor} rounded-lg flex items-center justify-center`}
+                        className={`w-10 h-10 lg:w-12 lg:h-12 ${bgColor} rounded-lg flex items-center justify-center admin-icon-hover`}
                       >
                         <Icon className={`w-5 h-5 lg:w-6 lg:h-6 ${textColor}`} />
                       </div>
@@ -351,7 +351,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Reports Table */}
-          <Card className="bg-card text-foreground">
+          <Card className="bg-card text-foreground admin-content-card">
             <CardHeader>
               <CardTitle>Laporan Masuk Terbaru</CardTitle>
             </CardHeader>
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reportsData.slice(0, 5).map((report) => {
+                  {reportsData.slice(0, 5).map((report, index) => {
                     let statusColor = ""
                     switch (report.status) {
                       case "Baru":
@@ -386,7 +386,7 @@ export default function AdminDashboard() {
                         statusColor = "bg-gray-600 text-white"
                     }
                     return (
-                      <TableRow key={report.id}>
+                      <TableRow key={report.id} className="admin-table-row">
                         <TableCell className="font-medium">{report.id}</TableCell>
                         <TableCell>{report.reporter}</TableCell>
                         <TableCell>{report.category}</TableCell>
@@ -394,7 +394,7 @@ export default function AdminDashboard() {
                           <Badge className={statusColor}>{report.status}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="admin-button-hover">
                             Lihat Detail
                           </Button>
                         </TableCell>
