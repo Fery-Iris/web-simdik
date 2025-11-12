@@ -95,8 +95,8 @@
 }
 
 @theme inline {
-  /* Added Montserrat as the default sans font */
-  --font-sans: var(--font-montserrat);
+  /* Added Poppins as the default sans font */
+  --font-sans: var(--font-poppins);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

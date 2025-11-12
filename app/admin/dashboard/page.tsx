@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -24,13 +24,87 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+import { Bar } from 'react-chartjs-2'
+
+// Register ChartJS components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export default function AdminDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [selectedReport, setSelectedReport] = useState<any>(null)
+  const [showReportDetail, setShowReportDetail] = useState(false)
 
   const router = useRouter()
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('.notification-dropdown') && !target.closest('.notification-button')) {
+        setShowNotifications(false)
+      }
+      if (!target.closest('.user-menu-dropdown') && !target.closest('.user-menu-button')) {
+        setShowUserMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Data untuk Chart.js
+  const chartData = {
+    labels: ['Reservasi', 'Sekolah', 'Berita', 'Agenda'],
+    datasets: [
+      {
+        label: 'Total Data',
+        data: [0, 0, 0, 0], // Data akan diisi dari API
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(153, 102, 255, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  }
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false, // Sembunyikan legenda
+      },
+      title: {
+        display: true,
+        text: 'Total Data Sistem',
+        font: {
+          size: 16,
+          weight: 'bold' as const,
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 5,
+        },
+      },
+    },
+  }
 
   const handleLogout = async () => {
     try {
@@ -53,6 +127,37 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleExportReport = () => {
+    // Simulasi export laporan
+    alert('Fitur Export Laporan akan segera tersedia!\n\nLaporan akan diexport dalam format PDF/Excel.')
+    // TODO: Implementasi export ke PDF/Excel
+  }
+
+  const handleImportData = () => {
+    // Simulasi import data
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls,.csv'
+    input.onchange = (e: any) => {
+      const file = e.target.files[0]
+      if (file) {
+        alert(`File "${file.name}" siap diupload!\n\nFitur import data akan segera diimplementasikan.`)
+        // TODO: Implementasi upload dan parsing file
+      }
+    }
+    input.click()
+  }
+
+  const handleViewReportDetail = (report: any) => {
+    setSelectedReport(report)
+    setShowReportDetail(true)
+  }
+
+  const handleCloseReportDetail = () => {
+    setShowReportDetail(false)
+    setSelectedReport(null)
+  }
+
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/admin/dashboard", active: true },
     { icon: School, label: "Manajemen Sekolah", href: "/admin/schools", active: false },
@@ -65,106 +170,35 @@ export default function AdminDashboard() {
   const statsData = [
     {
       title: "Total Sekolah",
-      value: "156",
+      value: "0",
       icon: School,
       color: "blue",
       bgColor: "bg-blue-100",
     },
     {
-      title: "Sekolah Aktif",
-      value: "142",
-      icon: CheckCircle,
+      title: "Total Berita",
+      value: "0",
+      icon: Newspaper,
       color: "green",
       bgColor: "bg-green-100",
     },
     {
-      title: "Akreditasi A",
-      value: "89",
-      icon: FileText,
+      title: "Total Agenda",
+      value: "0",
+      icon: Calendar,
       color: "yellow",
       bgColor: "bg-yellow-100",
     },
     {
-      title: "Perlu Review",
-      value: "12",
-      icon: AlertCircle,
+      title: "Total Reservasi",
+      value: "0",
+      icon: FileText,
       color: "red",
       bgColor: "bg-red-100",
     },
   ]
 
-  const reportsData = [
-    {
-      id: "RPT-001",
-      title: "Kerusakan Atap Ruang Kelas",
-      reporter: "Ahmad Fauzi",
-      school: "SDN Sungai Miai 5",
-      category: "Fasilitas",
-      priority: "Tinggi",
-      description: "Atap ruang kelas 3A bocor saat hujan, mengganggu proses pembelajaran",
-      reportDate: "2024-01-15",
-      status: "Baru",
-      statusColor: "bg-blue-100 text-blue-800",
-      contact: "081234567890",
-      evidence: "foto_atap_bocor.jpg",
-    },
-    {
-      id: "RPT-002",
-      title: "Kekurangan Buku Pelajaran",
-      reporter: "Siti Nurhaliza",
-      school: "SMPN 1 Banjarmasin",
-      category: "Kurikulum",
-      priority: "Sedang",
-      description: "Kekurangan buku pelajaran Matematika untuk kelas 8, hanya tersedia 20 dari 35 yang dibutuhkan",
-      reportDate: "2024-01-12",
-      status: "Diproses",
-      statusColor: "bg-yellow-100 text-yellow-800",
-      contact: "081345678901",
-      evidence: "daftar_buku.pdf",
-    },
-    {
-      id: "RPT-003",
-      title: "Guru Honorer Belum Menerima Gaji",
-      reporter: "Budi Santoso",
-      school: "SMAN 3 Banjarmasin",
-      category: "Tenaga Pengajar",
-      priority: "Tinggi",
-      description: "3 guru honorer belum menerima gaji bulan Desember 2023",
-      reportDate: "2024-01-10",
-      status: "Selesai",
-      statusColor: "bg-green-100 text-green-800",
-      contact: "081456789012",
-      evidence: "slip_gaji.pdf",
-    },
-    {
-      id: "RPT-004",
-      title: "Masalah Sistem Absensi Online",
-      reporter: "Maya Sari",
-      school: "SDN Kelayan Tengah 2",
-      category: "Administrasi",
-      priority: "Sedang",
-      description: "Sistem absensi online sering error dan tidak dapat menyimpan data kehadiran siswa",
-      reportDate: "2024-01-08",
-      status: "Baru",
-      statusColor: "bg-blue-100 text-blue-800",
-      contact: "081567890123",
-      evidence: "screenshot_error.png",
-    },
-    {
-      id: "RPT-005",
-      title: "Toilet Siswa Rusak",
-      reporter: "Rizki Pratama",
-      school: "SDN Sungai Miai 5",
-      category: "Fasilitas",
-      priority: "Tinggi",
-      description: "2 dari 4 toilet siswa rusak dan tidak dapat digunakan",
-      reportDate: "2024-01-05",
-      status: "Ditolak",
-      statusColor: "bg-red-100 text-red-800",
-      contact: "081678901234",
-      evidence: "foto_toilet.jpg",
-    },
-  ]
+  const reportsData: any[] = []
 
   return (
     <div className="flex h-screen bg-background">
@@ -175,7 +209,7 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <div
         className={`bg-sidebar text-sidebar-foreground transition-all duration-300 ${
-          sidebarCollapsed ? "w-16" : "w-64"
+          sidebarCollapsed ? "w-20" : "w-64"
         } flex flex-col fixed lg:relative z-50 h-full ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
@@ -193,9 +227,9 @@ export default function AdminDashboard() {
 
         {/* Logo */}
         <div className="p-4 border-b border-sidebar-border">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <School className="w-5 h-5 text-white" />
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <School className="w-6 h-6 text-white" />
             </div>
             {!sidebarCollapsed && <span className="text-xl font-bold">SIMDIK Admin</span>}
           </div>
@@ -213,13 +247,14 @@ export default function AdminDashboard() {
                       router.push(item.href)
                       setMobileMenuOpen(false)
                     }}
-                    className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                    className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-3'} p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
                       item.active
                         ? "bg-blue-600 text-white shadow-lg"
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md"
                     }`}
+                    title={sidebarCollapsed ? item.label : undefined}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-6 h-6 flex-shrink-0" />
                     {!sidebarCollapsed && <span>{item.label}</span>}
                   </button>
                 </li>
@@ -234,9 +269,10 @@ export default function AdminDashboard() {
             variant="ghost"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200"
+            className={`w-full ${sidebarCollapsed ? 'justify-center px-0' : 'justify-start'} text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200`}
+            title={sidebarCollapsed ? 'Logout' : undefined}
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-6 h-6 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
           </Button>
         </div>
@@ -267,16 +303,100 @@ export default function AdminDashboard() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-2 lg:space-x-4">
-              <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
-                <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
-              </Button>
-              <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
-                <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-xs lg:text-sm font-medium text-white">A</span>
-                </div>
-                <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 ml-1 lg:ml-2" />
-              </Button>
+            <div className="flex items-center space-x-2 lg:space-x-4 relative">
+              {/* Notification Button */}
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="hover:bg-accent hover:scale-105 transition-all duration-200 relative notification-button"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                >
+                  <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </Button>
+                
+                {/* Notification Dropdown */}
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg z-50 notification-dropdown">
+                    <div className="p-4 border-b border-border">
+                      <h3 className="font-semibold">Notifikasi</h3>
+                    </div>
+                    <div className="max-h-96 overflow-y-auto">
+                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
+                        <p className="text-sm font-medium">Laporan Baru Masuk</p>
+                        <p className="text-xs text-muted-foreground mt-1">Ahmad Fauzi melaporkan kerusakan atap</p>
+                        <p className="text-xs text-muted-foreground mt-1">5 menit yang lalu</p>
+                      </div>
+                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
+                        <p className="text-sm font-medium">Data Sekolah Diupdate</p>
+                        <p className="text-xs text-muted-foreground mt-1">SDN Sungai Miai 5 memperbarui data</p>
+                        <p className="text-xs text-muted-foreground mt-1">1 jam yang lalu</p>
+                      </div>
+                      <div className="p-4 hover:bg-accent cursor-pointer">
+                        <p className="text-sm font-medium">Sistem Maintenance</p>
+                        <p className="text-xs text-muted-foreground mt-1">Maintenance terjadwal besok pukul 02:00</p>
+                        <p className="text-xs text-muted-foreground mt-1">3 jam yang lalu</p>
+                      </div>
+                    </div>
+                    <div className="p-3 border-t border-border text-center">
+                      <button className="text-sm text-blue-600 hover:underline">Lihat Semua Notifikasi</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* User Menu Button */}
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="hover:bg-accent hover:scale-105 transition-all duration-200 user-menu-button"
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                >
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-xs lg:text-sm font-medium text-white">A</span>
+                  </div>
+                  <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 ml-1 lg:ml-2" />
+                </Button>
+
+                {/* User Dropdown Menu */}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-50 user-menu-dropdown">
+                    <div className="p-4 border-b border-border">
+                      <p className="font-semibold">Admin User</p>
+                      <p className="text-xs text-muted-foreground">admin@simdik.com</p>
+                    </div>
+                    <div className="p-2">
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                        onClick={() => alert('Fitur Profile akan segera tersedia')}
+                      >
+                        Profile Saya
+                      </button>
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                        onClick={() => alert('Fitur Pengaturan akan segera tersedia')}
+                      >
+                        Pengaturan
+                      </button>
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                        onClick={() => alert('Fitur Bantuan akan segera tersedia')}
+                      >
+                        Bantuan
+                      </button>
+                      <div className="border-t border-border my-2"></div>
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm text-red-600"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -289,11 +409,18 @@ export default function AdminDashboard() {
               <p className="text-muted-foreground mt-2">Ringkasan data dan statistik sistem pendidikan</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
-              <Button className="hover:scale-105 transition-all duration-200">
+              <Button 
+                className="hover:scale-105 transition-all duration-200"
+                onClick={handleExportReport}
+              >
                 <Download className="w-4 h-4 mr-2" />
                 Export Laporan
               </Button>
-              <Button variant="outline" className="hover:scale-105 transition-all duration-200 bg-transparent">
+              <Button 
+                variant="outline" 
+                className="hover:scale-105 transition-all duration-200 bg-transparent"
+                onClick={handleImportData}
+              >
                 <Upload className="w-4 h-4 mr-2" />
                 Import Data
               </Button>
@@ -348,6 +475,18 @@ export default function AdminDashboard() {
             })}
           </div>
 
+          {/* Chart.js Bar Chart */}
+          <Card className="mb-8 bg-card text-foreground">
+            <CardHeader>
+              <CardTitle>Statistik Total Data Sistem</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="w-full h-[400px] flex items-center justify-center">
+                <Bar data={chartData} options={chartOptions} />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Reports Table */}
           <Card className="bg-card text-foreground">
             <CardHeader>
@@ -365,46 +504,160 @@ export default function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reportsData.slice(0, 5).map((report) => {
-                    let statusColor = ""
-                    switch (report.status) {
-                      case "Baru":
-                        statusColor = "bg-blue-600 text-white"
-                        break
-                      case "Diproses":
-                        statusColor = "bg-yellow-600 text-white"
-                        break
-                      case "Selesai":
-                        statusColor = "bg-green-600 text-white"
-                        break
-                      case "Ditolak":
-                        statusColor = "bg-red-600 text-white"
-                        break
-                      default:
-                        statusColor = "bg-gray-600 text-white"
-                    }
-                    return (
-                      <TableRow key={report.id}>
-                        <TableCell className="font-medium">{report.id}</TableCell>
-                        <TableCell>{report.reporter}</TableCell>
-                        <TableCell>{report.category}</TableCell>
-                        <TableCell>
-                          <Badge className={statusColor}>{report.status}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="outline" size="sm">
-                            Lihat Detail
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
+                  {reportsData.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                        Belum ada laporan masuk
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    reportsData.slice(0, 5).map((report) => {
+                      let statusColor = ""
+                      switch (report.status) {
+                        case "Baru":
+                          statusColor = "bg-blue-600 text-white"
+                          break
+                        case "Diproses":
+                          statusColor = "bg-yellow-600 text-white"
+                          break
+                        case "Selesai":
+                          statusColor = "bg-green-600 text-white"
+                          break
+                        case "Ditolak":
+                          statusColor = "bg-red-600 text-white"
+                          break
+                        default:
+                          statusColor = "bg-gray-600 text-white"
+                      }
+                      return (
+                        <TableRow key={report.id}>
+                          <TableCell className="font-medium">{report.id}</TableCell>
+                          <TableCell>{report.reporter}</TableCell>
+                          <TableCell>{report.category}</TableCell>
+                          <TableCell>
+                            <Badge className={statusColor}>{report.status}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleViewReportDetail(report)}
+                            >
+                              Lihat Detail
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
         </main>
       </div>
+
+      {/* Modal Detail Laporan */}
+      {showReportDetail && selectedReport && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="p-6 border-b border-border flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Detail Laporan</h2>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={handleCloseReportDetail}
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">ID Laporan</p>
+                  <p className="text-lg font-semibold">{selectedReport.id}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Status</p>
+                  <Badge className={selectedReport.statusColor}>{selectedReport.status}</Badge>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Judul Laporan</p>
+                <p className="text-lg font-semibold">{selectedReport.title}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Pelapor</p>
+                  <p className="font-medium">{selectedReport.reporter}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Kontak</p>
+                  <p className="font-medium">{selectedReport.contact}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Sekolah</p>
+                  <p className="font-medium">{selectedReport.school}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Tanggal Laporan</p>
+                  <p className="font-medium">{selectedReport.reportDate}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Kategori</p>
+                  <p className="font-medium">{selectedReport.category}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Prioritas</p>
+                  <Badge variant={selectedReport.priority === 'Tinggi' ? 'destructive' : 'secondary'}>
+                    {selectedReport.priority}
+                  </Badge>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Deskripsi</p>
+                <p className="text-base mt-2 bg-accent/50 p-4 rounded-lg">{selectedReport.description}</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Bukti/Lampiran</p>
+                <div className="mt-2 p-3 bg-accent/50 rounded-lg flex items-center space-x-2">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  <span className="text-sm">{selectedReport.evidence}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-border flex justify-end space-x-2">
+              <Button 
+                variant="outline" 
+                onClick={handleCloseReportDetail}
+              >
+                Tutup
+              </Button>
+              <Button 
+                variant="default"
+                onClick={() => alert('Fitur update status akan segera tersedia')}
+              >
+                Update Status
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

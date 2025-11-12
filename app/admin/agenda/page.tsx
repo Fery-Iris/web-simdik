@@ -306,7 +306,7 @@ export default function AgendaPage() {
         {/* Sidebar */}
         <div
           className={`bg-sidebar text-sidebar-foreground transition-all duration-300 ${
-            sidebarCollapsed ? "w-16" : "w-64"
+            sidebarCollapsed ? "w-20" : "w-64"
           } flex flex-col fixed lg:relative z-50 h-full ${
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
           }`}
@@ -323,17 +323,17 @@ export default function AgendaPage() {
           </div>
 
           {/* Logo */}
-          <div className="px-4 py-4 border-b border-sidebar-border">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <School className="w-5 h-5 text-white" />
+          <div className="p-4 border-b border-sidebar-border">
+            <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <School className="w-6 h-6 text-white" />
               </div>
               {!sidebarCollapsed && <span className="text-xl font-bold">SIMDIK Admin</span>}
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4">
+          <nav className="flex-1 p-4 overflow-y-auto">
             <ul className="space-y-2">
               {navigationItems.map((item, index) => {
                 const Icon = item.icon
@@ -345,13 +345,16 @@ export default function AgendaPage() {
                         router.push(item.href)
                         setMobileMenuOpen(false)
                       }}
-                      className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                      className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                        sidebarCollapsed ? 'justify-center' : 'space-x-3'
+                      } ${
                         item.active
                           ? "bg-blue-600 text-white shadow-lg"
                           : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md"
                       }`}
+                      title={sidebarCollapsed ? item.label : undefined}
                     >
-                      <Icon className="w-5 h-5" />
+                      <Icon className="w-6 h-6 flex-shrink-0" />
                       {!sidebarCollapsed && <span>{item.label}</span>}
                     </button>
                   </li>
@@ -366,9 +369,12 @@ export default function AgendaPage() {
               variant="ghost"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200"
+              className={`w-full text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200 ${
+                sidebarCollapsed ? 'justify-center px-0' : 'justify-start'
+              }`}
+              title={sidebarCollapsed ? (isLoggingOut ? 'Logging out...' : 'Logout') : undefined}
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-6 h-6 flex-shrink-0" />
               {!sidebarCollapsed && <span className="ml-3">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
             </Button>
           </div>
@@ -434,7 +440,7 @@ export default function AgendaPage() {
       {/* Sidebar */}
       <div
         className={`bg-sidebar text-sidebar-foreground transition-all duration-300 ${
-          sidebarCollapsed ? "w-16" : "w-64"
+          sidebarCollapsed ? "w-20" : "w-64"
         } flex flex-col fixed lg:relative z-50 h-full ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
@@ -451,17 +457,17 @@ export default function AgendaPage() {
         </div>
 
         {/* Logo */}
-        <div className="px-4 py-4 border-b border-sidebar-border">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <School className="w-5 h-5 text-white" />
+        <div className="p-4 border-b border-sidebar-border">
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <School className="w-6 h-6 text-white" />
             </div>
             {!sidebarCollapsed && <span className="text-xl font-bold">SIMDIK Admin</span>}
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-2">
             {navigationItems.map((item, index) => {
               const Icon = item.icon
@@ -473,13 +479,16 @@ export default function AgendaPage() {
                       router.push(item.href)
                       setMobileMenuOpen(false)
                     }}
-                    className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                    className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                      sidebarCollapsed ? 'justify-center' : 'space-x-3'
+                    } ${
                       item.active
                         ? "bg-blue-600 text-white shadow-lg"
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md"
                     }`}
+                    title={sidebarCollapsed ? item.label : undefined}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-6 h-6 flex-shrink-0" />
                     {!sidebarCollapsed && <span>{item.label}</span>}
                   </button>
                 </li>
@@ -494,9 +503,12 @@ export default function AgendaPage() {
             variant="ghost"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200"
+            className={`w-full text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200 ${
+              sidebarCollapsed ? 'justify-center px-0' : 'justify-start'
+            }`}
+            title={sidebarCollapsed ? (isLoggingOut ? 'Logging out...' : 'Logout') : undefined}
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-6 h-6 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
           </Button>
         </div>

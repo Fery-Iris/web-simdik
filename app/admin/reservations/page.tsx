@@ -76,8 +76,27 @@ export default function AdminReservationsPage() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [serviceFilter, setServiceFilter] = useState("all")
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
   const router = useRouter()
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('.notification-dropdown') && !target.closest('.notification-button')) {
+        setShowNotifications(false)
+      }
+      if (!target.closest('.user-menu-dropdown') && !target.closest('.user-menu-button')) {
+        setShowUserMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -96,6 +115,53 @@ export default function AdminReservationsPage() {
       alert('Terjadi kesalahan saat logout.')
     } finally {
       setIsLoggingOut(false)
+    }
+  }
+
+  const handleExportData = async () => {
+    try {
+      setIsExporting(true)
+      
+      // Prepare data for export
+      const exportData = filteredReservations.map(reservation => ({
+        'Nomor Antrian': reservation.queueNumber,
+        'Nama': reservation.name,
+        'Telepon': reservation.phone,
+        'NIK': reservation.nik || '-',
+        'Layanan': reservation.layanan?.name || reservation.service,
+        'Keperluan': reservation.purpose,
+        'Tanggal': new Date(reservation.date).toLocaleDateString('id-ID'),
+        'Waktu': reservation.timeSlot,
+        'Status': reservation.status,
+        'Dibuat': new Date(reservation.createdAt).toLocaleString('id-ID'),
+      }))
+
+      // Convert to CSV
+      const headers = Object.keys(exportData[0] || {})
+      const csvContent = [
+        headers.join(','),
+        ...exportData.map(row => 
+          headers.map(header => `"${row[header as keyof typeof row] || ''}"`).join(',')
+        )
+      ].join('\n')
+
+      // Create and download file
+      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', `reservasi_${new Date().toISOString().split('T')[0]}.csv`)
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      alert(`Berhasil export ${exportData.length} data reservasi!`)
+    } catch (error) {
+      console.error('Export error:', error)
+      alert('Gagal export data. Silakan coba lagi.')
+    } finally {
+      setIsExporting(false)
     }
   }
 
@@ -350,7 +416,7 @@ export default function AdminReservationsPage() {
       {/* Sidebar */}
       <div
         className={`bg-sidebar text-sidebar-foreground transition-all duration-300 ${
-          sidebarCollapsed ? "w-16" : "w-64"
+          sidebarCollapsed ? "w-20" : "w-64"
         } flex flex-col fixed lg:relative z-50 h-full ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
@@ -367,17 +433,17 @@ export default function AdminReservationsPage() {
         </div>
 
         {/* Logo */}
-        <div className="px-4 py-4 border-b border-sidebar-border">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <School className="w-5 h-5 text-white" />
+        <div className="p-4 border-b border-sidebar-border">
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <School className="w-6 h-6 text-white" />
             </div>
             {!sidebarCollapsed && <span className="text-xl font-bold">SIMDIK Admin</span>}
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-2">
             {navigationItems.map((item, index) => {
               const Icon = item.icon
@@ -388,13 +454,16 @@ export default function AdminReservationsPage() {
                       router.push(item.href)
                       setMobileMenuOpen(false)
                     }}
-                    className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                    className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 hover:scale-105 ${
+                      sidebarCollapsed ? 'justify-center' : 'space-x-3'
+                    } ${
                       item.active
                         ? "bg-blue-600 text-white shadow-lg"
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-md"
                     }`}
+                    title={sidebarCollapsed ? item.label : undefined}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-6 h-6 flex-shrink-0" />
                     {!sidebarCollapsed && <span>{item.label}</span>}
                   </button>
                 </li>
@@ -409,9 +478,12 @@ export default function AdminReservationsPage() {
             variant="ghost"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full justify-start text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200"
+            className={`w-full text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-105 transition-all duration-200 ${
+              sidebarCollapsed ? 'justify-center px-0' : 'justify-start'
+            }`}
+            title={sidebarCollapsed ? (isLoggingOut ? 'Logging out...' : 'Logout') : undefined}
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-6 h-6 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
           </Button>
         </div>
@@ -442,16 +514,116 @@ export default function AdminReservationsPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-2 lg:space-x-4">
-              <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
-                <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
-              </Button>
-              <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
-                <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-xs lg:text-sm font-medium text-white">A</span>
-                </div>
-                <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 ml-1 lg:ml-2" />
-              </Button>
+            <div className="flex items-center space-x-2 lg:space-x-4 relative">
+              {/* Notification Button */}
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="hover:bg-accent hover:scale-105 transition-all duration-200 relative notification-button"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                >
+                  <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </Button>
+                
+                {/* Notification Dropdown */}
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg z-50 notification-dropdown">
+                    <div className="p-4 border-b border-border">
+                      <h3 className="font-semibold">Notifikasi</h3>
+                    </div>
+                    <div className="max-h-96 overflow-y-auto">
+                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
+                        <p className="text-sm font-medium">Reservasi Baru</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {stats.waiting} reservasi menunggu konfirmasi
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">Baru saja</p>
+                      </div>
+                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
+                        <p className="text-sm font-medium">Reservasi Selesai</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {stats.completed} reservasi telah selesai hari ini
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">1 jam yang lalu</p>
+                      </div>
+                      <div className="p-4 hover:bg-accent cursor-pointer">
+                        <p className="text-sm font-medium">Reservasi Dibatalkan</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {stats.cancelled} reservasi dibatalkan
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">2 jam yang lalu</p>
+                      </div>
+                    </div>
+                    <div className="p-3 border-t border-border text-center">
+                      <button className="text-sm text-blue-600 hover:underline">Lihat Semua Notifikasi</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* User Menu Button */}
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="hover:bg-accent hover:scale-105 transition-all duration-200 user-menu-button"
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                >
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-xs lg:text-sm font-medium text-white">A</span>
+                  </div>
+                  <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 ml-1 lg:ml-2" />
+                </Button>
+
+                {/* User Dropdown Menu */}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-50 user-menu-dropdown">
+                    <div className="p-4 border-b border-border">
+                      <p className="font-semibold">Admin User</p>
+                      <p className="text-xs text-muted-foreground">admin@simdik.com</p>
+                    </div>
+                    <div className="p-2">
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                        onClick={() => {
+                          setShowUserMenu(false)
+                          alert('Fitur Profile akan segera tersedia')
+                        }}
+                      >
+                        Profile Saya
+                      </button>
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                        onClick={() => {
+                          setShowUserMenu(false)
+                          alert('Fitur Pengaturan akan segera tersedia')
+                        }}
+                      >
+                        Pengaturan
+                      </button>
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                        onClick={() => {
+                          setShowUserMenu(false)
+                          alert('Fitur Bantuan akan segera tersedia')
+                        }}
+                      >
+                        Bantuan
+                      </button>
+                      <div className="border-t border-border my-2"></div>
+                      <button 
+                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm text-red-600"
+                        onClick={handleLogout}
+                        disabled={isLoggingOut}
+                      >
+                        {isLoggingOut ? 'Logging out...' : 'Logout'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -466,9 +638,13 @@ export default function AdminReservationsPage() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={handleExportData}
+                disabled={isExporting || filteredReservations.length === 0}
+              >
                 <Download className="w-4 h-4 mr-2" />
-                Export Data
+                {isExporting ? 'Exporting...' : 'Export Data'}
               </Button>
               <Button variant="outline" className="border-blue-200 hover:border-blue-400 bg-transparent">
                 <Filter className="w-4 h-4 mr-2" />
