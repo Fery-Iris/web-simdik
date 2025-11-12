@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   School,
   FileText,
@@ -450,8 +451,15 @@ export default function AdminSchoolsPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4">
+              <ThemeToggle />
               <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
                 <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
+              </Button>
+              <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
+                <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-xs lg:text-sm font-medium text-white">A</span>
+                </div>
+                <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 ml-1 lg:ml-2" />
               </Button>
             </div>
           </div>
@@ -462,62 +470,62 @@ export default function AdminSchoolsPage() {
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Manajemen Sekolah</h1>
-              <p className="text-gray-600">Kelola data sekolah di Kota Banjarmasin</p>
+              <h1 className="text-3xl font-bold text-foreground">Manajemen Sekolah</h1>
+              <p className="text-muted-foreground">Kelola data sekolah di Kota Banjarmasin</p>
             </div>
 
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Total Sekolah</p>
                       <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
                     </div>
-                    <div className="bg-blue-100 p-3 rounded-lg">
+                    <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-blue-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">PAUD</p>
                       <p className="text-3xl font-bold text-purple-600">{stats.paud}</p>
                     </div>
-                    <div className="bg-purple-100 p-3 rounded-lg">
+                    <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-purple-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">SD</p>
                       <p className="text-3xl font-bold text-green-600">{stats.sd}</p>
                     </div>
-                    <div className="bg-green-100 p-3 rounded-lg">
+                    <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-green-600" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="admin-stats-card admin-card-interactive">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">SMP</p>
                       <p className="text-3xl font-bold text-orange-600">{stats.smp}</p>
                     </div>
-                    <div className="bg-orange-100 p-3 rounded-lg">
+                    <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
                       <School className="w-6 h-6 text-orange-600" />
                     </div>
                   </div>
@@ -526,11 +534,11 @@ export default function AdminSchoolsPage() {
             </div>
 
             {/* Filters and Actions */}
-            <Card>
+            <Card className="admin-content-card">
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <CardTitle>Daftar Sekolah</CardTitle>
-                  <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
+                  <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700 admin-button-hover">
                     <Plus className="w-4 h-4 mr-2" />
                     Tambah Sekolah
                   </Button>
@@ -581,76 +589,76 @@ export default function AdminSchoolsPage() {
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-50 dark:bg-gray-900/50"> 
                         <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Nama Sekolah
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Jenjang
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Kecamatan
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Akreditasi
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Status
                           </th>
-                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Aksi
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredSekolah.map((sekolah) => (
-                          <tr key={sekolah.id} className="hover:bg-gray-50">
+                      <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
+                        {filteredSekolah.map((sekolah, index) => (
+                          <tr key={sekolah.id} className="admin-table-row">
                             <td className="px-4 py-4">
                               <div className="flex items-center">
                                 <div>
-                                  <div className="text-sm font-medium text-gray-900">{sekolah.nama}</div>
-                                  <div className="text-sm text-gray-500 line-clamp-1">{sekolah.alamat}</div>
+                                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{sekolah.nama}</div>
+                                  <div className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{sekolah.alamat}</div>
                                 </div>
                               </div>
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap">
                               <Badge variant="outline">{sekolah.jenjang}</Badge>
                             </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                               {sekolah.kecamatan}
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap">
-                              <Badge className="bg-yellow-100 text-yellow-800">
+                              <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
                                 {sekolah.akreditasi || "-"}
                               </Badge>
                             </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                               {sekolah.status}
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <div className="flex justify-end space-x-2">
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
+                                  size="sm"
+                                  variant="outline"
                                   onClick={() => handleViewDetails(sekolah)}
-                                  className="hover:bg-blue-50 hover:text-blue-600"
+                                  className="text-blue-600 hover:text-blue-700 bg-transparent admin-button-hover"
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
+                                  size="sm"
+                                  variant="outline"
                                   onClick={() => handleEdit(sekolah)}
-                                  className="hover:bg-green-50 hover:text-green-600"
+                                  className="text-green-600 hover:text-green-700 bg-transparent admin-button-hover"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </Button>
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
+                                  size="sm"
+                                  variant="outline"
                                   onClick={() => handleDelete(sekolah)}
-                                  className="hover:bg-red-50 hover:text-red-600"
+                                  className="text-red-600 hover:text-red-700 bg-transparent admin-button-hover"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>

@@ -17,11 +17,12 @@ import {
   Twitter,
   Linkedin,
 } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { SiteHeader } from "@/components/site-header"
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
+import Image from "next/image"
+import { resolveImageUrl } from "@/lib/utils"
 
 interface Agenda {
   id: string
@@ -47,6 +48,7 @@ export default function AgendaDetailPage() {
   const [agenda, setAgenda] = useState<Agenda | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [featuredImageSize, setFeaturedImageSize] = useState<{ width: number; height: number } | null>(null)
 
   useEffect(() => {
     const fetchAgenda = async () => {
@@ -189,11 +191,28 @@ export default function AgendaDetailPage() {
           </div>
 
           {/* Featured Image */}
-          {agenda.imageUrl && (
-            <div className="aspect-video relative mb-8 rounded-lg overflow-hidden">
-              <Image src={agenda.imageUrl} alt={agenda.title} fill className="object-cover" priority />
-            </div>
-          )}
+          <div className="w-full mb-8 rounded-lg overflow-hidden bg-muted">
+            <Image
+              src={resolveImageUrl(agenda.imageUrl)}
+              alt={agenda.title}
+              width={featuredImageSize?.width ?? 1200}
+              height={featuredImageSize?.height ?? 675}
+              className="w-full h-auto object-contain bg-background"
+              priority
+              sizes="(min-width: 1024px) 768px, 100vw"
+              onLoadingComplete={(img) => {
+                const naturalWidth = img.naturalWidth || img.width
+                const naturalHeight = img.naturalHeight || img.height
+                if (
+                  naturalWidth > 0 &&
+                  naturalHeight > 0 &&
+                  (featuredImageSize?.width !== naturalWidth || featuredImageSize?.height !== naturalHeight)
+                ) {
+                  setFeaturedImageSize({ width: naturalWidth, height: naturalHeight })
+                }
+              }}
+            />
+          </div>
 
           {/* Event Details */}
           <Card className="mb-8">

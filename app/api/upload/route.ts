@@ -2,6 +2,37 @@ import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import { createClient } from '@supabase/supabase-js'
+
+// Konfigurasi Supabase (opsional - fallback ke local storage jika tidak ada)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseBucket = process.env.NEXT_PUBLIC_SUPABASE_BUCKET || 'SIMDIK-Uploads'
+
+// DEBUG: Log environment variables (untuk troubleshooting)
+console.log('🔍 DEBUG Environment Variables:')
+console.log('  NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? '✅ Set' : '❌ NOT SET')
+console.log('  NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseKey ? '✅ Set' : '❌ NOT SET')
+console.log('  NEXT_PUBLIC_SUPABASE_BUCKET:', supabaseBucket)
+
+// Check apakah Supabase tersedia
+const useSupabase = !!(supabaseUrl && supabaseKey)
+
+let supabase: ReturnType<typeof createClient> | null = null
+if (useSupabase) {
+  try {
+    supabase = createClient(supabaseUrl!, supabaseKey!)
+    console.log('✅ Supabase Storage enabled')
+    console.log('   URL:', supabaseUrl)
+    console.log('   Bucket:', supabaseBucket)
+  } catch (error) {
+    console.error('❌ Failed to initialize Supabase client:', error)
+    console.log('⚠️  Falling back to local storage')
+  }
+} else {
+  console.log('⚠️  Supabase not configured, using local storage')
+  console.log('   Missing:', !supabaseUrl ? 'URL' : '', !supabaseKey ? 'ANON_KEY' : '')
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,9 +64,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
     // Deteksi folder berdasarkan referer atau default ke 'agendas'
     const referer = request.headers.get('referer') || ''
     let folder = 'agendas'
@@ -49,23 +77,56 @@ export async function POST(request: NextRequest) {
       prefix = 'berita'
     }
 
-    // Buat direktori uploads jika belum ada
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', folder)
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-
     // Generate nama file unik
     const timestamp = Date.now()
     const randomString = Math.random().toString(36).substring(2, 8)
     const fileExtension = file.name.split('.').pop()
     const fileName = `${prefix}-${timestamp}-${randomString}.${fileExtension}`
 
-    const filePath = join(uploadsDir, fileName)
-    await writeFile(filePath, buffer)
+    let fileUrl: string
 
-    // Return URL relatif untuk frontend
-    const fileUrl = `/uploads/${folder}/${fileName}`
+    // Upload ke Supabase Storage atau Local Storage
+    if (useSupabase && supabase) {
+      // ===== SUPABASE STORAGE (Production) =====
+      try {
+        const storagePath = `${folder}/${fileName}`
+        
+        // Convert File to ArrayBuffer
+        const arrayBuffer = await file.arrayBuffer()
+        const buffer = new Uint8Array(arrayBuffer)
+
+        // Upload ke Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from(supabaseBucket)
+          .upload(storagePath, buffer, {
+            contentType: file.type,
+            cacheControl: '3600',
+            upsert: false
+          })
+
+        if (uploadError) {
+          console.error('Supabase upload error:', uploadError)
+          throw new Error(`Gagal upload ke Supabase: ${uploadError.message}`)
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from(supabaseBucket)
+          .getPublicUrl(storagePath)
+
+        fileUrl = publicUrl
+        console.log(`✅ Uploaded to Supabase: ${fileUrl}`)
+
+      } catch (supabaseError) {
+        console.error('Supabase error, falling back to local storage:', supabaseError)
+        // Fallback ke local storage jika Supabase gagal
+        fileUrl = await uploadToLocal(folder, fileName, file)
+      }
+
+    } else {
+      // ===== LOCAL STORAGE (Development) =====
+      fileUrl = await uploadToLocal(folder, fileName, file)
+    }
 
     return NextResponse.json({
       success: true,
@@ -74,7 +135,8 @@ export async function POST(request: NextRequest) {
         fileName: fileName,
         originalName: file.name,
         size: file.size,
-        type: file.type
+        type: file.type,
+        storage: useSupabase ? 'supabase' : 'local'
       }
     })
 
@@ -85,4 +147,26 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+/**
+ * Upload file ke local storage (fallback untuk development)
+ */
+async function uploadToLocal(folder: string, fileName: string, file: File): Promise<string> {
+  const bytes = await file.arrayBuffer()
+  const buffer = Buffer.from(bytes)
+
+  // Buat direktori uploads jika belum ada
+  const uploadsDir = join(process.cwd(), 'public', 'uploads', folder)
+  if (!existsSync(uploadsDir)) {
+    await mkdir(uploadsDir, { recursive: true })
+  }
+
+  const filePath = join(uploadsDir, fileName)
+  await writeFile(filePath, buffer)
+
+  const fileUrl = `/uploads/${folder}/${fileName}`
+  console.log(`✅ Uploaded to local: ${fileUrl}`)
+  
+  return fileUrl
 }
