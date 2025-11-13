@@ -26,7 +26,6 @@ import {
   Menu,
   X,
   LogOut,
-  Bell,
   ChevronDown,
   Home,
   Newspaper,
@@ -406,9 +405,6 @@ export default function AgendaPage() {
               </div>
               <div className="flex items-center space-x-2 lg:space-x-4">
                 <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
-                  <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
-                </Button>
-                <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
                   <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
                     <span className="text-xs lg:text-sm font-medium text-white">A</span>
                   </div>
@@ -540,9 +536,6 @@ export default function AgendaPage() {
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4">
               <ThemeToggle />
-              <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
-                <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
-              </Button>
               <Button variant="ghost" size="sm" className="hover:bg-accent hover:scale-105 transition-all duration-200">
                 <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-xs lg:text-sm font-medium text-white">A</span>

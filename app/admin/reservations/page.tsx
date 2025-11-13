@@ -21,7 +21,6 @@ import {
   CheckCircle,
   Clock,
   LogOut,
-  Bell,
   ChevronDown,
   Home,
   Newspaper,
@@ -515,53 +514,6 @@ export default function AdminReservationsPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4 relative">
-              {/* Notification Button */}
-              <div className="relative">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="hover:bg-accent hover:scale-105 transition-all duration-200 relative notification-button"
-                  onClick={() => setShowNotifications(!showNotifications)}
-                >
-                  <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                </Button>
-                
-                {/* Notification Dropdown */}
-                {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg z-50 notification-dropdown">
-                    <div className="p-4 border-b border-border">
-                      <h3 className="font-semibold">Notifikasi</h3>
-                    </div>
-                    <div className="max-h-96 overflow-y-auto">
-                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
-                        <p className="text-sm font-medium">Reservasi Baru</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {stats.waiting} reservasi menunggu konfirmasi
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">Baru saja</p>
-                      </div>
-                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
-                        <p className="text-sm font-medium">Reservasi Selesai</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {stats.completed} reservasi telah selesai hari ini
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">1 jam yang lalu</p>
-                      </div>
-                      <div className="p-4 hover:bg-accent cursor-pointer">
-                        <p className="text-sm font-medium">Reservasi Dibatalkan</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {stats.cancelled} reservasi dibatalkan
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">2 jam yang lalu</p>
-                      </div>
-                    </div>
-                    <div className="p-3 border-t border-border text-center">
-                      <button className="text-sm text-blue-600 hover:underline">Lihat Semua Notifikasi</button>
-                    </div>
-                  </div>
-                )}
-              </div>
 
               {/* User Menu Button */}
               <div className="relative">
