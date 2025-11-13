@@ -2,6 +2,7 @@
 
 // Dashboard Admin with real-time data from database
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -24,34 +25,29 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { 
-  Chart as ChartJS, 
-  CategoryScale, 
-  LinearScale, 
-  BarElement, 
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title, 
-  Tooltip, 
-  Legend,
-  Filler
-} from 'chart.js'
-import { Bar, Line, Doughnut } from 'react-chartjs-2'
 
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale, 
-  LinearScale, 
-  BarElement, 
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title, 
-  Tooltip, 
-  Legend,
-  Filler
-)
+// ⚡ Lazy load Chart.js - hanya dimuat saat dashboard dibuka
+const Bar = dynamic(() => import('react-chartjs-2').then(mod => mod.Bar), { ssr: false })
+const Line = dynamic(() => import('react-chartjs-2').then(mod => mod.Line), { ssr: false })
+const Doughnut = dynamic(() => import('react-chartjs-2').then(mod => mod.Doughnut), { ssr: false })
+
+// Register ChartJS components dinamis
+if (typeof window !== 'undefined') {
+  import('chart.js').then((ChartJS) => {
+    ChartJS.Chart.register(
+      ChartJS.CategoryScale,
+      ChartJS.LinearScale,
+      ChartJS.BarElement,
+      ChartJS.PointElement,
+      ChartJS.LineElement,
+      ChartJS.ArcElement,
+      ChartJS.Title,
+      ChartJS.Tooltip,
+      ChartJS.Legend,
+      ChartJS.Filler
+    )
+  })
+}
 
 export default function AdminDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
