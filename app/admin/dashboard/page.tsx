@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+// Dashboard Admin with real-time data from database
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +17,6 @@ import {
   CheckCircle,
   Clock,
   LogOut,
-  Bell,
   ChevronDown,
   Home,
   Newspaper,
@@ -24,30 +24,175 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
-import { Bar } from 'react-chartjs-2'
+import { 
+  Chart as ChartJS, 
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title, 
+  Tooltip, 
+  Legend,
+  Filler
+} from 'chart.js'
+import { Bar, Line, Doughnut } from 'react-chartjs-2'
 
 // Register ChartJS components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+ChartJS.register(
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title, 
+  Tooltip, 
+  Legend,
+  Filler
+)
 
 export default function AdminDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const [showNotifications, setShowNotifications] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [selectedReport, setSelectedReport] = useState<any>(null)
   const [showReportDetail, setShowReportDetail] = useState(false)
+  
+  // State untuk data dari database
+  const [totalReservations, setTotalReservations] = useState(0)
+  const [totalSchools, setTotalSchools] = useState(0)
+  const [totalNews, setTotalNews] = useState(0)
+  const [totalAgenda, setTotalAgenda] = useState(0)
+  const [reservationsByStatus, setReservationsByStatus] = useState({ completed: 0, waiting: 0, cancelled: 0 })
+  const [reservationsByMonth, setReservationsByMonth] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [serviceProgress, setServiceProgress] = useState<any[]>([])
+  const [recentReservations, setRecentReservations] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   const router = useRouter()
+
+  // Fetch data dari database
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch Reservations
+        let reservations: any[] = []
+        try {
+          const resReservations = await fetch('/api/reservations')
+          const reservationsData = await resReservations.json()
+          reservations = reservationsData.data || []
+          console.log('📊 Reservations fetched:', reservations.length)
+        } catch (err) {
+          console.error('❌ Error fetching reservations:', err)
+        }
+        
+        // Fetch Schools
+        let schools: any[] = []
+        try {
+          const resSchools = await fetch('/api/sekolahs')
+          const schoolsData = await resSchools.json()
+          schools = schoolsData.data || []
+          console.log('🏫 Schools fetched:', schools.length)
+        } catch (err) {
+          console.error('❌ Error fetching schools:', err)
+        }
+        
+        // Fetch News
+        let news: any[] = []
+        try {
+          const resNews = await fetch('/api/news?status=all')
+          const newsData = await resNews.json()
+          // API news returns array directly, not wrapped in object
+          news = Array.isArray(newsData) ? newsData : (newsData.data || newsData.beritas || [])
+          console.log('📰 News fetched:', news.length)
+        } catch (err) {
+          console.error('❌ Error fetching news:', err)
+        }
+        
+        // Fetch Agenda
+        let agenda: any[] = []
+        try {
+          const resAgenda = await fetch('/api/agendas')
+          const agendaData = await resAgenda.json()
+          agenda = agendaData.data || agendaData.agendas || []
+          console.log('📅 Agenda fetched:', agenda.length)
+        } catch (err) {
+          console.error('❌ Error fetching agenda:', err)
+        }
+        
+        // Set total counts
+        setTotalReservations(reservations.length)
+        setTotalSchools(schools.length)
+        setTotalNews(news.length)
+        setTotalAgenda(agenda.length)
+        
+        // Calculate reservations by status
+        const completed = reservations.filter((r: any) => r.status === 'completed').length
+        const waiting = reservations.filter((r: any) => r.status === 'waiting').length
+        const cancelled = reservations.filter((r: any) => r.status === 'cancelled').length
+        setReservationsByStatus({ completed, waiting, cancelled })
+        
+        // Calculate reservations by month (current year)
+        const currentYear = new Date().getFullYear()
+        const monthCounts = Array(12).fill(0)
+        reservations.forEach((reservation: any) => {
+          const date = new Date(reservation.createdAt || reservation.date)
+          if (date.getFullYear() === currentYear) {
+            monthCounts[date.getMonth()]++
+          }
+        })
+        setReservationsByMonth(monthCounts)
+        
+        // Calculate service progress (percentage of total reservations per service)
+        const serviceMap: { [key: string]: number } = {}
+        reservations.forEach((reservation: any) => {
+          const serviceName = reservation.layanan?.name || reservation.service || 'Lainnya'
+          serviceMap[serviceName] = (serviceMap[serviceName] || 0) + 1
+        })
+        
+        const totalRes = reservations.length || 1
+        const progressData = Object.entries(serviceMap).map(([name, count]) => ({
+          name,
+          progress: Math.round((count / totalRes) * 100),
+          count,
+          color: name.includes('PTK') ? 'bg-blue-500' : 
+                 name.includes('SD') ? 'bg-green-500' : 
+                 name.includes('SMP') ? 'bg-yellow-500' : 
+                 name.includes('PAUD') ? 'bg-purple-500' : 'bg-gray-500'
+        }))
+        
+        setServiceProgress(progressData)
+        
+        // Set recent reservations (latest 5, sorted by createdAt)
+        const sortedReservations = [...reservations]
+          .sort((a: any, b: any) => {
+            const dateA = new Date(a.createdAt || a.date).getTime()
+            const dateB = new Date(b.createdAt || b.date).getTime()
+            return dateB - dateA // Most recent first
+          })
+          .slice(0, 5)
+        setRecentReservations(sortedReservations)
+        console.log('📋 Recent reservations:', sortedReservations.length)
+        
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchDashboardData()
+  }, [])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
-      if (!target.closest('.notification-dropdown') && !target.closest('.notification-button')) {
-        setShowNotifications(false)
-      }
       if (!target.closest('.user-menu-dropdown') && !target.closest('.user-menu-button')) {
         setShowUserMenu(false)
       }
@@ -57,13 +202,13 @@ export default function AdminDashboard() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Data untuk Chart.js
+  // Data untuk Bar Chart - Total Data Sistem (dari database)
   const chartData = {
     labels: ['Reservasi', 'Sekolah', 'Berita', 'Agenda'],
     datasets: [
       {
         label: 'Total Data',
-        data: [0, 0, 0, 0], // Data akan diisi dari API
+        data: [totalReservations, totalSchools, totalNews, totalAgenda],
         backgroundColor: [
           'rgba(54, 162, 235, 0.2)',
           'rgba(75, 192, 192, 0.2)',
@@ -83,9 +228,10 @@ export default function AdminDashboard() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // Sembunyikan legenda
+        display: false,
       },
       title: {
         display: true,
@@ -104,6 +250,99 @@ export default function AdminDashboard() {
         },
       },
     },
+  }
+
+  // Data untuk Line Chart - Laporan Reservasi Bulanan (dari database)
+  const lineChartData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    datasets: [
+      {
+        label: 'Reservasi',
+        data: reservationsByMonth,
+        fill: true,
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderColor: 'rgb(59, 130, 246)',
+        tension: 0.4,
+        pointBackgroundColor: 'rgb(59, 130, 246)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(59, 130, 246)',
+      },
+    ],
+  }
+
+  const lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value: any) {
+            return value
+          }
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)',
+        }
+      },
+      x: {
+        grid: {
+          display: false,
+        }
+      }
+    },
+  }
+
+  // Data untuk Doughnut Chart - Status Reservasi (dari database)
+  const doughnutChartData = {
+    labels: ['Selesai', 'Menunggu', 'Dibatalkan'],
+    datasets: [
+      {
+        data: [reservationsByStatus.completed, reservationsByStatus.waiting, reservationsByStatus.cancelled],
+        backgroundColor: [
+          'rgb(34, 197, 94)',   // green
+          'rgb(59, 130, 246)',  // blue
+          'rgb(14, 165, 233)',  // cyan
+        ],
+        borderColor: [
+          'rgb(34, 197, 94)',
+          'rgb(59, 130, 246)',
+          'rgb(14, 165, 233)',
+        ],
+        borderWidth: 2,
+      },
+    ],
+  }
+
+  const doughnutChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom' as const,
+        labels: {
+          padding: 15,
+          usePointStyle: true,
+          font: {
+            size: 12,
+          }
+        }
+      },
+      title: {
+        display: false,
+      },
+    },
+    cutout: '70%',
   }
 
   const handleLogout = async () => {
@@ -170,35 +409,88 @@ export default function AdminDashboard() {
   const statsData = [
     {
       title: "Total Sekolah",
-      value: "0",
+      value: totalSchools.toString(),
       icon: School,
       color: "blue",
       bgColor: "bg-blue-100",
     },
     {
       title: "Total Berita",
-      value: "0",
+      value: totalNews.toString(),
       icon: Newspaper,
       color: "green",
       bgColor: "bg-green-100",
     },
     {
       title: "Total Agenda",
-      value: "0",
+      value: totalAgenda.toString(),
       icon: Calendar,
       color: "yellow",
       bgColor: "bg-yellow-100",
     },
     {
       title: "Total Reservasi",
-      value: "0",
+      value: totalReservations.toString(),
       icon: FileText,
       color: "red",
       bgColor: "bg-red-100",
     },
   ]
 
-  const reportsData: any[] = []
+  // Transform recent reservations to reports format
+  const reportsData = recentReservations.map((reservation: any) => {
+    // Map status to Indonesian
+    let statusText = 'Baru'
+    let statusColor = 'bg-blue-600 text-white'
+    
+    if (reservation.status === 'completed') {
+      statusText = 'Selesai'
+      statusColor = 'bg-green-600 text-white'
+    } else if (reservation.status === 'waiting') {
+      statusText = 'Menunggu'
+      statusColor = 'bg-yellow-600 text-white'
+    } else if (reservation.status === 'cancelled') {
+      statusText = 'Dibatalkan'
+      statusColor = 'bg-red-600 text-white'
+    }
+    
+    return {
+      id: reservation.id,
+      reporter: reservation.name || reservation.institutionName || 'N/A',
+      category: reservation.layanan?.name || reservation.service || 'Reservasi',
+      status: statusText,
+      statusColor: statusColor,
+      title: `Reservasi ${reservation.layanan?.name || reservation.service || ''}`,
+      description: reservation.notes || 'Tidak ada catatan',
+      date: new Date(reservation.createdAt || reservation.date).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }),
+      time: reservation.time || new Date(reservation.createdAt || reservation.date).toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      contact: reservation.email || reservation.phone || 'N/A',
+      reservationDate: reservation.date ? new Date(reservation.date).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }) : 'N/A'
+    }
+  })
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Memuat data dashboard...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -304,47 +596,6 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4 relative">
-              {/* Notification Button */}
-              <div className="relative">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="hover:bg-accent hover:scale-105 transition-all duration-200 relative notification-button"
-                  onClick={() => setShowNotifications(!showNotifications)}
-                >
-                  <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                </Button>
-                
-                {/* Notification Dropdown */}
-                {showNotifications && (
-                  <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg z-50 notification-dropdown">
-                    <div className="p-4 border-b border-border">
-                      <h3 className="font-semibold">Notifikasi</h3>
-                    </div>
-                    <div className="max-h-96 overflow-y-auto">
-                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
-                        <p className="text-sm font-medium">Laporan Baru Masuk</p>
-                        <p className="text-xs text-muted-foreground mt-1">Ahmad Fauzi melaporkan kerusakan atap</p>
-                        <p className="text-xs text-muted-foreground mt-1">5 menit yang lalu</p>
-                      </div>
-                      <div className="p-4 hover:bg-accent cursor-pointer border-b border-border">
-                        <p className="text-sm font-medium">Data Sekolah Diupdate</p>
-                        <p className="text-xs text-muted-foreground mt-1">SDN Sungai Miai 5 memperbarui data</p>
-                        <p className="text-xs text-muted-foreground mt-1">1 jam yang lalu</p>
-                      </div>
-                      <div className="p-4 hover:bg-accent cursor-pointer">
-                        <p className="text-sm font-medium">Sistem Maintenance</p>
-                        <p className="text-xs text-muted-foreground mt-1">Maintenance terjadwal besok pukul 02:00</p>
-                        <p className="text-xs text-muted-foreground mt-1">3 jam yang lalu</p>
-                      </div>
-                    </div>
-                    <div className="p-3 border-t border-border text-center">
-                      <button className="text-sm text-blue-600 hover:underline">Lihat Semua Notifikasi</button>
-                    </div>
-                  </div>
-                )}
-              </div>
 
               {/* User Menu Button */}
               <div className="relative">
@@ -475,17 +726,80 @@ export default function AdminDashboard() {
             })}
           </div>
 
-          {/* Chart.js Bar Chart */}
-          <Card className="mb-8 bg-card text-foreground">
-            <CardHeader>
-              <CardTitle>Statistik Total Data Sistem</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="w-full h-[400px] flex items-center justify-center">
-                <Bar data={chartData} options={chartOptions} />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Charts Grid - 2 Columns */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Line Chart - Laporan Reservasi Bulanan */}
+            <Card className="bg-card text-foreground">
+              <CardHeader>
+                <CardTitle className="text-base lg:text-lg">Laporan Reservasi</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full h-[300px]">
+                  <Line data={lineChartData} options={lineChartOptions} />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Doughnut Chart - Status Reservasi */}
+            <Card className="bg-card text-foreground">
+              <CardHeader>
+                <CardTitle className="text-base lg:text-lg">Status Reservasi</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full h-[300px] flex items-center justify-center">
+                  <div className="w-full max-w-[250px]">
+                    <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Second Row - Progress and Bar Chart */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Progress Bars - Layanan */}
+            <Card className="bg-card text-foreground">
+              <CardHeader>
+                <CardTitle className="text-base lg:text-lg">Progress Layanan</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {serviceProgress.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Belum ada data reservasi layanan
+                  </div>
+                ) : (
+                  serviceProgress.map((service, index) => (
+                    <div key={index} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">{service.name}</span>
+                        <span className="text-sm font-semibold">
+                          {service.progress}% ({service.count} reservasi)
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                        <div 
+                          className={`${service.color} h-2.5 rounded-full transition-all duration-500`}
+                          style={{ width: `${service.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Bar Chart - Total Data Sistem */}
+            <Card className="bg-card text-foreground">
+              <CardHeader>
+                <CardTitle className="text-base lg:text-lg">Total Data Sistem</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full h-[280px]">
+                  <Bar data={chartData} options={chartOptions} />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Reports Table */}
           <Card className="bg-card text-foreground">
@@ -593,7 +907,7 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Pelapor</p>
+                  <p className="text-sm font-medium text-muted-foreground">Nama/Instansi</p>
                   <p className="font-medium">{selectedReport.reporter}</p>
                 </div>
                 <div>
@@ -604,39 +918,29 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Sekolah</p>
-                  <p className="font-medium">{selectedReport.school}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Kategori Layanan</p>
+                  <p className="font-medium">{selectedReport.category}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Tanggal Laporan</p>
-                  <p className="font-medium">{selectedReport.reportDate}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Tanggal Dibuat</p>
+                  <p className="font-medium">{selectedReport.date}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Kategori</p>
-                  <p className="font-medium">{selectedReport.category}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Tanggal Reservasi</p>
+                  <p className="font-medium">{selectedReport.reservationDate}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Prioritas</p>
-                  <Badge variant={selectedReport.priority === 'Tinggi' ? 'destructive' : 'secondary'}>
-                    {selectedReport.priority}
-                  </Badge>
+                  <p className="text-sm font-medium text-muted-foreground">Waktu</p>
+                  <p className="font-medium">{selectedReport.time}</p>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Deskripsi</p>
+                <p className="text-sm font-medium text-muted-foreground">Catatan</p>
                 <p className="text-base mt-2 bg-accent/50 p-4 rounded-lg">{selectedReport.description}</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Bukti/Lampiran</p>
-                <div className="mt-2 p-3 bg-accent/50 rounded-lg flex items-center space-x-2">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm">{selectedReport.evidence}</span>
-                </div>
               </div>
             </div>
 
