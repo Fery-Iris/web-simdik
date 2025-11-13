@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "prisma generate && next build",
     "dev": "next dev --hostname 0.0.0.0",
     "lint": "next lint",
     "start": "next start",
+    "postinstall": "prisma generate",
     "db:setup": "node scripts/setup-database.js",
     "db:test": "node scripts/test-db-connection.js",
     "db:crud": "node scripts/test-crud-operations.js",
