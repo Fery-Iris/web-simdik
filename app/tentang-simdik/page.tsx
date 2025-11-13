@@ -33,7 +33,7 @@ export default function AboutSIMDIKPage() {
       icon: BookOpen,
       date: "Sep 2024 - Des 2024",
       location: "Dinas Pendidikan",
-      image: "/curriculum-discussion.png",
+      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.35%20(1).jpeg",
     },
     {
       title: "Pelatihan Guru Berbasis Digital",
@@ -42,7 +42,7 @@ export default function AboutSIMDIKPage() {
       icon: Lightbulb,
       date: "Jan 2025 - Mar 2025",
       location: "Pusat Pelatihan Guru",
-      image: "/teachers-digital-training.png",
+      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
     },
     {
       title: "Evaluasi Kualitas Pendidikan Tahunan",
@@ -50,7 +50,7 @@ export default function AboutSIMDIKPage() {
       icon: CheckCircle,
       date: "Apr 2025 - Jun 2025",
       location: "Seluruh Sekolah",
-      image: "/education-officials-evaluation.png",
+      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.36.jpeg",
     },
     {
       title: "Sosialisasi Program Beasiswa",
@@ -59,7 +59,7 @@ export default function AboutSIMDIKPage() {
       icon: GraduationCap,
       date: "Jul 2025",
       location: "Sekolah & Online",
-      image: "/scholarship-presentation.png",
+      image: "/kegiatan/beasiswa-1.png",
     },
     {
       title: "Pengembangan Sistem Informasi Pendidikan",
@@ -68,7 +68,7 @@ export default function AboutSIMDIKPage() {
       icon: School,
       date: "Agu 2025 - Okt 2025",
       location: "Dinas Pendidikan",
-      image: "/placeholder-dxit6.png",
+      image: "/kegiatan/sistem-1.png",
     },
     {
       title: "Forum Komunikasi Orang Tua dan Sekolah",
@@ -77,7 +77,7 @@ export default function AboutSIMDIKPage() {
       icon: Users,
       date: "Nov 2025",
       location: "Berbagai Lokasi",
-      image: "/school-discussion-forum.png",
+      image: "/kegiatan/forum-1.png",
     },
   ]
 
@@ -254,7 +254,7 @@ export default function AboutSIMDIKPage() {
       <section className="py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-12">Kegiatan Dinas Pendidikan</h2>
+            <h2 className="text-3xl font-bold text-center text-foreground mb-12">Dokumentasi Kegiatan</h2>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {officeActivities.map((activity, index) => {

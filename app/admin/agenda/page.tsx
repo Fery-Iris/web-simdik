@@ -106,7 +106,6 @@ export default function AgendaPage() {
     { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news", active: false },
     { icon: Clock, label: "Manajemen Agenda", href: "/admin/agenda", active: true },
     { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations", active: false },
-    { icon: FileText, label: "Manajemen Tentang SIMDIK", href: "/admin/tentang-simdik", active: false },
   ]
 
   // Fetch agendas

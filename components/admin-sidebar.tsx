@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { School, Home, Newspaper, Calendar, FileText, LogOut, X } from "lucide-react"
+import { School, Home, Newspaper, Calendar, LogOut, X } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import { useState } from "react"
 
@@ -42,7 +42,6 @@ export function AdminSidebar({ sidebarCollapsed, mobileMenuOpen, setMobileMenuOp
     { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news" },
     { icon: Calendar, label: "Manajemen Agenda", href: "/admin/agenda" },
     { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations" },
-    { icon: FileText, label: "Manajemen Tentang SIMDIK", href: "/admin/tentang-simdik" },
   ]
 
   return (

@@ -43,19 +43,19 @@ const activityDetails = {
     ],
     photos: [
       {
-        url: "/kegiatan/kurikulum-1.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.35%20(1).jpeg",
         title: "Rapat Koordinasi Tim Penyusun",
         description:
           "Tim ahli kurikulum dari berbagai instansi berkumpul untuk membahas kerangka dasar kurikulum daerah yang akan dikembangkan.",
       },
       {
-        url: "/kegiatan/kurikulum-2.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.33.jpeg",
         title: "Workshop Pengembangan Materi",
         description:
           "Sesi workshop intensif untuk mengembangkan materi pembelajaran yang mengintegrasikan konten lokal dengan standar nasional.",
       },
       {
-        url: "/kegiatan/kurikulum-3.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.37%20(1).jpeg",
         title: "Presentasi Hasil Kajian",
         description:
           "Presentasi hasil kajian kurikulum kepada stakeholder pendidikan untuk mendapatkan masukan dan persetujuan implementasi.",
@@ -79,19 +79,19 @@ const activityDetails = {
     ],
     photos: [
       {
-        url: "/kegiatan/digital-1.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
         title: "Sesi Pelatihan Platform Digital",
         description:
           "Guru-guru antusias mengikuti pelatihan penggunaan platform pembelajaran digital untuk meningkatkan kualitas mengajar.",
       },
       {
-        url: "/kegiatan/digital-2.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.38%20(1).jpeg",
         title: "Workshop Pembuatan Konten",
         description:
           "Workshop hands-on pembuatan konten pembelajaran interaktif menggunakan berbagai aplikasi dan tools digital terkini.",
       },
       {
-        url: "/kegiatan/digital-3.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.38.jpeg",
         title: "Praktik Mengajar Digital",
         description:
           "Sesi praktik mengajar dengan memanfaatkan teknologi digital, dimana guru dapat langsung menerapkan ilmu yang telah dipelajari.",
@@ -114,19 +114,19 @@ const activityDetails = {
     ],
     photos: [
       {
-        url: "/kegiatan/evaluasi-1.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.36.jpeg",
         title: "Tim Evaluasi di Lapangan",
         description:
           "Tim evaluator dari Dinas Pendidikan melakukan kunjungan langsung ke sekolah-sekolah untuk menilai kondisi dan kualitas pendidikan.",
       },
       {
-        url: "/kegiatan/evaluasi-2.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.37.jpeg",
         title: "Wawancara dengan Stakeholder",
         description:
           "Sesi wawancara mendalam dengan kepala sekolah, guru, dan siswa untuk mendapatkan gambaran komprehensif kualitas pendidikan.",
       },
       {
-        url: "/kegiatan/evaluasi-3.png",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.32.jpeg",
         title: "Analisis Data dan Pelaporan",
         description:
           "Tim ahli melakukan analisis data hasil evaluasi untuk menyusun laporan dan rekomendasi peningkatan kualitas pendidikan.",

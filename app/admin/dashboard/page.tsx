@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { 
   Chart as ChartJS, 
   CategoryScale, 
@@ -403,7 +404,6 @@ export default function AdminDashboard() {
     { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news", active: false },
     { icon: Calendar, label: "Manajemen Agenda", href: "/admin/agenda", active: false },
     { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations", active: false },
-    { icon: FileText, label: "Manajemen Tentang SIMDIK", href: "/admin/tentang-simdik", active: false },
   ]
 
   const statsData = [
@@ -596,6 +596,8 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4 relative">
+              {/* Theme Toggle */}
+              <ThemeToggle />
 
               {/* User Menu Button */}
               <div className="relative">

@@ -106,7 +106,6 @@ export default function AdminSchoolsPage() {
     { label: "Manajemen Berita", href: "/admin/news", icon: Newspaper },
     { label: "Manajemen Agenda", href: "/admin/agenda", icon: Calendar },
     { label: "Laporan Reservasi", href: "/admin/reservations", icon: ClipboardList },
-    { label: "Manajemen Tentang SIMDIK", href: "/admin/tentang-simdik", icon: FileText },
   ]
 
   const handleLogout = async () => {

@@ -53,14 +53,6 @@ export default function LoginPage() {
     }
   }
 
-  const demoAccounts = [
-    {
-      type: "Admin Disdik",
-      email: "disdikbanjarmasin@gmail.com",
-      password: "disdik123",
-    },
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-700 via-blue-600 via-blue-500 to-blue-300 relative overflow-hidden">
       <div className="absolute top-16 left-16 w-40 h-40 bg-white/8 rounded-full blur-3xl"></div>
@@ -170,28 +162,6 @@ export default function LoginPage() {
                   )}
                 </Button>
               </form>
-
-              {/* Demo Accounts */}
-              <div className="pt-6 border-t border-gray-200">
-                <p className="text-center text-sm text-gray-500 mb-4">Demo Account</p>
-                <div className="flex justify-center">
-                  {demoAccounts.map((account, index) => (
-                    <div
-                      key={index}
-                      className="text-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors w-full max-w-xs"
-                      onClick={() => {
-                        setEmail(account.email)
-                        setPassword(account.password)
-                        setError("")
-                      }}
-                    >
-                      <p className="text-sm font-medium text-gray-700">{account.type}</p>
-                      <p className="text-xs text-blue-600">{account.email}</p>
-                      <p className="text-xs text-gray-500">{account.password}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </CardContent>
           </Card>
 
