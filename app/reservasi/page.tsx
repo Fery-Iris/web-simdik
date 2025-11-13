@@ -20,7 +20,15 @@ import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
-import { generateTicketPDF, type ReservationTicketData } from "@/lib/pdf-generator"
+
+// ⚡ Lazy load PDF generator (jsPDF library cukup besar ~100KB)
+const generateTicketPDF = async (data: ReservationTicketData) => {
+  const module = await import("@/lib/pdf-generator")
+  return module.generateTicketPDF(data)
+}
+
+// Type import tetap normal
+import type { ReservationTicketData } from "@/lib/pdf-generator"
 
 // Icon mapping
 const iconMap: { [key: string]: any } = {
