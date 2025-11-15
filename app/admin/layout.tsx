@@ -15,7 +15,7 @@ export default async function AdminLayout({
     redirect("/login")
   }
 
-  return <>{children}</>
+  return <div className="admin-layout">{children}</div>
 }
 
 

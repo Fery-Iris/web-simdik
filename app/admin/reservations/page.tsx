@@ -15,8 +15,6 @@ import {
   Menu,
   X,
   Eye,
-  Download,
-  Filter,
   AlertCircle,
   CheckCircle,
   Clock,
@@ -78,7 +76,6 @@ export default function AdminReservationsPage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const [isExporting, setIsExporting] = useState(false)
 
   const router = useRouter()
 
@@ -118,52 +115,6 @@ export default function AdminReservationsPage() {
     }
   }
 
-  const handleExportData = async () => {
-    try {
-      setIsExporting(true)
-      
-      // Prepare data for export
-      const exportData = filteredReservations.map(reservation => ({
-        'Nomor Antrian': reservation.queueNumber,
-        'Nama': reservation.name,
-        'Telepon': reservation.phone,
-        'NIK': reservation.nik || '-',
-        'Layanan': reservation.layanan?.name || reservation.service,
-        'Keperluan': reservation.purpose,
-        'Tanggal': new Date(reservation.date).toLocaleDateString('id-ID'),
-        'Waktu': reservation.timeSlot,
-        'Status': reservation.status,
-        'Dibuat': new Date(reservation.createdAt).toLocaleString('id-ID'),
-      }))
-
-      // Convert to CSV
-      const headers = Object.keys(exportData[0] || {})
-      const csvContent = [
-        headers.join(','),
-        ...exportData.map(row => 
-          headers.map(header => `"${row[header as keyof typeof row] || ''}"`).join(',')
-        )
-      ].join('\n')
-
-      // Create and download file
-      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
-      const link = document.createElement('a')
-      const url = URL.createObjectURL(blob)
-      link.setAttribute('href', url)
-      link.setAttribute('download', `reservasi_${new Date().toISOString().split('T')[0]}.csv`)
-      link.style.visibility = 'hidden'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-
-      alert(`Berhasil export ${exportData.length} data reservasi!`)
-    } catch (error) {
-      console.error('Export error:', error)
-      alert('Gagal export data. Silakan coba lagi.')
-    } finally {
-      setIsExporting(false)
-    }
-  }
 
   // Fetch reservations from API
   useEffect(() => {
@@ -584,32 +535,16 @@ export default function AdminReservationsPage() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 space-y-4 lg:space-y-0">
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Laporan Reservasi</h1>
-              <p className="text-muted-foreground mt-2">
-                Kelola dan tindak lanjuti reservasi layanan dari masyarakat
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-              <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={handleExportData}
-                disabled={isExporting || filteredReservations.length === 0}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                {isExporting ? 'Exporting...' : 'Export Data'}
-              </Button>
-              <Button variant="outline" className="border-blue-200 hover:border-blue-400 bg-transparent">
-                <Filter className="w-4 h-4 mr-2" />
-                Filter
-              </Button>
-            </div>
+          <div className="mb-6 space-y-4 lg:space-y-0">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Laporan Reservasi</h1>
+            <p className="text-muted-foreground mt-2">
+              Kelola dan tindak lanjuti reservasi layanan dari masyarakat
+            </p>
           </div>
 
           {/* Reservation Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <Card className="bg-card border-border">
+            <Card className="bg-card">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -621,7 +556,7 @@ export default function AdminReservationsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -633,7 +568,7 @@ export default function AdminReservationsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -645,7 +580,7 @@ export default function AdminReservationsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border">
+            <Card className="bg-card">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>

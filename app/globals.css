@@ -147,31 +147,8 @@
     @apply border-border outline-ring/50;
   }
   
-  /* Smooth transition for dark mode - 1 Second Smooth */
-  html {
-    transition: background-color 1s ease, color 1s ease;
-  }
-  
   body {
     @apply bg-background text-foreground;
-    transition: background-color 1s ease, color 1s ease;
-  }
-  
-  /* Smooth transitions for color-based properties */
-  *,
-  *::before,
-  *::after {
-    transition-property: background-color, border-color, color;
-    transition-duration: 1s;
-    transition-timing-function: ease;
-  }
-  
-  /* Consistent 1s transition when theme is changing */
-  html.theme-transitioning *,
-  html.theme-transitioning *::before,
-  html.theme-transitioning *::after {
-    transition-duration: 1s !important;
-    transition-timing-function: ease !important;
   }
   
   /* Preserve animations and transitions that should not be affected */
@@ -215,29 +192,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Enhanced Dark/Light Mode Transition Animation - 1 Second */
-@keyframes fadeInTheme {
-  0% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-html.theme-transitioning {
-  animation: fadeInTheme 1s ease;
-}
-
-/* Smooth color transitions for specific elements - 1 Second */
-.card,
-[class*="bg-"],
-[class*="text-"],
-[class*="border-"] {
-  transition: background-color 1s ease,
-              color 1s ease,
-              border-color 1s ease;
-}
 
 /* Glow Effect for Interactive Cards */
 .card-glow {
@@ -1114,18 +1068,57 @@ html.theme-transitioning {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Frontend Card Border Styling - White border in dark mode, dark border in light mode */
+/* Apply to all cards by default (frontend pages) */
+/* For cards without border-transparent: always show border */
+[data-slot="card"]:not(.border-transparent) {
+  /* Light mode - dark border for frontend cards */
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode - white border for frontend cards (without border-transparent) */
+.dark [data-slot="card"]:not(.border-transparent) {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* For cards with border-transparent: show white border in dark mode when not hovering */
+/* Use :not(:hover) to allow hover classes (like hover:border-blue-400) to work properly */
+.dark [data-slot="card"].border-transparent:not(:hover) {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Note: In light mode, border-transparent cards remain transparent as intended */
+/* Hover classes like hover:border-blue-400 will work properly on hover */
+
+/* Admin Card Border Styling - White border in dark mode, dark border in light mode */
+/* Only apply to cards within admin layout - more specific selector to override frontend styling */
+/* Override any border utilities like border-border */
+.admin-layout [data-slot="card"],
+.admin-layout [data-slot="card"].border-border {
+  /* Light mode - dark border */
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dark mode - white border for admin cards */
+.dark .admin-layout [data-slot="card"],
+.dark .admin-layout [data-slot="card"].border-border {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
 /* Dark mode adjustments */
 .dark .admin-card-interactive:hover {
   box-shadow: 
     0 10px 25px -5px rgba(0, 0, 0, 0.3),
     0 10px 10px -5px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(59, 130, 246, 0.2);
+    0 0 0 1px rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 .dark .admin-stats-card:hover {
   box-shadow: 
     0 20px 25px -5px rgba(0, 0, 0, 0.3),
     0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 .dark .admin-table-row:hover {
@@ -1136,6 +1129,7 @@ html.theme-transitioning {
   box-shadow: 
     0 10px 15px -3px rgba(0, 0, 0, 0.3),
     0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Force Poppins font globally */

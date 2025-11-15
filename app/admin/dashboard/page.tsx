@@ -12,8 +12,6 @@ import {
   FileText,
   Menu,
   X,
-  Download,
-  Upload,
   AlertCircle,
   CheckCircle,
   Clock,
@@ -377,26 +375,6 @@ export default function AdminDashboard() {
     }
   }
 
-  const handleExportReport = () => {
-    // Simulasi export laporan
-    alert('Fitur Export Laporan akan segera tersedia!\n\nLaporan akan diexport dalam format PDF/Excel.')
-    // TODO: Implementasi export ke PDF/Excel
-  }
-
-  const handleImportData = () => {
-    // Simulasi import data
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.xlsx,.xls,.csv'
-    input.onchange = (e: any) => {
-      const file = e.target.files[0]
-      if (file) {
-        alert(`File "${file.name}" siap diupload!\n\nFitur import data akan segera diimplementasikan.`)
-        // TODO: Implementasi upload dan parsing file
-      }
-    }
-    input.click()
-  }
 
   const handleViewReportDetail = (report: any) => {
     setSelectedReport(report)
@@ -666,28 +644,9 @@ export default function AdminDashboard() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 lg:mb-8 space-y-4 lg:space-y-0">
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Dashboard</h1>
-              <p className="text-muted-foreground mt-2">Ringkasan data dan statistik sistem pendidikan</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Button 
-                className="hover:scale-105 transition-all duration-200"
-                onClick={handleExportReport}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export Laporan
-              </Button>
-              <Button 
-                variant="outline" 
-                className="hover:scale-105 transition-all duration-200 bg-transparent"
-                onClick={handleImportData}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Import Data
-              </Button>
-            </div>
+          <div className="mb-6 lg:mb-8">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-2">Ringkasan data dan statistik sistem pendidikan</p>
           </div>
 
           {/* Dashboard Stats */}
