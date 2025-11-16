@@ -16,7 +16,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { label: "Beranda", href: "/" },
   { label: "Reservasi", href: "/reservasi" },
-  { label: "Tentang SIMDIK", href: "/tentang-simdik" },
+  { label: "Tentang SIREDI", href: "/tentang-simdik" },
   { label: "Direktori Sekolah", href: "/direktori-sekolah" },
   { label: "Berita", href: "/#berita" },
   { label: "Agenda", href: "/#agenda" },
@@ -73,7 +73,7 @@ export function SiteHeader() {
                 <School className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold text-foreground transition-colors duration-300 hover:text-primary">
-                SIMDIK Kota Banjarmasin
+                SIREDI Kota Banjarmasin
               </span>
             </Link>
           </ScrollReveal>

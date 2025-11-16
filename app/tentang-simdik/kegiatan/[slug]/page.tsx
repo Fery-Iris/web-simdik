@@ -274,7 +274,7 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
             className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 bg-transparent"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Tentang SIMDIK</span>
+            <span>Kembali ke Tentang SIREDI</span>
           </Button>
         </Link>
       </div>
@@ -424,7 +424,7 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                   <School className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">SIMDIK</span>
+                <span className="text-xl font-bold text-white">SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)</span>
               </div>
               <p className="text-blue-200 leading-relaxed">
                 Membangun masa depan pendidikan Banjarmasin melalui inovasi, kolaborasi, dan komitmen untuk mencerdaskan
@@ -436,13 +436,13 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
             <div>
               <h3 className="text-lg font-semibold text-white mb-4">Tautan Cepat</h3>
               <ul className="space-y-2">
-                {["Beranda", "Tentang SIMDIK", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map((item, index) => (
+                {["Beranda", "Tentang SIREDI", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map((item, index) => (
                   <li key={index}>
                     <Link
                       href={
                         item === "Direktori Sekolah"
                           ? "/direktori-sekolah"
-                          : item === "Tentang SIMDIK"
+                          : item === "Tentang SIREDI"
                             ? "/tentang-simdik"
                             : item === "Agenda"
                               ? "#agenda"

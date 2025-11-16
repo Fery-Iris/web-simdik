@@ -239,7 +239,7 @@ export default function Component() {
                   size="lg"
                   className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg border-0 font-semibold text-sm sm:text-base"
                 >
-                  Tentang SIMDIK
+                  Tentang SIREDI
                 </Button>
               </Link>
               <Link href="/direktori-sekolah" className="w-full sm:w-auto">
@@ -535,7 +535,7 @@ export default function Component() {
                   <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-12">
                     <School className="w-6 h-6 text-white" />
                   </div>
-                  <span className="text-xl font-bold text-white">SIMDIK</span>
+                  <span className="text-xl font-bold text-white">SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)</span>
                 </div>
                 <p className="text-blue-200 leading-relaxed">
                   Membangun masa depan pendidikan Banjarmasin melalui inovasi, kolaborasi, dan komitmen untuk
@@ -549,7 +549,7 @@ export default function Component() {
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Tautan Cepat</h3>
                 <ul className="space-y-2">
-                  {["Beranda", "Reservasi", "Tentang SIMDIK", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map(
+                  {["Beranda", "Reservasi", "Tentang SIREDI", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map(
                     (item, index) => (
                       <li key={index}>
                         <Link
@@ -558,7 +558,7 @@ export default function Component() {
                               ? "/reservasi"
                               : item === "Direktori Sekolah"
                                 ? "/direktori-sekolah"
-                                : item === "Tentang SIMDIK"
+                                : item === "Tentang SIREDI"
                                   ? "/tentang-simdik"
                                   : item === "Berita"
                                     ? "#berita"
