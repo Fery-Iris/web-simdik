@@ -38,6 +38,16 @@ export default function Component() {
 
   const [agendas, setAgendas] = useState<any[]>([])
   const [agendaLoading, setAgendaLoading] = useState(true)
+  const [schoolStats, setSchoolStats] = useState({
+    total: 0,
+    counts: { PAUD: 0, SD: 0, SMP: 0 },
+    akreditasiABPercent: 0,
+  })
+  const [detailedStats, setDetailedStats] = useState<
+    { category: string; description: string; data: { label: string; count: number }[] }[]
+  >([])
+  const [schoolStatsLoading, setSchoolStatsLoading] = useState(true)
+  const [schoolStatsError, setSchoolStatsError] = useState<string | null>(null)
 
   // Fetch agendas from API
   useEffect(() => {
@@ -59,6 +69,92 @@ export default function Component() {
   }, [])
 
   useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        setSchoolStatsLoading(true)
+        const response = await fetch("/api/sekolahs")
+        if (!response.ok) {
+          throw new Error("Failed to fetch sekolah data")
+        }
+        const result = await response.json()
+        const schools = result.data || []
+
+        const counts = {
+          PAUD: schools.filter((school: any) => school.jenjang === "PAUD").length,
+          SD: schools.filter((school: any) => school.jenjang === "SD").length,
+          SMP: schools.filter((school: any) => school.jenjang === "SMP").length,
+        }
+
+        const akreditasiAB = schools.filter((school: any) => {
+          const grade = (school.akreditasi || "").toUpperCase()
+          return grade === "A" || grade === "B" || grade === "A/B"
+        }).length
+
+        const akreditasiPercent = schools.length ? Math.round((akreditasiAB / schools.length) * 100) : 0
+
+        const jenjangMeta: Record<string, { title: string; description: string }> = {
+          PAUD: {
+            title: "PAUD (Pendidikan Anak Usia Dini)",
+            description: "Kelompok PAUD tercatat di Kota Banjarmasin",
+          },
+          SD: {
+            title: "Pendidikan Dasar (SD/MI)",
+            description: "Sekolah dasar & madrasah ibtidaiyah",
+          },
+          SMP: {
+            title: "Pendidikan Menengah Pertama (SMP/MTs)",
+            description: "Sekolah menengah pertama & madrasah tsanawiyah",
+          },
+        }
+
+        const detailData = Object.entries(jenjangMeta).map(([key, meta]) => {
+          const subset = schools.filter((school: any) => school.jenjang === key)
+          const statusCounts = subset.reduce((acc: Record<string, number>, school: any) => {
+            const statusLabel = (school.status?.trim() || "Lainnya").toUpperCase()
+            acc[statusLabel] = (acc[statusLabel] || 0) + 1
+            return acc
+          }, {})
+
+          const dataEntries =
+            Object.keys(statusCounts).length > 0
+              ? Object.entries(statusCounts).map(([status, count]) => ({
+                  label: `Status ${status}`,
+                  count: count as number,
+                }))
+              : [{ label: "Belum ada data", count: 0 }]
+
+          return {
+            category: meta.title,
+            description: meta.description,
+            data: dataEntries,
+          }
+        })
+
+        setSchoolStats({
+          total: schools.length,
+          counts,
+          akreditasiABPercent: akreditasiPercent,
+        })
+        setDetailedStats(detailData)
+        setSchoolStatsError(null)
+      } catch (error) {
+        console.error("Error fetching schools:", error)
+        setSchoolStatsError("Gagal memuat data sekolah")
+        setDetailedStats([])
+        setSchoolStats({
+          total: 0,
+          counts: { PAUD: 0, SD: 0, SMP: 0 },
+          akreditasiABPercent: 0,
+        })
+      } finally {
+        setSchoolStatsLoading(false)
+      }
+    }
+
+    fetchSchools()
+  }, [])
+
+  useEffect(() => {
     // Trigger initial animations
     setIsVisible(true)
 
@@ -76,54 +172,33 @@ export default function Component() {
   }
 
   const statsData = [
-    { icon: School, number: "127", label: "PAUD", chartColor: "chart-1", detail: "Pendidikan Anak Usia Dini" },
+    {
+      icon: School,
+      number: schoolStats.counts.PAUD.toString(),
+      label: "PAUD",
+      chartColor: "chart-1",
+      detail: "Pendidikan Anak Usia Dini",
+    },
     {
       icon: GraduationCap,
-      number: "112",
+      number: schoolStats.counts.SD.toString(),
       label: "SD/MI",
       chartColor: "chart-2",
       detail: "Sekolah Dasar & Madrasah Ibtidaiyah",
     },
     {
       icon: Users,
-      number: "75",
+      number: schoolStats.counts.SMP.toString(),
       label: "SMP/MTs",
       chartColor: "chart-3",
       detail: "Sekolah Menengah Pertama & Madrasah Tsanawiyah",
     },
     {
       icon: CheckCircle,
-      number: "92%",
+      number: `${schoolStats.akreditasiABPercent}%`,
       label: "Akreditasi A/B",
       chartColor: "chart-5",
       detail: "Persentase Akreditasi Baik",
-    },
-  ]
-
-  const detailedStats = [
-    {
-      category: "PAUD (Pendidikan Anak Usia Dini)",
-      data: [
-        { level: "TK Negeri", count: 15, students: "1,200" },
-        { level: "TK Swasta", count: 89, students: "8,900" },
-        { level: "KB/TPA", count: 23, students: "1,150" },
-      ],
-    },
-    {
-      category: "Pendidikan Dasar (SD/MI)",
-      data: [
-        { level: "SD Negeri", count: 89, students: "18,450" },
-        { level: "SD Swasta", count: 8, students: "1,200" },
-        { level: "MI", count: 15, students: "2,100" },
-      ],
-    },
-    {
-      category: "Pendidikan Menengah Pertama (SMP/MTs)",
-      data: [
-        { level: "SMP Negeri", count: 45, students: "12,800" },
-        { level: "SMP Swasta", count: 18, students: "2,400" },
-        { level: "MTs", count: 12, students: "1,800" },
-      ],
     },
   ]
 
@@ -281,8 +356,24 @@ export default function Component() {
                 </div>
               </div>
               <p className="text-muted-foreground text-sm sm:text-base md:text-lg px-2">
-                Data terkini berdasarkan Dapodik Kemendikbudristek per Semester Genap 2024/2025
+                Data terkini berdasarkan Dapodik Kemendikbudristek per Semester Genap 2024/2025.
+                {schoolStatsLoading ? (
+                  <span className="mt-2 block text-blue-600 dark:text-blue-400 text-sm">
+                    Memuat data sekolah...
+                  </span>
+                ) : schoolStats.total > 0 ? (
+                  <span className="mt-2 block text-base font-semibold text-foreground">
+                    {schoolStats.total.toLocaleString("id-ID")} sekolah telah terdata di sistem.
+                  </span>
+                ) : (
+                  <span className="mt-2 block text-sm text-muted-foreground">
+                    Belum ada data sekolah yang tersedia.
+                  </span>
+                )}
               </p>
+              {schoolStatsError && (
+                <p className="text-sm text-red-500 text-center mt-3">{schoolStatsError}</p>
+              )}
             </div>
           </ScrollReveal>
 
@@ -323,63 +414,45 @@ export default function Component() {
                 Rincian Data Sekolah per Jenjang Pendidikan
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {detailedStats.map((category, categoryIndex) => (
-                  <div
-                    key={categoryIndex}
-                    className="card-glow card-glow-purple bg-card/90 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
-                  >
-                    <h4 className="text-lg font-semibold text-foreground mb-4 text-center border-b border-border pb-2">
-                      {category.category}
-                    </h4>
-                    <div className="space-y-3">
-                      {category.data.map((item, itemIndex) => (
-                        <div
-                          key={itemIndex}
-                          className="card-glow-cyan flex justify-between items-center p-3 bg-muted/60 dark:bg-muted/40 rounded-lg hover:bg-muted/80 dark:hover:bg-muted/60 transition-all duration-300 border border-transparent"
-                        >
-                          <div>
-                            <div className="font-medium text-foreground">{item.level}</div>
-                            <div className="text-sm text-muted-foreground">{item.students} siswa</div>
+                {schoolStatsLoading ? (
+                  <div className="col-span-full flex justify-center py-10">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : detailedStats.length === 0 ? (
+                  <div className="col-span-full text-center text-muted-foreground py-8">
+                    {schoolStatsError ?? "Belum ada data sekolah yang bisa ditampilkan."}
+                  </div>
+                ) : (
+                  detailedStats.map((category, categoryIndex) => (
+                    <div
+                      key={categoryIndex}
+                      className="card-glow card-glow-purple bg-card/90 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
+                    >
+                      <h4 className="text-lg font-semibold text-foreground mb-1 text-center">
+                        {category.category}
+                      </h4>
+                      {category.description && (
+                        <p className="text-sm text-muted-foreground text-center mb-4 border-b border-border pb-2">
+                          {category.description}
+                        </p>
+                      )}
+                      <div className="space-y-3">
+                        {category.data.map((item, itemIndex) => (
+                          <div
+                            key={itemIndex}
+                            className="card-glow-cyan flex justify-between items-center p-3 bg-muted/60 dark:bg-muted/40 rounded-lg hover:bg-muted/80 dark:hover:bg-muted/60 transition-all duration-300 border border-transparent"
+                          >
+                            <div>
+                              <div className="font-medium text-foreground">{item.label}</div>
+                              <div className="text-xs text-muted-foreground">Jumlah sekolah tercatat</div>
+                            </div>
+                            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{item.count}</div>
                           </div>
-                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{item.count}</div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal animation="fade-up" delay={600} duration={800}>
-            <div className="text-center bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-950/40 dark:to-blue-900/40 rounded-lg p-6 border border-blue-200/50 dark:border-blue-800/50">
-              <div className="flex justify-center">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4 max-w-2xl">
-                  <div className="text-center p-4 bg-card/60 dark:bg-card/40 rounded-lg hover:bg-card/80 dark:hover:bg-card/60 transition-all duration-300 hover:scale-105 hover:shadow-md border border-transparent hover:border-blue-200/50 dark:hover:border-blue-700/50">
-                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">314</div>
-                    <div className="text-sm text-muted-foreground">Total Sekolah</div>
-                  </div>
-                  <div className="text-center p-4 bg-card/60 dark:bg-card/40 rounded-lg hover:bg-card/80 dark:hover:bg-card/60 transition-all duration-300 hover:scale-105 hover:shadow-md border border-transparent hover:border-green-200/50 dark:hover:border-green-700/50">
-                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">2,847</div>
-                    <div className="text-sm text-muted-foreground">Total Guru</div>
-                  </div>
-                  <div className="text-center p-4 bg-card/60 dark:bg-card/40 rounded-lg hover:bg-card/80 dark:hover:bg-card/60 transition-all duration-300 hover:scale-105 hover:shadow-md border border-transparent hover:border-purple-200/50 dark:hover:border-purple-700/50">
-                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">50,050</div>
-                    <div className="text-sm text-muted-foreground">Total Siswa</div>
-                  </div>
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground border-t border-border/50 pt-4">
-                <p className="mb-2">
-                  <strong>Sumber Data:</strong> Dapodik Kemendikbudristek, Data Pokok Pendidikan Kota Banjarmasin
-                </p>
-                <p>
-                  <strong>Periode:</strong> Semester Genap Tahun Pelajaran 2024/2025 |
-                  <strong> Terakhir Diperbarui:</strong> Januari 2025
-                </p>
-                <p className="mt-2 text-blue-600 dark:text-blue-400 font-medium">
-                  *Data mencakup PAUD, SD/MI, dan SMP/MTs sesuai kewenangan Dinas Pendidikan Kota Banjarmasin
-                </p>
+                  ))
+                )}
               </div>
             </div>
           </ScrollReveal>
