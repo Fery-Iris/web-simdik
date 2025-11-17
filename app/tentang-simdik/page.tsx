@@ -254,7 +254,9 @@ export default function AboutSIMDIKPage() {
       <section className="py-16 bg-card shadow-sm border-y border-border relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-12">Dokumentasi Kegiatan</h2>
+            <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+              Dokumentasi Pengembangan Website SIREDI
+            </h2>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {officeActivities.map((activity, index) => {
