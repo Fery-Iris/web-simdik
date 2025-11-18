@@ -27,7 +27,7 @@ export default function AboutSIMDIKPage() {
 
   const officeActivities = [
     {
-      title: "Mengamati dan mengalisis sitem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasin",
+      title: "Mengamati dan mengalisis sitem informasi yang sudah ada",
       description:
         "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
       icon: BookOpen,
