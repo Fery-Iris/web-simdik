@@ -27,13 +27,13 @@ export default function AboutSIMDIKPage() {
 
   const officeActivities = [
     {
-      title: "Penyusunan Kurikulum Daerah",
+      title: "Mengamati dan mengalisis sitem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasin",
       description:
-        "Mengembangkan kurikulum yang relevan dengan kebutuhan lokal dan standar nasional, melibatkan pakar pendidikan dan praktisi.",
+        "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
       icon: BookOpen,
       date: "Sep 2024 - Des 2024",
       location: "Dinas Pendidikan",
-      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.35%20(1).jpeg",
+      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.34%20(1).jpeg",
     },
     {
       title: "Pelatihan Guru Berbasis Digital",

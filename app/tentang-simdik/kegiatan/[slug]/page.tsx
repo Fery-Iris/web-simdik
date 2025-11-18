@@ -26,39 +26,32 @@ import { useState } from "react"
 import { notFound } from "next/navigation"
 
 const activityDetails = {
-  "penyusunan-kurikulum-daerah": {
-    title: "Penyusunan Kurikulum Daerah",
+  "mengamati-dan-mengalisis-sitem-informasi-yang-sudah-ada-di-dinas-pendidikan-kota-banjarmasin": {
+    title: "Mengamati dan mengalisis sitem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasi",
     description:
-      "Mengembangkan kurikulum yang relevan dengan kebutuhan lokal dan standar nasional, melibatkan pakar pendidikan dan praktisi.",
+      "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
     icon: BookOpen,
     date: "Sep 2024 - Des 2024",
     location: "Dinas Pendidikan",
     fullDescription:
-      "Program penyusunan kurikulum daerah merupakan inisiatif strategis Dinas Pendidikan Kota Banjarmasin untuk mengembangkan kurikulum yang tidak hanya memenuhi standar nasional, tetapi juga relevan dengan kebutuhan dan karakteristik lokal. Program ini melibatkan berbagai stakeholder termasuk pakar pendidikan, praktisi, guru berpengalaman, dan perwakilan masyarakat.",
+      "Kegiatan mengamati dan menganalisis sistem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasin merupakan langkah awal yang krusial dalam upaya peningkatan pengelolaan data pendidikan. Melalui kegiatan ini, tim akan melakukan evaluasi menyeluruh terhadap sistem yang sedang berjalan, termasuk infrastruktur teknologi, proses bisnis, serta keterlibatan pengguna.",
     objectives: [
-      "Mengintegrasikan nilai-nilai lokal Banjarmasin dalam kurikulum",
-      "Meningkatkan relevansi pembelajaran dengan kebutuhan industri lokal",
-      "Mengembangkan kompetensi siswa yang sesuai dengan potensi daerah",
-      "Memperkuat identitas budaya dalam proses pembelajaran",
+      "Memahami sistem informasi yang telah diterapkan di Dinas Pendidikan",
+      "Mengidentifikasi kekuatan dan kelemahan sistem yang ada",
+      "Mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan",
     ],
     photos: [
       {
-        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.35%20(1).jpeg",
-        title: "Rapat Koordinasi Tim Penyusun",
-        description:
-          "Tim ahli kurikulum dari berbagai instansi berkumpul untuk membahas kerangka dasar kurikulum daerah yang akan dikembangkan.",
-      },
-      {
         url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.33.jpeg",
-        title: "Workshop Pengembangan Materi",
+        title: "Mengamati Sistem Informasi",
         description:
-          "Sesi workshop intensif untuk mengembangkan materi pembelajaran yang mengintegrasikan konten lokal dengan standar nasional.",
+          "Tim melakukan observasi langsung terhadap sistem informasi yang sedang berjalan di Dinas Pendidikan Kota Banjarmasin.",
       },
       {
-        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.37%20(1).jpeg",
-        title: "Presentasi Hasil Kajian",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.32%20(1).jpeg",
+        title: "Analisis Data dan Proses",
         description:
-          "Presentasi hasil kajian kurikulum kepada stakeholder pendidikan untuk mendapatkan masukan dan persetujuan implementasi.",
+          "Tim melakukan analisis mendalam terhadap data dan proses bisnis yang terkait dengan sistem informasi pendidikan.",
       },
     ],
   },
