@@ -14,6 +14,7 @@ import {
   Facebook,
   Youtube,
   ArrowLeft,
+  ScanEyeIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -30,7 +31,7 @@ export default function AboutSIMDIKPage() {
       title: "Mengamati dan mengalisis sitem informasi yang sudah ada",
       description:
         "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
-      icon: BookOpen,
+      icon: ScanEyeIcon,
       date: "Sep 2024 - Des 2024",
       location: "Dinas Pendidikan",
       image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.34%20(1).jpeg",
