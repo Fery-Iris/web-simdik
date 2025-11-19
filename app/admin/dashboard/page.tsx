@@ -640,21 +640,12 @@ export default function AdminDashboard() {
                     <div className="p-2">
                       <button 
                         className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
-                        onClick={() => alert('Fitur Profile akan segera tersedia')}
+                        onClick={() => {
+                          router.push('/admin/profile')
+                          setShowUserMenu(false)
+                        }}
                       >
                         Profile Saya
-                      </button>
-                      <button 
-                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
-                        onClick={() => alert('Fitur Pengaturan akan segera tersedia')}
-                      >
-                        Pengaturan
-                      </button>
-                      <button 
-                        className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
-                        onClick={() => alert('Fitur Bantuan akan segera tersedia')}
-                      >
-                        Bantuan
                       </button>
                       <div className="border-t border-border my-2"></div>
                       <button 
