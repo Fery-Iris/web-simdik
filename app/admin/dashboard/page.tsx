@@ -444,6 +444,7 @@ export default function AdminDashboard() {
     
     return {
       id: reservation.id,
+      queueNumber: reservation.queueNumber || reservation.id,
       reporter: reservation.name || reservation.institutionName || 'N/A',
       category: reservation.layanan?.name || reservation.service || 'Reservasi',
       status: statusText,
@@ -781,7 +782,7 @@ export default function AdminDashboard() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>ID Laporan</TableHead>
+                    <TableHead>No. Tiket</TableHead>
                     <TableHead>Pelapor</TableHead>
                     <TableHead>Kategori</TableHead>
                     <TableHead>Status</TableHead>
@@ -816,7 +817,7 @@ export default function AdminDashboard() {
                       }
                       return (
                         <TableRow key={report.id}>
-                          <TableCell className="font-medium">{report.id}</TableCell>
+                          <TableCell className="font-medium">{report.queueNumber}</TableCell>
                           <TableCell>{report.reporter}</TableCell>
                           <TableCell>{report.category}</TableCell>
                           <TableCell>
@@ -862,8 +863,8 @@ export default function AdminDashboard() {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">ID Laporan</p>
-                  <p className="text-lg font-semibold">{selectedReport.id}</p>
+                  <p className="text-sm font-medium text-muted-foreground">No. Tiket</p>
+                  <p className="text-lg font-semibold">{selectedReport.queueNumber}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Status</p>
