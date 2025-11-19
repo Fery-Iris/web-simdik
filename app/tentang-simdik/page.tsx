@@ -33,7 +33,7 @@ export default function AboutSIMDIKPage() {
       description:
         "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
       icon: ScanEyeIcon,
-      date: "Sep 2024 - Des 2024",
+      date: "Agt 2025 - Sept 2025",
       location: "Dinas Pendidikan",
       image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.34%20(1).jpeg",
     },
@@ -42,7 +42,7 @@ export default function AboutSIMDIKPage() {
       description:
         "Membuat desain awal sistem reservasi yang terintegrasi untuk memudahkan pengelolaan data pendidikan dan informasi di Dinas Pendidikan Kota Banjarmasin.",
       icon: PenSquare,
-      date: "Jan 2025 - Mar 2025",
+      date: "Agt 2025 - Sept 2025",
       location: "Dinas Pendidikan",
       image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.02.33.jpeg",
     },

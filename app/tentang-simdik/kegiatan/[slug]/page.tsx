@@ -33,7 +33,7 @@ const activityDetails = {
     description:
       "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
     icon: ScanEyeIcon,
-    date: "Sep 2024 - Des 2024",
+    date: "Agt 2025 - Sept 2025",
     location: "Dinas Pendidikan",
     fullDescription:
       "Kegiatan mengamati dan menganalisis sistem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasin merupakan langkah awal yang krusial dalam upaya peningkatan pengelolaan data pendidikan. Melalui kegiatan ini, tim akan melakukan evaluasi menyeluruh terhadap sistem yang sedang berjalan, termasuk infrastruktur teknologi, proses bisnis, serta keterlibatan pengguna.",
@@ -62,7 +62,7 @@ const activityDetails = {
     description:
       "Kegiatan ini fokus pada perancangan sistem reservasi yang efisien dan user-friendly untuk memudahkan akses informasi dan layanan pendidikan bagi masyarakat Banjarmasin.",
     icon: PenSquare,
-    date: "Jan 2025 - Mar 2025",
+    date: "Agt 2025 - Sept 2025",
     location: "Dinas Pendidikan",
     fullDescription:
       "Kegiatan mendesain SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi) merupakan langkah strategis dalam meningkatkan layanan pendidikan di Kota Banjarmasin. Sistem ini dirancang untuk memberikan kemudahan akses informasi dan layanan pendidikan kepada masyarakat melalui platform digital yang terintegrasi.",
