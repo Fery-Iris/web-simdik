@@ -158,22 +158,55 @@ export default function AdminDashboard() {
         setReservationsByMonth(monthCounts)
         
         // Calculate service progress (percentage of total reservations per service)
-        const serviceMap: { [key: string]: number } = {}
+        // Only show 4 main categories: PTK, SD, SMP, PAUD
+        const serviceCategories = {
+          'PTK (Pendidik dan Tenaga Kependidikan)': 0,
+          'SD Umum': 0,
+          'SMP Umum': 0,
+          'PAUD': 0
+        }
+        
         reservations.forEach((reservation: any) => {
-          const serviceName = reservation.layanan?.name || reservation.service || 'Lainnya'
-          serviceMap[serviceName] = (serviceMap[serviceName] || 0) + 1
+          const serviceName = reservation.layanan?.name || reservation.service || ''
+          
+          if (serviceName.includes('PTK')) {
+            serviceCategories['PTK (Pendidik dan Tenaga Kependidikan)']++
+          } else if (serviceName.includes('SD')) {
+            serviceCategories['SD Umum']++
+          } else if (serviceName.includes('SMP')) {
+            serviceCategories['SMP Umum']++
+          } else if (serviceName.includes('PAUD')) {
+            serviceCategories['PAUD']++
+          }
         })
         
         const totalRes = reservations.length || 1
-        const progressData = Object.entries(serviceMap).map(([name, count]) => ({
-          name,
-          progress: Math.round((count / totalRes) * 100),
-          count,
-          color: name.includes('PTK') ? 'bg-blue-500' : 
-                 name.includes('SD') ? 'bg-green-500' : 
-                 name.includes('SMP') ? 'bg-yellow-500' : 
-                 name.includes('PAUD') ? 'bg-purple-500' : 'bg-gray-500'
-        }))
+        const progressData = [
+          {
+            name: 'PTK (Pendidik dan Tenaga Kependidikan)',
+            progress: Math.round((serviceCategories['PTK (Pendidik dan Tenaga Kependidikan)'] / totalRes) * 100),
+            count: serviceCategories['PTK (Pendidik dan Tenaga Kependidikan)'],
+            color: 'bg-blue-500'
+          },
+          {
+            name: 'SD Umum',
+            progress: Math.round((serviceCategories['SD Umum'] / totalRes) * 100),
+            count: serviceCategories['SD Umum'],
+            color: 'bg-green-500'
+          },
+          {
+            name: 'SMP Umum',
+            progress: Math.round((serviceCategories['SMP Umum'] / totalRes) * 100),
+            count: serviceCategories['SMP Umum'],
+            color: 'bg-yellow-500'
+          },
+          {
+            name: 'PAUD',
+            progress: Math.round((serviceCategories['PAUD'] / totalRes) * 100),
+            count: serviceCategories['PAUD'],
+            color: 'bg-purple-500'
+          }
+        ]
         
         setServiceProgress(progressData)
         
@@ -243,12 +276,7 @@ export default function AdminDashboard() {
         display: false,
       },
       title: {
-        display: true,
-        text: 'Total Data Sistem',
-        font: {
-          size: 16,
-          weight: 'bold' as const,
-        },
+        display: false,
       },
     },
     scales: {
@@ -320,12 +348,12 @@ export default function AdminDashboard() {
         backgroundColor: [
           'rgb(34, 197, 94)',   // green
           'rgb(59, 130, 246)',  // blue
-          'rgb(14, 165, 233)',  // cyan
+          'rgb(239, 68, 68)',   // red
         ],
         borderColor: [
           'rgb(34, 197, 94)',
           'rgb(59, 130, 246)',
-          'rgb(14, 165, 233)',
+          'rgb(239, 68, 68)',
         ],
         borderWidth: 2,
       },
@@ -734,7 +762,7 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle className="text-base lg:text-lg">Progress Layanan</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 {serviceProgress.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     Belum ada data reservasi layanan
@@ -766,7 +794,7 @@ export default function AdminDashboard() {
                 <CardTitle className="text-base lg:text-lg">Total Data Sistem</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="w-full h-[280px]">
+                <div className="w-full h-[240px]">
                   <Bar data={chartData} options={chartOptions} />
                 </div>
               </CardContent>
