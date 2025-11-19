@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ScanEyeIcon,
+  PenSquare,
 } from "lucide-react"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -27,7 +28,7 @@ import { useState } from "react"
 import { notFound } from "next/navigation"
 
 const activityDetails = {
-  "mengamati-dan-mengalisis-sitem-informasi-yang-sudah-ada-di-dinas-pendidikan-kota-banjarmasin": {
+  "mengamati-dan-mengalisis-sitem-informasi-yang-sudah-ada": {
     title: "Mengamati dan mengalisis sitem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasi",
     description:
       "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
@@ -56,39 +57,32 @@ const activityDetails = {
       },
     ],
   },
-  "pelatihan-guru-berbasis-digital": {
-    title: "Pelatihan Guru Berbasis Digital",
+  "mendesain-siredi-sistem-reservasi-dinas-pendidikan-dan-informasi": {
+    title: "Mendesain SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)",
     description:
-      "Program pelatihan intensif untuk meningkatkan kompetensi guru dalam pemanfaatan teknologi digital untuk pembelajaran.",
-    icon: Lightbulb,
+      "Kegiatan ini fokus pada perancangan sistem reservasi yang efisien dan user-friendly untuk memudahkan akses informasi dan layanan pendidikan bagi masyarakat Banjarmasin.",
+    icon: PenSquare,
     date: "Jan 2025 - Mar 2025",
-    location: "Pusat Pelatihan Guru",
+    location: "Dinas Pendidikan",
     fullDescription:
-      "Program pelatihan guru berbasis digital dirancang untuk mempersiapkan tenaga pendidik menghadapi era digitalisasi pendidikan. Pelatihan ini mencakup penggunaan platform pembelajaran online, pengembangan konten digital interaktif, dan strategi pembelajaran hybrid yang efektif.",
+      "Kegiatan mendesain SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi) merupakan langkah strategis dalam meningkatkan layanan pendidikan di Kota Banjarmasin. Sistem ini dirancang untuk memberikan kemudahan akses informasi dan layanan pendidikan kepada masyarakat melalui platform digital yang terintegrasi.",
     objectives: [
-      "Meningkatkan literasi digital guru di seluruh jenjang pendidikan",
-      "Mengembangkan kemampuan membuat konten pembelajaran digital",
-      "Memperkenalkan platform dan tools pembelajaran modern",
-      "Membangun mindset adaptif terhadap teknologi pendidikan",
+      "Merancang sistem reservasi yang efisien dan user-friendly",
+      "Memudahkan akses informasi dan layanan pendidikan bagi masyarakat Banjarmasin",
+      "Meningkatkan transparansi dan akuntabilitas layanan pendidikan",
     ],
     photos: [
       {
-        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
-        title: "Sesi Pelatihan Platform Digital",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.02.33.jpeg",
+        title: "sesi perancangan sistem",
         description:
-          "Guru-guru antusias mengikuti pelatihan penggunaan platform pembelajaran digital untuk meningkatkan kualitas mengajar.",
-      },
-      {
-        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.38%20(1).jpeg",
-        title: "Workshop Pembuatan Konten",
-        description:
-          "Workshop hands-on pembuatan konten pembelajaran interaktif menggunakan berbagai aplikasi dan tools digital terkini.",
+          "Merancang arsitektur dan alur kerja sistem reservasi SIREDI.",
       },
       {
         url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.38.jpeg",
-        title: "Praktik Mengajar Digital",
+        title: "Pembentukan Prototipe",
         description:
-          "Sesi praktik mengajar dengan memanfaatkan teknologi digital, dimana guru dapat langsung menerapkan ilmu yang telah dipelajari.",
+          "merancang prototipe awal dari sistem reservasi SIREDI.",
       },
     ],
   },

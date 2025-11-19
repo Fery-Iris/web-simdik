@@ -15,6 +15,7 @@ import {
   Youtube,
   ArrowLeft,
   ScanEyeIcon,
+  PenSquare,
 } from "lucide-react"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -37,13 +38,13 @@ export default function AboutSIMDIKPage() {
       image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.34%20(1).jpeg",
     },
     {
-      title: "Pelatihan Guru Berbasis Digital",
+      title: "Mendesain SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)",
       description:
-        "Program pelatihan intensif untuk meningkatkan kompetensi guru dalam pemanfaatan teknologi digital untuk pembelajaran.",
-      icon: Lightbulb,
+        "Membuat desain awal sistem reservasi yang terintegrasi untuk memudahkan pengelolaan data pendidikan dan informasi di Dinas Pendidikan Kota Banjarmasin.",
+      icon: PenSquare,
       date: "Jan 2025 - Mar 2025",
-      location: "Pusat Pelatihan Guru",
-      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
+      location: "Dinas Pendidikan",
+      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.02.33.jpeg",
     },
     {
       title: "Evaluasi Kualitas Pendidikan Tahunan",
