@@ -16,6 +16,7 @@ import {
   ArrowLeft,
   ScanEyeIcon,
   PenSquare,
+  LucideComputer,
 } from "lucide-react"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -47,12 +48,12 @@ export default function AboutSIMDIKPage() {
       image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.02.33.jpeg",
     },
     {
-      title: "Evaluasi Kualitas Pendidikan Tahunan",
-      description: "Melakukan evaluasi menyeluruh terhadap kualitas pendidikan di seluruh sekolah di Banjarmasin.",
-      icon: CheckCircle,
-      date: "Apr 2025 - Jun 2025",
-      location: "Seluruh Sekolah",
-      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.36.jpeg",
+      title: "Pengkodean (Development) SIREDI",
+      description: "Mengembangkan sistem reservasi Dinas Pendidikan dan Informasi (SIREDI) berdasarkan desain yang telah dibuat.",
+      icon: LucideComputer,
+      date: "Sept 2025 - Okt 2025",
+      location: "Dinas Pendidikan",
+      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.54.34%20(1).jpeg",
     },
     {
       title: "Sosialisasi Program Beasiswa",

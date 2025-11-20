@@ -17,6 +17,7 @@ import {
   ChevronRight,
   ScanEyeIcon,
   PenSquare,
+  LucideComputer,
 } from "lucide-react"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -86,38 +87,32 @@ const activityDetails = {
       },
     ],
   },
-  "evaluasi-kualitas-pendidikan-tahunan": {
-    title: "Evaluasi Kualitas Pendidikan Tahunan",
-    description: "Melakukan evaluasi menyeluruh terhadap kualitas pendidikan di seluruh sekolah di Banjarmasin.",
-    icon: CheckCircle,
-    date: "Apr 2025 - Jun 2025",
-    location: "Seluruh Sekolah",
+  "pengkodean-development-siredi": {
+    title: "Pengkodean (Development) SIREDI",
+    description: "Mengembangkan sistem reservasi Dinas Pendidikan dan Informasi (SIREDI) berdasarkan desain yang telah dibuat.",
+    icon: LucideComputer,
+    date: "Sept 2025 - Okt 2025",
+    location: "Dinas Pendidikan",
     fullDescription:
-      "Program evaluasi kualitas pendidikan tahunan merupakan kegiatan komprehensif untuk mengukur dan menilai standar pendidikan di seluruh sekolah di Kota Banjarmasin. Evaluasi ini mencakup aspek akademik, infrastruktur, kualitas pengajaran, dan pencapaian siswa.",
+      "Kegiatan pengkodean (development) SIREDI merupakan tahap krusial dalam mewujudkan sistem reservasi Dinas Pendidikan dan Informasi yang telah dirancang. Pada tahap ini, tim pengembang akan menerjemahkan desain sistem menjadi kode program yang fungsional dan dapat dioperasikan. Proses pengkodean melibatkan berbagai aspek teknis, termasuk pemilihan bahasa pemrograman, pengembangan database, serta integrasi dengan sistem yang sudah ada.",
     objectives: [
-      "Mengukur pencapaian standar pendidikan nasional",
-      "Mengidentifikasi area yang perlu perbaikan",
-      "Memberikan rekomendasi peningkatan kualitas",
-      "Memastikan pemerataan kualitas pendidikan",
+      "Menerjemahkan desain sistem menjadi kode program yang fungsional",
+      "Mengembangkan database yang efisien untuk mendukung operasional SIREDI",
+      "Melakukan integrasi dengan sistem informasi pendidikan yang sudah ada",
+      "Melakukan pengujian awal untuk memastikan sistem berjalan sesuai spesifikasi",
     ],
     photos: [
       {
-        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.36.jpeg",
-        title: "Tim Evaluasi di Lapangan",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.54.34%20(1).jpeg",
+        title: "Tim Pengembang Sedang mengoding",
         description:
-          "Tim evaluator dari Dinas Pendidikan melakukan kunjungan langsung ke sekolah-sekolah untuk menilai kondisi dan kualitas pendidikan.",
+          "Tim pengembang sedang bekerja keras mengkode sistem reservasi SIREDI sesuai dengan desain yang telah dibuat.",
       },
       {
-        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.37.jpeg",
-        title: "Wawancara dengan Stakeholder",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.54.35%20(1).jpeg",
+        title: "Tim pengembang berdiskusi",
         description:
-          "Sesi wawancara mendalam dengan kepala sekolah, guru, dan siswa untuk mendapatkan gambaran komprehensif kualitas pendidikan.",
-      },
-      {
-        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.32.jpeg",
-        title: "Analisis Data dan Pelaporan",
-        description:
-          "Tim ahli melakukan analisis data hasil evaluasi untuk menyusun laporan dan rekomendasi peningkatan kualitas pendidikan.",
+          "Tim pengembang berdiskusi untuk menyelesaikan tantangan teknis selama proses pengkodean SIREDI.",
       },
     ],
   },
