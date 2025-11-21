@@ -18,6 +18,7 @@ import {
   ScanEyeIcon,
   PenSquare,
   LucideComputer,
+  MessageCircleCodeIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -116,39 +117,32 @@ const activityDetails = {
       },
     ],
   },
-  "sosialisasi-program-beasiswa": {
-    title: "Sosialisasi Program Beasiswa",
+  "mendiskusikan-website-siredi-dengan-dinas-pendidikan-kota-banjarmasin": {
+    title: "Mendiskusikan website SIREDI dengan Dinas Pendidikan Kota Banjarmasin",
     description:
-      "Mengadakan sosialisasi program beasiswa bagi siswa berprestasi dan kurang mampu di berbagai jenjang pendidikan.",
-    icon: GraduationCap,
-    date: "Jul 2025",
-    location: "Sekolah & Online",
+      "Melakukan diskusi mendalam dengan pihak Dinas Pendidikan untuk memastikan bahwa website SIREDI memenuhi kebutuhan dan harapan mereka dalam pengelolaan data reservasi.",
+    icon: MessageCircleCodeIcon,
+    date: "Nov 2025",
+    location: "Dinas Pendidikan",
     fullDescription:
-      "Program sosialisasi beasiswa bertujuan untuk memastikan informasi tentang berbagai program beasiswa dapat diakses oleh seluruh siswa di Kota Banjarmasin. Kegiatan ini dilakukan secara hybrid dengan kombinasi kunjungan langsung ke sekolah dan platform online.",
+      "Kegiatan mendiskusikan website SIREDI dengan Dinas Pendidikan Kota Banjarmasin merupakan langkah penting untuk memastikan bahwa sistem yang dikembangkan benar-benar sesuai dengan kebutuhan dan harapan pengguna akhir. Diskusi ini melibatkan berbagai pihak terkait, termasuk tim pengembang, serta staf Dinas Pendidikan.",
     objectives: [
-      "Meningkatkan akses informasi beasiswa bagi siswa",
-      "Membantu siswa berprestasi dan kurang mampu",
-      "Mengurangi angka putus sekolah karena faktor ekonomi",
-      "Mendorong peningkatan prestasi akademik siswa",
+      "Memastikan bahwa website SIREDI memenuhi kebutuhan dan harapan Dinas Pendidikan",
+      "Mendapatkan masukan dan umpan balik dari pihak Dinas Pendidikan untuk perbaikan sistem",
+      "Membangun komunikasi yang baik antara tim pengembang dan Dinas Pendidikan untuk kelancaran implementasi sistem",
     ],
     photos: [
       {
-        url: "/kegiatan/beasiswa-1.png",
-        title: "Presentasi Program Beasiswa",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
+        title: "Diskusi dengan staf Dinas Pendidikan",
         description:
-          "Penyampaian informasi lengkap tentang berbagai program beasiswa yang tersedia untuk siswa berprestasi dan kurang mampu.",
+          "Tim pengembang berdiskusi dengan staf Dinas Pendidikan untuk memahami kebutuhan mereka terkait website SIREDI.",
       },
       {
-        url: "/kegiatan/beasiswa-2.png",
-        title: "Sesi Tanya Jawab Siswa",
+        url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.32.jpeg",
+        title: "Menunjukkan Progres Website",
         description:
-          "Siswa antusias mengajukan pertanyaan tentang persyaratan, proses pendaftaran, dan tips mendapatkan beasiswa.",
-      },
-      {
-        url: "/kegiatan/beasiswa-3.png",
-        title: "Pendampingan Pendaftaran",
-        description:
-          "Tim dari Dinas Pendidikan memberikan pendampingan langsung kepada siswa dalam proses pendaftaran beasiswa.",
+          "Tim pengembang menjelaskan progres pengembangan website SIREDI kepada pihak Dinas Pendidikan.",
       },
     ],
   },

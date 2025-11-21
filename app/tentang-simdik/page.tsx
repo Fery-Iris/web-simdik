@@ -17,6 +17,7 @@ import {
   ScanEyeIcon,
   PenSquare,
   LucideComputer,
+  MessageCircleCodeIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
@@ -56,13 +57,13 @@ export default function AboutSIMDIKPage() {
       image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.54.34%20(1).jpeg",
     },
     {
-      title: "Sosialisasi Program Beasiswa",
+      title: "Mendiskusikan website SIREDI dengan Dinas Pendidikan Kota Banjarmasin",
       description:
-        "Mengadakan sosialisasi program beasiswa bagi siswa berprestasi dan kurang mampu di berbagai jenjang pendidikan.",
-      icon: GraduationCap,
-      date: "Jul 2025",
-      location: "Sekolah & Online",
-      image: "/kegiatan/beasiswa-1.png",
+        "Melakukan diskusi mendalam dengan pihak Dinas Pendidikan untuk memastikan bahwa website SIREDI memenuhi kebutuhan dan harapan mereka dalam pengelolaan data reservasi.",
+      icon: MessageCircleCodeIcon,
+      date: "Nov 2025",
+      location: "Dinas Pendidikan",
+      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
     },
     {
       title: "Pengembangan Sistem Informasi Pendidikan",
