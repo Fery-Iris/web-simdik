@@ -512,12 +512,15 @@ export default function ActivityDetailPage({
                 ].map((social, index) => {
                   const Icon = social.icon;
                   return (
-                    <Link
+                    <a // 1. Gunakan tag <a> untuk link eksternal
                       key={index}
-                      href="#"
-                      className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1`}>
+                      href={social.href} // 2. INI KOREKSINYA: Ambil url dari social.href
+                      target="_blank" // 3. Buka di tab baru agar user tidak close web Anda
+                      rel="noreferrer" // 4. Keamanan standar
+                      className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 text-white`} // Tambah text-white agar icon terlihat jelas
+                    >
                       <Icon className="w-5 h-5" />
-                    </Link>
+                    </a>
                   );
                 })}
               </div>
