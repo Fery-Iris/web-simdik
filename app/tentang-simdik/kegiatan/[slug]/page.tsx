@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   School,
   Calendar,
@@ -19,19 +19,20 @@ import {
   PenSquare,
   LucideComputer,
   MessageCircleCodeIcon,
-} from "lucide-react"
-import Link from "next/link"
-import { ScrollReveal } from "@/components/scroll-reveal"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { SiteHeader } from "@/components/site-header"
-import { useState } from "react"
-import { notFound } from "next/navigation"
+} from "lucide-react";
+import Link from "next/link";
+import { ScrollReveal } from "@/components/scroll-reveal";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteHeader } from "@/components/site-header";
+import { useState } from "react";
+import { notFound } from "next/navigation";
 
 const activityDetails = {
   "mengamati-dan-mengalisis-sitem-informasi-yang-sudah-ada": {
-    title: "Mengamati dan mengalisis sitem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasi",
+    title:
+      "Mengamati dan mengalisis sitem informasi yang sudah ada di Dinas Pendidikan Kota Banjarmasi",
     description:
       "Kegiatan ini bertujuan untuk memahami sistem informasi yang telah diterapkan, mengidentifikasi kekuatan dan kelemahan, serta mencari peluang untuk peningkatan efisiensi dan efektivitas pengelolaan data pendidikan.",
     icon: ScanEyeIcon,
@@ -83,14 +84,14 @@ const activityDetails = {
       {
         url: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.38.jpeg",
         title: "Pembentukan Prototipe",
-        description:
-          "merancang prototipe awal dari sistem reservasi SIREDI.",
+        description: "merancang prototipe awal dari sistem reservasi SIREDI.",
       },
     ],
   },
   "pengkodean-development-siredi": {
     title: "Pengkodean (Development) SIREDI",
-    description: "Mengembangkan sistem reservasi Dinas Pendidikan dan Informasi (SIREDI) berdasarkan desain yang telah dibuat.",
+    description:
+      "Mengembangkan sistem reservasi Dinas Pendidikan dan Informasi (SIREDI) berdasarkan desain yang telah dibuat.",
     icon: LucideComputer,
     date: "Sept 2025 - Okt 2025",
     location: "Dinas Pendidikan",
@@ -118,7 +119,8 @@ const activityDetails = {
     ],
   },
   "mendiskusikan-website-siredi-dengan-dinas-pendidikan-kota-banjarmasin": {
-    title: "Mendiskusikan website SIREDI dengan Dinas Pendidikan Kota Banjarmasin",
+    title:
+      "Mendiskusikan website SIREDI dengan Dinas Pendidikan Kota Banjarmasin",
     description:
       "Melakukan diskusi mendalam dengan pihak Dinas Pendidikan untuk memastikan bahwa website SIREDI memenuhi kebutuhan dan harapan mereka dalam pengelolaan data reservasi.",
     icon: MessageCircleCodeIcon,
@@ -218,26 +220,32 @@ const activityDetails = {
       },
     ],
   },
-}
+};
 
-export default function ActivityDetailPage({ params }: { params: { slug: string } }) {
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
+export default function ActivityDetailPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-  const activity = activityDetails[params.slug as keyof typeof activityDetails]
+  const activity = activityDetails[params.slug as keyof typeof activityDetails];
 
   if (!activity) {
-    notFound()
+    notFound();
   }
 
-  const Icon = activity.icon
+  const Icon = activity.icon;
 
   const nextPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev + 1) % activity.photos.length)
-  }
+    setCurrentPhotoIndex((prev) => (prev + 1) % activity.photos.length);
+  };
 
   const prevPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev - 1 + activity.photos.length) % activity.photos.length)
-  }
+    setCurrentPhotoIndex(
+      (prev) => (prev - 1 + activity.photos.length) % activity.photos.length
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -248,8 +256,7 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
         <Link href="/tentang-simdik">
           <Button
             variant="outline"
-            className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 bg-transparent"
-          >
+            className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 bg-transparent">
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali ke Tentang SIREDI</span>
           </Button>
@@ -289,7 +296,9 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
       <section className="py-16 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-12">Dokumentasi Kegiatan</h2>
+            <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+              Dokumentasi Kegiatan
+            </h2>
           </ScrollReveal>
 
           {/* Main Photo Display */}
@@ -297,7 +306,9 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
             <ScrollReveal animation="scale" delay={200} duration={800}>
               <div className="relative h-96 md:h-[500px] rounded-lg overflow-hidden shadow-2xl">
                 <Image
-                  src={activity.photos[currentPhotoIndex].url || "/placeholder.svg"}
+                  src={
+                    activity.photos[currentPhotoIndex].url || "/placeholder.svg"
+                  }
                   alt={activity.photos[currentPhotoIndex].title}
                   fill
                   className="object-cover"
@@ -306,14 +317,12 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
                 {/* Navigation Arrows */}
                 <button
                   onClick={prevPhoto}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300"
-                >
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300">
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                   onClick={nextPhoto}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300"
-                >
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-300">
                   <ChevronRight className="w-6 h-6" />
                 </button>
 
@@ -328,7 +337,9 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
           {/* Photo Info */}
           <ScrollReveal animation="fade-up" delay={400} duration={800}>
             <div className="max-w-4xl mx-auto text-center mb-8">
-              <h3 className="text-2xl font-bold text-foreground mb-4">{activity.photos[currentPhotoIndex].title}</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-4">
+                {activity.photos[currentPhotoIndex].title}
+              </h3>
               <p className="text-muted-foreground text-lg leading-relaxed">
                 {activity.photos[currentPhotoIndex].description}
               </p>
@@ -347,9 +358,13 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
                       index === currentPhotoIndex
                         ? "ring-4 ring-blue-500 scale-110"
                         : "hover:scale-105 opacity-70 hover:opacity-100"
-                    }`}
-                  >
-                    <Image src={photo.url || "/placeholder.svg"} alt={photo.title} fill className="object-cover" />
+                    }`}>
+                    <Image
+                      src={photo.url || "/placeholder.svg"}
+                      alt={photo.title}
+                      fill
+                      className="object-cover"
+                    />
                   </button>
                 ))}
               </div>
@@ -363,25 +378,33 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <ScrollReveal animation="fade-up" delay={0} duration={800}>
-              <h2 className="text-3xl font-bold text-foreground mb-8">Detail Kegiatan</h2>
+              <h2 className="text-3xl font-bold text-foreground mb-8">
+                Detail Kegiatan
+              </h2>
             </ScrollReveal>
 
             <ScrollReveal animation="fade-up" delay={200} duration={800}>
               <div className="prose prose-lg max-w-none mb-12">
-                <p className="text-muted-foreground leading-relaxed text-lg">{activity.fullDescription}</p>
+                <p className="text-muted-foreground leading-relaxed text-lg">
+                  {activity.fullDescription}
+                </p>
               </div>
             </ScrollReveal>
 
             <ScrollReveal animation="fade-up" delay={400} duration={800}>
               <div>
-                <h3 className="text-2xl font-bold text-foreground mb-6">Tujuan Kegiatan</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-6">
+                  Tujuan Kegiatan
+                </h3>
                 <ul className="space-y-4">
                   {activity.objectives.map((objective, index) => (
                     <li key={index} className="flex items-start space-x-3">
                       <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                         <CheckCircle className="w-4 h-4" />
                       </div>
-                      <span className="text-muted-foreground leading-relaxed">{objective}</span>
+                      <span className="text-muted-foreground leading-relaxed">
+                        {objective}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -401,34 +424,44 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                   <School className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)</span>
+                <span className="text-xl font-bold text-white">
+                  SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)
+                </span>
               </div>
               <p className="text-blue-200 leading-relaxed">
-                Membangun masa depan pendidikan Banjarmasin melalui inovasi, kolaborasi, dan komitmen untuk mencerdaskan
-                generasi bangsa.
+                Membangun masa depan pendidikan Banjarmasin melalui inovasi,
+                kolaborasi, dan komitmen untuk mencerdaskan generasi bangsa.
               </p>
             </div>
 
             {/* Column 2: Quick Links */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Tautan Cepat</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Tautan Cepat
+              </h3>
               <ul className="space-y-2">
-                {["Beranda", "Tentang SIREDI", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map((item, index) => (
+                {[
+                  "Beranda",
+                  "Tentang SIREDI",
+                  "Direktori Sekolah",
+                  "Berita",
+                  "Agenda",
+                  "Kontak",
+                ].map((item, index) => (
                   <li key={index}>
                     <Link
                       href={
                         item === "Direktori Sekolah"
                           ? "/direktori-sekolah"
                           : item === "Tentang SIREDI"
-                            ? "/tentang-simdik"
-                            : item === "Agenda"
-                              ? "#agenda"
-                              : item === "Kontak"
-                                ? "#kontak"
-                                : "#"
+                          ? "/tentang-simdik"
+                          : item === "Agenda"
+                          ? "#agenda"
+                          : item === "Kontak"
+                          ? "#kontak"
+                          : "#"
                       }
-                      className="text-blue-200 hover:text-white transition-all duration-300 hover:translate-x-2 inline-block"
-                    >
+                      className="text-blue-200 hover:text-white transition-all duration-300 hover:translate-x-2 inline-block">
                       {item}
                     </Link>
                   </li>
@@ -438,7 +471,9 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
 
             {/* Column 3: Contact Info */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Kontak Kami</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Kontak Kami
+              </h3>
               <div className="space-y-3 text-blue-200">
                 <p>
                   Jl. Sultan Adam No. 18
@@ -454,23 +489,36 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
 
             {/* Column 4: Social Media */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Media Sosial</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Media Sosial
+              </h3>
               <div className="flex space-x-4">
                 {[
-                  { icon: Instagram, color: "hover:bg-pink-600" },
-                  { icon: Facebook, color: "hover:bg-blue-600" },
-                  { icon: Youtube, color: "hover:bg-red-600" },
+                  {
+                    icon: Instagram,
+                    color: "hover:bg-pink-600",
+                    href: "https://www.instagram.com/disdik_banjarmasin?igsh=ank2bWR4anA3Y2tt",
+                  },
+                  {
+                    icon: Facebook,
+                    color: "hover:bg-blue-600",
+                    href: "https://www.facebook.com/share/1BSEjYXn2p/",
+                  },
+                  {
+                    icon: Youtube,
+                    color: "hover:bg-red-600",
+                    href: "https://youtube.com/@dinaspendidikankotabanjarm5448?si=bzyM0JXPoW0asGaR",
+                  },
                 ].map((social, index) => {
-                  const Icon = social.icon
+                  const Icon = social.icon;
                   return (
                     <Link
                       key={index}
                       href="#"
-                      className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1`}
-                    >
+                      className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1`}>
                       <Icon className="w-5 h-5" />
                     </Link>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -478,10 +526,13 @@ export default function ActivityDetailPage({ params }: { params: { slug: string 
 
           {/* Copyright */}
           <div className="border-t border-blue-800 mt-8 pt-8 text-center text-blue-200">
-            <p>&copy; {new Date().getFullYear()} Dinas Pendidikan Kota Banjarmasin. Semua hak dilindungi.</p>
+            <p>
+              &copy; {new Date().getFullYear()} Dinas Pendidikan Kota
+              Banjarmasin. Semua hak dilindungi.
+            </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
