@@ -1,5 +1,5 @@
-"use client"
-import { Card, CardContent } from "@/components/ui/card"
+"use client";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   School,
   Calendar,
@@ -18,16 +18,19 @@ import {
   PenSquare,
   LucideComputer,
   MessageCircleCodeIcon,
-} from "lucide-react"
-import Link from "next/link"
-import { ScrollReveal } from "@/components/scroll-reveal"
-import { useStaggeredScrollAnimation } from "@/hooks/use-scroll-animation"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
+} from "lucide-react";
+import Link from "next/link";
+import { ScrollReveal } from "@/components/scroll-reveal";
+import { useStaggeredScrollAnimation } from "@/hooks/use-scroll-animation";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function AboutSIMDIKPage() {
-  const [setActivityRef, activityVisible] = useStaggeredScrollAnimation(6, { delay: 150, triggerOnce: true })
+  const [setActivityRef, activityVisible] = useStaggeredScrollAnimation(6, {
+    delay: 150,
+    triggerOnce: true,
+  });
 
   const officeActivities = [
     {
@@ -37,33 +40,40 @@ export default function AboutSIMDIKPage() {
       icon: ScanEyeIcon,
       date: "Agt 2025 - Sept 2025",
       location: "Dinas Pendidikan",
-      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.34%20(1).jpeg",
+      image:
+        "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.34%20(1).jpeg",
     },
     {
-      title: "Mendesain SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)",
+      title:
+        "Mendesain SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)",
       description:
         "Membuat desain awal sistem reservasi yang terintegrasi untuk memudahkan pengelolaan data pendidikan dan informasi di Dinas Pendidikan Kota Banjarmasin.",
       icon: PenSquare,
       date: "Agt 2025 - Sept 2025",
       location: "Dinas Pendidikan",
-      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.02.33.jpeg",
+      image:
+        "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.02.33.jpeg",
     },
     {
       title: "Pengkodean (Development) SIREDI",
-      description: "Mengembangkan sistem reservasi Dinas Pendidikan dan Informasi (SIREDI) berdasarkan desain yang telah dibuat.",
+      description:
+        "Mengembangkan sistem reservasi Dinas Pendidikan dan Informasi (SIREDI) berdasarkan desain yang telah dibuat.",
       icon: LucideComputer,
       date: "Sept 2025 - Okt 2025",
       location: "Dinas Pendidikan",
-      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.54.34%20(1).jpeg",
+      image:
+        "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-19%20at%2009.54.34%20(1).jpeg",
     },
     {
-      title: "Mendiskusikan website SIREDI dengan Dinas Pendidikan Kota Banjarmasin",
+      title:
+        "Mendiskusikan website SIREDI dengan Dinas Pendidikan Kota Banjarmasin",
       description:
         "Melakukan diskusi mendalam dengan pihak Dinas Pendidikan untuk memastikan bahwa website SIREDI memenuhi kebutuhan dan harapan mereka dalam pengelolaan data reservasi.",
       icon: MessageCircleCodeIcon,
       date: "Nov 2025",
       location: "Dinas Pendidikan",
-      image: "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
+      image:
+        "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
     },
     {
       title: "Pengembangan Sistem Informasi Pendidikan",
@@ -83,7 +93,7 @@ export default function AboutSIMDIKPage() {
       location: "Berbagai Lokasi",
       image: "/kegiatan/forum-1.png",
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -105,22 +115,19 @@ export default function AboutSIMDIKPage() {
             <nav className="hidden md:flex items-center space-x-8">
               <Link
                 href="/"
-                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group"
-              >
+                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group">
                 Beranda
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <Link
                 href="/tentang-simdik"
-                className="text-primary font-medium transition-all duration-300 relative group"
-              >
+                className="text-primary font-medium transition-all duration-300 relative group">
                 Tentang SIREDI
                 <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600"></span>
               </Link>
               <Link
                 href="/direktori-sekolah"
-                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group"
-              >
+                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group">
                 Direktori Sekolah
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
               </Link>
@@ -148,7 +155,8 @@ export default function AboutSIMDIKPage() {
             className="object-cover object-center animate-bg-pan"
             priority
           />
-          <div className="absolute inset-0 bg-blue-900 opacity-60"></div> {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-blue-900 opacity-60"></div>{" "}
+          {/* Dark overlay for text readability */}
         </div>
         {/* Background Animation - More colorful and dynamic "pernak-pernik" */}
         <div className="absolute inset-0 opacity-30">
@@ -187,7 +195,8 @@ export default function AboutSIMDIKPage() {
           </ScrollReveal>
           <ScrollReveal animation="fade-up" delay={200} duration={800}>
             <p className="text-xl text-gray-100 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-              Mewujudkan pendidikan berkualitas dan merata untuk seluruh masyarakat Banjarmasin.
+              Mewujudkan pendidikan berkualitas dan merata untuk seluruh
+              masyarakat Banjarmasin.
             </p>
           </ScrollReveal>
         </div>
@@ -198,8 +207,7 @@ export default function AboutSIMDIKPage() {
         <Link href="/">
           <Button
             variant="outline"
-            className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 bg-transparent"
-          >
+            className="flex items-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 bg-transparent">
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali ke Beranda</span>
           </Button>
@@ -215,33 +223,54 @@ export default function AboutSIMDIKPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="fade-up" delay={0} duration={800}>
-            <h2 className="text-3xl font-bold text-center text-foreground mb-8">Visi, Misi, dan Motto Kami</h2>
+            <h2 className="text-3xl font-bold text-center text-foreground mb-8">
+              Visi, Misi, dan Motto Kami
+            </h2>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ScrollReveal animation="fade-right" delay={200} duration={800}>
               <div>
-                <h3 className="text-2xl font-semibold text-primary mb-4">Visi</h3>
+                <h3 className="text-2xl font-semibold text-primary mb-4">
+                  Visi
+                </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Menjadi pelopor pendidikan inovatif dan inklusif yang menghasilkan generasi cerdas, berkarakter, dan
-                  berdaya saing global di Kota Banjarmasin.
+                  Menjadi pelopor pendidikan inovatif dan inklusif yang
+                  menghasilkan generasi cerdas, berkarakter, dan berdaya saing
+                  global di Kota Banjarmasin.
                 </p>
               </div>
             </ScrollReveal>
             <ScrollReveal animation="fade-left" delay={400} duration={800}>
               <div>
-                <h3 className="text-2xl font-semibold text-primary mb-4">Misi</h3>
+                <h3 className="text-2xl font-semibold text-primary mb-4">
+                  Misi
+                </h3>
                 <ul className="list-disc list-inside text-muted-foreground space-y-2 leading-relaxed">
-                  <li>Meningkatkan kualitas dan relevansi kurikulum pendidikan.</li>
-                  <li>Mengembangkan kompetensi tenaga pendidik dan kependidikan.</li>
-                  <li>Memfasilitasi akses pendidikan yang merata dan berkualitas.</li>
-                  <li>Mendorong inovasi dan pemanfaatan teknologi dalam pembelajaran.</li>
-                  <li>Membangun kemitraan strategis dengan berbagai pihak untuk kemajuan pendidikan.</li>
+                  <li>
+                    Meningkatkan kualitas dan relevansi kurikulum pendidikan.
+                  </li>
+                  <li>
+                    Mengembangkan kompetensi tenaga pendidik dan kependidikan.
+                  </li>
+                  <li>
+                    Memfasilitasi akses pendidikan yang merata dan berkualitas.
+                  </li>
+                  <li>
+                    Mendorong inovasi dan pemanfaatan teknologi dalam
+                    pembelajaran.
+                  </li>
+                  <li>
+                    Membangun kemitraan strategis dengan berbagai pihak untuk
+                    kemajuan pendidikan.
+                  </li>
                 </ul>
               </div>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={600} duration={800}>
               <div>
-                <h3 className="text-2xl font-semibold text-primary mb-4">Moto Pelayananan : IQRA</h3>
+                <h3 className="text-2xl font-semibold text-primary mb-4">
+                  Moto Pelayananan : IQRA
+                </h3>
                 <ul className="list-disc list-inside text-muted-foreground space-y-2 leading-relaxed">
                   <li>Integrity (Integritas).</li>
                   <li>Quality (Kualitas).</li>
@@ -249,7 +278,7 @@ export default function AboutSIMDIKPage() {
                   <li>Accountability (Akuntabilitas).</li>
                 </ul>
               </div>
-              </ScrollReveal>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -264,20 +293,21 @@ export default function AboutSIMDIKPage() {
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {officeActivities.map((activity, index) => {
-              const Icon = activity.icon
+              const Icon = activity.icon;
               const slug = activity.title
                 .toLowerCase()
                 .replace(/\s+/g, "-")
-                .replace(/[^\w-]/g, "")
+                .replace(/[^\w-]/g, "");
 
               return (
                 <div
                   key={index}
                   ref={setActivityRef(index)}
                   className={`transform transition-all duration-700 ease-out ${
-                    activityVisible[index] ? "opacity-100 translate-y-0 rotate-0" : "opacity-0 translate-y-8 rotate-1"
-                  }`}
-                >
+                    activityVisible[index]
+                      ? "opacity-100 translate-y-0 rotate-0"
+                      : "opacity-0 translate-y-8 rotate-1"
+                  }`}>
                   <Link href={`/tentang-simdik/kegiatan/${slug}`}>
                     <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400 cursor-pointer">
                       <div className="relative h-48 overflow-hidden">
@@ -303,7 +333,9 @@ export default function AboutSIMDIKPage() {
                             {activity.title}
                           </h3>
                         </div>
-                        <p className="text-muted-foreground mb-4 line-clamp-3">{activity.description}</p>
+                        <p className="text-muted-foreground mb-4 line-clamp-3">
+                          {activity.description}
+                        </p>
                         <div className="text-sm text-muted-foreground space-y-1">
                           <p className="flex items-center">
                             <Calendar className="w-4 h-4 mr-2 text-blue-500" />
@@ -318,7 +350,7 @@ export default function AboutSIMDIKPage() {
                     </Card>
                   </Link>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -334,34 +366,44 @@ export default function AboutSIMDIKPage() {
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                   <School className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)</span>
+                <span className="text-xl font-bold text-white">
+                  SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)
+                </span>
               </div>
               <p className="text-blue-200 leading-relaxed">
-                Membangun masa depan pendidikan Banjarmasin melalui inovasi, kolaborasi, dan komitmen untuk mencerdaskan
-                generasi bangsa.
+                Membangun masa depan pendidikan Banjarmasin melalui inovasi,
+                kolaborasi, dan komitmen untuk mencerdaskan generasi bangsa.
               </p>
             </div>
 
             {/* Column 2: Quick Links */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Tautan Cepat</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Tautan Cepat
+              </h3>
               <ul className="space-y-2">
-                {["Beranda", "Tentang SIREDI", "Direktori Sekolah", "Berita", "Agenda", "Kontak"].map((item, index) => (
+                {[
+                  "Beranda",
+                  "Tentang SIREDI",
+                  "Direktori Sekolah",
+                  "Berita",
+                  "Agenda",
+                  "Kontak",
+                ].map((item, index) => (
                   <li key={index}>
                     <Link
                       href={
                         item === "Direktori Sekolah"
                           ? "/direktori-sekolah"
                           : item === "Tentang SIREDI"
-                            ? "/tentang-simdik"
-                            : item === "Agenda"
-                              ? "#agenda"
-                              : item === "Kontak"
-                                ? "#kontak"
-                                : "#"
+                          ? "/tentang-simdik"
+                          : item === "Agenda"
+                          ? "#agenda"
+                          : item === "Kontak"
+                          ? "#kontak"
+                          : "#"
                       }
-                      className="text-blue-200 hover:text-white transition-all duration-300 hover:translate-x-2 inline-block"
-                    >
+                      className="text-blue-200 hover:text-white transition-all duration-300 hover:translate-x-2 inline-block">
                       {item}
                     </Link>
                   </li>
@@ -371,7 +413,9 @@ export default function AboutSIMDIKPage() {
 
             {/* Column 3: Contact Info */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Kontak Kami</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Kontak Kami
+              </h3>
               <div className="space-y-3 text-blue-200">
                 <p>
                   Jl. Sultan Adam No. 18
@@ -387,23 +431,39 @@ export default function AboutSIMDIKPage() {
 
             {/* Column 4: Social Media */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Media Sosial</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Media Sosial
+              </h3>
               <div className="flex space-x-4">
                 {[
-                  { icon: Instagram, color: "hover:bg-pink-600" },
-                  { icon: Facebook, color: "hover:bg-blue-600" },
-                  { icon: Youtube, color: "hover:bg-red-600" },
+                  {
+                    icon: Instagram,
+                    color: "hover:bg-pink-600",
+                    href: "https://www.instagram.com/disdik_banjarmasin?igsh=ank2bWR4anA3Y2tt",
+                  },
+                  {
+                    icon: Facebook,
+                    color: "hover:bg-blue-600",
+                    href: "https://www.facebook.com/share/1BSEjYXn2p/",
+                  },
+                  {
+                    icon: Youtube,
+                    color: "hover:bg-red-600",
+                    href: "https://youtube.com/@dinaspendidikankotabanjarm5448?si=bzyM0JXPoW0asGaR",
+                  },
                 ].map((social, index) => {
-                  const Icon = social.icon
+                  const Icon = social.icon;
                   return (
-                    <Link
+                    <a // 1. Gunakan tag <a> untuk link eksternal
                       key={index}
-                      href="#"
-                      className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1`}
+                      href={social.href} // 2. INI KOREKSINYA: Ambil url dari social.href
+                      target="_blank" // 3. Buka di tab baru agar user tidak close web Anda
+                      rel="noreferrer" // 4. Keamanan standar
+                      className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 text-white`} // Tambah text-white agar icon terlihat jelas
                     >
                       <Icon className="w-5 h-5" />
-                    </Link>
-                  )
+                    </a>
+                  );
                 })}
               </div>
             </div>
@@ -411,10 +471,13 @@ export default function AboutSIMDIKPage() {
 
           {/* Copyright */}
           <div className="border-t border-blue-800 mt-8 pt-8 text-center text-blue-200">
-            <p>&copy; {new Date().getFullYear()} Dinas Pendidikan Kota Banjarmasin. Semua hak dilindungi.</p>
+            <p>
+              &copy; {new Date().getFullYear()} Dinas Pendidikan Kota
+              Banjarmasin. Semua hak dilindungi.
+            </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
