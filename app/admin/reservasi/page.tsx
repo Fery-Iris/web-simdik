@@ -137,10 +137,10 @@ export default function AdminReservationsPage() {
 
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/admin/dashboard", active: false },
-    { icon: School, label: "Manajemen Sekolah", href: "/admin/schools", active: false },
-    { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news", active: false },
+    { icon: School, label: "Manajemen Sekolah", href: "/admin/sekolah", active: false },
+    { icon: Newspaper, label: "Manajemen Berita", href: "/admin/berita", active: false },
     { icon: Calendar, label: "Manajemen Agenda", href: "/admin/agenda", active: false },
-    { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations", active: true },
+    { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservasi", active: true },
   ]
 
   // Filter reservations based on selected filters

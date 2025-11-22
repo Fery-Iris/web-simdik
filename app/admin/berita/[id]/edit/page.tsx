@@ -61,7 +61,7 @@ export default function EditNewsPage() {
     setTimeout(() => {
       console.log("Updating news:", formData)
       setSaving(false)
-      router.push(`/admin/news/${params.id}`)
+      router.push(`/admin/berita/${params.id}`)
     }, 1000)
   }
 

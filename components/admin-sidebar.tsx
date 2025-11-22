@@ -38,10 +38,10 @@ export function AdminSidebar({ sidebarCollapsed, mobileMenuOpen, setMobileMenuOp
 
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/admin/dashboard" },
-    { icon: School, label: "Manajemen Sekolah", href: "/admin/schools" },
-    { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news" },
+    { icon: School, label: "Manajemen Sekolah", href: "/admin/sekolah" },
+    { icon: Newspaper, label: "Manajemen Berita", href: "/admin/berita" },
     { icon: Calendar, label: "Manajemen Agenda", href: "/admin/agenda" },
-    { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations" },
+    { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservasi" },
   ]
 
   return (

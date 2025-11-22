@@ -88,7 +88,7 @@ export default function NewsDetailPage() {
             </Button>
             <h1 className="text-3xl font-bold">Detail Berita</h1>
           </div>
-          <Button onClick={() => router.push(`/admin/news/${news.id}/edit`)}>
+          <Button onClick={() => router.push(`/admin/berita/${news.id}/edit`)}>
             <Edit className="w-4 h-4 mr-2" />
             Edit Berita
           </Button>

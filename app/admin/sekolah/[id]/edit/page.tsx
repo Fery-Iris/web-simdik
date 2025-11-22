@@ -69,7 +69,7 @@ export default function EditSchoolPage() {
     setTimeout(() => {
       console.log("Updating school:", formData)
       setSaving(false)
-      router.push(`/admin/schools/${params.id}`)
+      router.push(`/admin/sekolah/${params.id}`)
     }, 1000)
   }
 

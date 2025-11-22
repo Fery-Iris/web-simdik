@@ -69,10 +69,10 @@ export async function POST(request: NextRequest) {
     let folder = 'agendas'
     let prefix = 'agenda'
     
-    if (referer.includes('/admin/schools')) {
+    if (referer.includes('/admin/sekolah')) {
       folder = 'sekolahs'
       prefix = 'sekolah'
-    } else if (referer.includes('/admin/news')) {
+    } else if (referer.includes('/admin/berita')) {
       folder = 'beritas'
       prefix = 'berita'
     }

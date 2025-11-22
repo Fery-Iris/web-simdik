@@ -127,10 +127,10 @@ export default function AdminNewsPage() {
 
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/admin/dashboard", active: false },
-    { icon: School, label: "Manajemen Sekolah", href: "/admin/schools", active: false },
-    { icon: Newspaper, label: "Manajemen Berita", href: "/admin/news", active: true },
+    { icon: School, label: "Manajemen Sekolah", href: "/admin/sekolah", active: false },
+    { icon: Newspaper, label: "Manajemen Berita", href: "/admin/berita", active: true },
     { icon: Calendar, label: "Manajemen Agenda", href: "/admin/agenda", active: false },
-    { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservations", active: false },
+    { icon: Calendar, label: "Laporan Reservasi", href: "/admin/reservasi", active: false },
   ]
 
   const kategoriOptions = [

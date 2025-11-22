@@ -102,10 +102,10 @@ export default function AdminSchoolsPage() {
 
   const navigationItems = [
     { label: "Dashboard", href: "/admin/dashboard", icon: Home },
-    { label: "Manajemen Sekolah", href: "/admin/schools", icon: School, active: true },
-    { label: "Manajemen Berita", href: "/admin/news", icon: Newspaper },
+    { label: "Manajemen Sekolah", href: "/admin/sekolah", icon: School, active: true },
+    { label: "Manajemen Berita", href: "/admin/berita", icon: Newspaper },
     { label: "Manajemen Agenda", href: "/admin/agenda", icon: Calendar },
-    { label: "Laporan Reservasi", href: "/admin/reservations", icon: ClipboardList },
+    { label: "Laporan Reservasi", href: "/admin/reservasi", icon: ClipboardList },
   ]
 
   const handleLogout = async () => {

@@ -76,7 +76,7 @@ export default function SchoolDetailPage() {
             </Button>
             <h1 className="text-3xl font-bold">Detail Sekolah</h1>
           </div>
-          <Button onClick={() => router.push(`/admin/schools/${school.id}/edit`)}>
+          <Button onClick={() => router.push(`/admin/sekolah/${school.id}/edit`)}>
             <Edit className="w-4 h-4 mr-2" />
             Edit Sekolah
           </Button>
