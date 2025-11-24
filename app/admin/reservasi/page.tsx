@@ -30,6 +30,11 @@ import {
   Edit,
   Trash2,
   Save,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -60,6 +65,28 @@ interface Reservation {
   estimatedCallTime?: string
 }
 
+const SERVICE_NAME_MAP: Record<string, string> = {
+  'ptk (pendidik dan tenaga kependidikan)': 'ptk',
+  'ptk': 'ptk',
+  'sd umum': 'sd',
+  'sd': 'sd',
+  'smp umum': 'smp',
+  'smp': 'smp',
+  'paud': 'paud',
+}
+
+const getServiceKey = (reservation: Reservation) => {
+  if (reservation.layanan?.name) {
+    const key = SERVICE_NAME_MAP[reservation.layanan.name.trim().toLowerCase()]
+    if (key) return key
+  }
+  if (reservation.service) {
+    const key = SERVICE_NAME_MAP[reservation.service.trim().toLowerCase()]
+    if (key) return key
+  }
+  return reservation.service?.trim().toLowerCase() || ''
+}
+
 export default function AdminReservationsPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -73,9 +100,12 @@ export default function AdminReservationsPage() {
   const [deleteReservation, setDeleteReservation] = useState<Reservation | null>(null)
   const [statusFilter, setStatusFilter] = useState("all")
   const [serviceFilter, setServiceFilter] = useState("all")
+  const [searchTerm, setSearchTerm] = useState("")
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
 
   const router = useRouter()
 
@@ -146,13 +176,22 @@ export default function AdminReservationsPage() {
   // Filter reservations based on selected filters
   const filteredReservations = reservations.filter(reservation => {
     const statusMatch = statusFilter === "all" || reservation.status === statusFilter
-    // Check both service field and layanan relation for service filter
-    const serviceMatch = serviceFilter === "all" || 
-      reservation.service === serviceFilter || 
-      reservation.idLayanan === serviceFilter ||
-      (reservation.layanan && reservation.layanan.id === serviceFilter)
-    return statusMatch && serviceMatch
+    const serviceKey = getServiceKey(reservation)
+    const serviceMatch = serviceFilter === "all" || serviceKey === serviceFilter
+    const searchMatch =
+      searchTerm.trim() === "" ||
+      reservation.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reservation.queueNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reservation.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+    return statusMatch && serviceMatch && searchMatch
   })
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [statusFilter, serviceFilter, searchTerm, reservations])
+
+  const totalPages = Math.max(1, Math.ceil(filteredReservations.length / itemsPerPage))
+  const paginatedReservations = filteredReservations.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   // Calculate statistics
   const stats = {
@@ -526,61 +565,82 @@ export default function AdminReservationsPage() {
 
           {/* Reservation Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <Card className="bg-card">
+            <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Total Reservasi</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+                    <p className="text-sm text-gray-500 mb-1">Total Reservasi</p>
+                    <p className="text-2xl font-bold text-blue-600">{stats.total}</p>
                   </div>
-                  <Calendar className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
+                    <Calendar className="w-6 h-6 text-blue-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card">
+            <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Selesai</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.completed}</p>
+                    <p className="text-sm text-gray-500 mb-1">Selesai</p>
+                    <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
                   </div>
-                  <CheckCircle className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card">
+            <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Menunggu</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.waiting}</p>
+                    <p className="text-sm text-gray-500 mb-1">Menunggu</p>
+                    <p className="text-2xl font-bold text-orange-600">{stats.waiting}</p>
                   </div>
-                  <Clock className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
+                    <Clock className="w-6 h-6 text-orange-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-card">
+            <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Dibatalkan</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.cancelled}</p>
+                    <p className="text-sm text-gray-500 mb-1">Dibatalkan</p>
+                    <p className="text-2xl font-bold text-red-600">{stats.cancelled}</p>
                   </div>
-                  <XCircle className="w-8 h-8 text-muted-foreground" />
+                  <div className="bg-red-100 p-3 rounded-lg admin-icon-hover">
+                    <XCircle className="w-6 h-6 text-red-600" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="space-y-2">
+              <Label htmlFor="search-reservation">Cari Reservasi</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="search-reservation"
+                  placeholder="Cari nama, tiket, atau nomor telepon..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="status-filter">Filter Status</Label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="status-filter" className="w-full">
                   <SelectValue placeholder="Pilih status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -592,10 +652,10 @@ export default function AdminReservationsPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex-1">
+            <div className="space-y-2">
               <Label htmlFor="service-filter">Filter Layanan</Label>
               <Select value={serviceFilter} onValueChange={setServiceFilter}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="service-filter" className="w-full">
                   <SelectValue placeholder="Pilih layanan" />
                 </SelectTrigger>
                 <SelectContent>
@@ -648,7 +708,7 @@ export default function AdminReservationsPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                      {filteredReservations.map((reservation) => (
+                      {paginatedReservations.map((reservation) => (
                         <tr key={reservation.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400">
                             {reservation.queueNumber}
@@ -720,6 +780,59 @@ export default function AdminReservationsPage() {
                 </div>
               )}
             </CardContent>
+            {filteredReservations.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t">
+                <span className="text-sm text-muted-foreground">
+                  Menampilkan {(currentPage - 1) * itemsPerPage + 1}-
+                  {Math.min(currentPage * itemsPerPage, filteredReservations.length)} dari {filteredReservations.length} reservasi
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    aria-label="Halaman pertama"
+                  >
+                    <ChevronsLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    aria-label="Halaman sebelumnya"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <span className="text-sm font-medium min-w-[120px] text-center">
+                    Halaman {currentPage} / {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    aria-label="Halaman selanjutnya"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    aria-label="Halaman terakhir"
+                  >
+                    <ChevronsRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
         </main>
       </div>

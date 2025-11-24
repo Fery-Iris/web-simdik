@@ -28,6 +28,10 @@ import {
   Search,
   Upload,
   Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -67,6 +71,8 @@ export default function AdminSchoolsPage() {
   const [kecamatanFilter, setKecamatanFilter] = useState("Semua")
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
 
   const [formData, setFormData] = useState({
     nama: "",
@@ -341,6 +347,13 @@ export default function AdminSchoolsPage() {
     return matchesJenjang && matchesKecamatan && matchesSearch
   })
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [jenjangFilter, kecamatanFilter, searchTerm, sekolahList])
+
+  const totalPages = Math.max(1, Math.ceil(filteredSekolah.length / itemsPerPage))
+  const paginatedSekolah = filteredSekolah.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
   return (
     <div className="flex h-screen bg-background">
       {mobileMenuOpen && (
@@ -471,61 +484,61 @@ export default function AdminSchoolsPage() {
 
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="admin-stats-card admin-card-interactive">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Total Sekolah</p>
-                      <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
-                    </div>
-                    <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
-                      <School className="w-6 h-6 text-blue-600" />
-                    </div>
+            <Card className="admin-stats-card admin-card-interactive">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Total Sekolah</p>
+                    <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
+                    <School className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="admin-stats-card admin-card-interactive">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">PAUD</p>
-                      <p className="text-3xl font-bold text-purple-600">{stats.paud}</p>
-                    </div>
-                    <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
-                      <School className="w-6 h-6 text-purple-600" />
-                    </div>
+            <Card className="admin-stats-card admin-card-interactive">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">PAUD</p>
+                    <p className="text-3xl font-bold text-purple-600">{stats.paud}</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
+                    <School className="w-6 h-6 text-purple-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="admin-stats-card admin-card-interactive">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">SD</p>
-                      <p className="text-3xl font-bold text-green-600">{stats.sd}</p>
-                    </div>
-                    <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
-                      <School className="w-6 h-6 text-green-600" />
-                    </div>
+            <Card className="admin-stats-card admin-card-interactive">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">SD</p>
+                    <p className="text-3xl font-bold text-green-600">{stats.sd}</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
+                    <School className="w-6 h-6 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card className="admin-stats-card admin-card-interactive">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">SMP</p>
-                      <p className="text-3xl font-bold text-orange-600">{stats.smp}</p>
-                    </div>
-                    <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
-                      <School className="w-6 h-6 text-orange-600" />
-                    </div>
+            <Card className="admin-stats-card admin-card-interactive">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">SMP</p>
+                    <p className="text-3xl font-bold text-orange-600">{stats.smp}</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
+                    <School className="w-6 h-6 text-orange-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             </div>
 
             {/* Filters and Actions */}
@@ -607,7 +620,7 @@ export default function AdminSchoolsPage() {
                         </tr>
                       </thead>
                       <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                        {filteredSekolah.map((sekolah, index) => (
+                        {paginatedSekolah.map((sekolah, index) => (
                           <tr key={sekolah.id} className="admin-table-row">
                             <td className="px-4 py-4">
                               <div className="flex items-center">
@@ -663,6 +676,59 @@ export default function AdminSchoolsPage() {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                )}
+                {filteredSekolah.length > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t">
+                    <span className="text-sm text-muted-foreground">
+                      Menampilkan {(currentPage - 1) * itemsPerPage + 1}-
+                      {Math.min(currentPage * itemsPerPage, filteredSekolah.length)} dari {filteredSekolah.length} sekolah
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        aria-label="Halaman pertama"
+                      >
+                        <ChevronsLeft className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        aria-label="Halaman sebelumnya"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <span className="text-sm font-medium min-w-[120px] text-center">
+                        Halaman {currentPage} / {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        aria-label="Halaman selanjutnya"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        aria-label="Halaman terakhir"
+                      >
+                        <ChevronsRight className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>

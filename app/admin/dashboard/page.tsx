@@ -673,42 +673,25 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
             {statsData.map((stat, index) => {
               const Icon = stat.icon
-              let textColor = ""
-              let bgColor = ""
-
-              switch (stat.color) {
-                case "blue":
-                  textColor = "text-chart-1"
-                  bgColor = "bg-chart-1/10"
-                  break
-                case "green":
-                  textColor = "text-chart-2"
-                  bgColor = "bg-chart-2/10"
-                  break
-                case "yellow":
-                  textColor = "text-chart-3"
-                  bgColor = "bg-chart-3/10"
-                  break
-                case "red":
-                  textColor = "text-destructive"
-                  bgColor = "bg-destructive/10"
-                  break
-                default:
-                  textColor = "text-gray-600"
-                  bgColor = "bg-gray-100"
+              const colorMap: Record<string, { text: string; bg: string }> = {
+                blue: { text: "text-blue-600", bg: "bg-blue-100" },
+                green: { text: "text-green-600", bg: "bg-green-100" },
+                yellow: { text: "text-yellow-600", bg: "bg-yellow-100" },
+                red: { text: "text-red-600", bg: "bg-red-100" },
+                purple: { text: "text-purple-600", bg: "bg-purple-100" },
               }
+              const colors = colorMap[stat.color] || { text: "text-gray-600", bg: "bg-gray-100" }
+
               return (
-                <Card key={index} className="hover:shadow-lg hover:scale-105 transition-all duration-200">
-                  <CardContent className="p-4 lg:p-6">
+                <Card key={index} className="admin-stats-card admin-card-interactive">
+                  <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground mb-1">{stat.title}</p>
-                        <p className="text-2xl lg:text-3xl font-bold text-foreground">{stat.value}</p>
+                        <p className="text-sm text-gray-500 mb-1">{stat.title}</p>
+                        <p className={`text-2xl lg:text-3xl font-bold ${colors.text}`}>{stat.value}</p>
                       </div>
-                      <div
-                        className={`w-10 h-10 lg:w-12 lg:h-12 ${bgColor} rounded-lg flex items-center justify-center`}
-                      >
-                        <Icon className={`w-5 h-5 lg:w-6 lg:h-6 ${textColor}`} />
+                      <div className={`${colors.bg} p-3 rounded-lg admin-icon-hover`}>
+                        <Icon className={`w-5 h-5 lg:w-6 lg:h-6 ${colors.text}`} />
                       </div>
                     </div>
                   </CardContent>

@@ -29,6 +29,10 @@ import {
   Search,
   Upload,
   Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -66,6 +70,8 @@ export default function AdminNewsPage() {
   const [kategoriFilter, setKategoriFilter] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
 
   const [formData, setFormData] = useState({
     judul: "",
@@ -150,6 +156,13 @@ export default function AdminNewsPage() {
                        (berita.ringkasan && berita.ringkasan.toLowerCase().includes(searchTerm.toLowerCase()))
     return statusMatch && kategoriMatch && searchMatch
   })
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [statusFilter, kategoriFilter, searchTerm, beritaList])
+
+  const totalPages = Math.max(1, Math.ceil(filteredBerita.length / itemsPerPage))
+  const paginatedBerita = filteredBerita.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   // Calculate statistics
   const stats = {
@@ -418,7 +431,7 @@ export default function AdminNewsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Total Berita</p>
-                      <p className="text-3xl font-bold text-gray-800">{stats.total}</p>
+                      <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
                     </div>
                     <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
                       <Newspaper className="w-6 h-6 text-blue-600" />
@@ -446,10 +459,10 @@ export default function AdminNewsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Draft</p>
-                      <p className="text-3xl font-bold text-gray-600">{stats.draft}</p>
+                      <p className="text-3xl font-bold text-purple-600">{stats.draft}</p>
                     </div>
-                    <div className="bg-gray-100 p-3 rounded-lg admin-icon-hover">
-                      <Edit className="w-6 h-6 text-gray-600" />
+                    <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
+                      <Edit className="w-6 h-6 text-purple-600" />
                     </div>
                   </div>
                 </CardContent>
@@ -549,7 +562,7 @@ export default function AdminNewsPage() {
                         </tr>
                       </thead>
                       <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                        {filteredBerita.map((berita, index) => (
+                        {paginatedBerita.map((berita, index) => (
                           <tr key={berita.id} className="admin-table-row">
                             <td className="px-4 py-4">
                               <div className="flex items-center">
@@ -607,6 +620,59 @@ export default function AdminNewsPage() {
                     </table>
                   </div>
                 )}
+                {filteredBerita.length > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t">
+                    <span className="text-sm text-muted-foreground">
+                      Menampilkan {(currentPage - 1) * itemsPerPage + 1}-
+                      {Math.min(currentPage * itemsPerPage, filteredBerita.length)} dari {filteredBerita.length} berita
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        aria-label="Halaman pertama"
+                      >
+                        <ChevronsLeft className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        aria-label="Halaman sebelumnya"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <span className="text-sm font-medium min-w-[120px] text-center">
+                        Halaman {currentPage} / {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        aria-label="Halaman selanjutnya"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        aria-label="Halaman terakhir"
+                      >
+                        <ChevronsRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -620,7 +686,7 @@ export default function AdminNewsPage() {
             <DialogTitle>Detail Berita</DialogTitle>
           </DialogHeader>
           {selectedBerita && (
-            <div className="space-y-4">
+            <div className="space-y-4 text-foreground">
               {selectedBerita.gambarUtama && (
                 <img
                   src={selectedBerita.gambarUtama}
@@ -638,19 +704,19 @@ export default function AdminNewsPage() {
               </div>
               <div>
                 <h2 className="text-2xl font-bold">{selectedBerita.judul}</h2>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {new Date(selectedBerita.createdAt).toLocaleDateString('id-ID')} | {selectedBerita.views} views
                 </p>
               </div>
               {selectedBerita.ringkasan && (
                 <div>
                   <h3 className="font-semibold mb-2">Ringkasan:</h3>
-                  <p className="text-gray-700">{selectedBerita.ringkasan}</p>
+                  <p className="text-muted-foreground">{selectedBerita.ringkasan}</p>
                 </div>
               )}
               <div>
                 <h3 className="font-semibold mb-2">Konten:</h3>
-                <div className="text-gray-700 whitespace-pre-wrap">{selectedBerita.konten}</div>
+                <div className="text-muted-foreground whitespace-pre-wrap">{selectedBerita.konten}</div>
               </div>
               {selectedBerita.tags && (
                 <div>

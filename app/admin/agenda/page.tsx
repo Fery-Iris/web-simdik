@@ -32,6 +32,10 @@ import {
   Calendar,
   FileText,
   Search,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react"
 
 interface Agenda {
@@ -83,6 +87,8 @@ export default function AgendaPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -138,6 +144,13 @@ export default function AgendaPage() {
     const matchesStatus = !statusFilter || statusFilter === "all" || agenda.status === statusFilter
     return matchesSearch && matchesStatus
   })
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, statusFilter, agendas])
+
+  const totalPages = Math.max(1, Math.ceil(filteredAgendas.length / itemsPerPage))
+  const paginatedAgendas = filteredAgendas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -606,12 +619,12 @@ export default function AgendaPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Selesai</p>
-                  <p className="text-3xl font-bold text-gray-600">
+                  <p className="text-3xl font-bold text-purple-600">
                     {agendas.filter(a => a.status === 'COMPLETED').length}
                   </p>
                 </div>
-                <div className="bg-gray-100 p-3 rounded-lg admin-icon-hover">
-                  <CheckCircle className="w-6 h-6 text-gray-600" />
+                <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
+                  <CheckCircle className="w-6 h-6 text-purple-600" />
                 </div>
               </div>
             </CardContent>
@@ -706,7 +719,7 @@ export default function AgendaPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                    {filteredAgendas.map((agenda, index) => (
+                    {paginatedAgendas.map((agenda, index) => (
                       <tr key={agenda.id} className="admin-table-row">
                         <td className="px-4 py-4">
                           <div className="flex items-center">
@@ -762,6 +775,59 @@ export default function AgendaPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+            {filteredAgendas.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-4 border-t">
+                <span className="text-sm text-muted-foreground">
+                  Menampilkan {(currentPage - 1) * itemsPerPage + 1}-
+                  {Math.min(currentPage * itemsPerPage, filteredAgendas.length)} dari {filteredAgendas.length} agenda
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    aria-label="Halaman pertama"
+                  >
+                    <ChevronsLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    aria-label="Halaman sebelumnya"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <span className="text-sm font-medium min-w-[120px] text-center">
+                    Halaman {currentPage} / {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    aria-label="Halaman selanjutnya"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    aria-label="Halaman terakhir"
+                  >
+                    <ChevronsRight className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
