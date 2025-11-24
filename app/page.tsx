@@ -25,6 +25,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
 import { ScrollingNewsCarousel } from "@/components/scrolling-news-carousel"
 import { ScrollingAgendaCarousel } from "@/components/scrolling-agenda-carousel"
+import SocialMediaLinks from "@/components/SocialMediaLinks"
 
 export default function Component() {
   const [isVisible, setIsVisible] = useState(false)
@@ -675,22 +676,7 @@ export default function Component() {
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Media Sosial</h3>
                 <div className="flex space-x-4">
-                  {[
-                    { icon: Instagram, color: "hover:bg-pink-600" },
-                    { icon: Facebook, color: "hover:bg-blue-600" },
-                    { icon: Youtube, color: "hover:bg-red-600" },
-                  ].map((social, index) => {
-                    const Icon = social.icon
-                    return (
-                      <Link
-                        key={index}
-                        href="#"
-                        className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </Link>
-                    )
-                  })}
+                  <SocialMediaLinks />
                 </div>
               </div>
             </ScrollReveal>
