@@ -25,6 +25,7 @@ import { useStaggeredScrollAnimation } from "@/hooks/use-scroll-animation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import SocialMediaLinks from "@/components/SocialMediaLinks";
 
 export default function AboutSIMDIKPage() {
   const [setActivityRef, activityVisible] = useStaggeredScrollAnimation(6, {
@@ -435,36 +436,7 @@ export default function AboutSIMDIKPage() {
                 Media Sosial
               </h3>
               <div className="flex space-x-4">
-                {[
-                  {
-                    icon: Instagram,
-                    color: "hover:bg-pink-600",
-                    href: "https://www.instagram.com/disdik_banjarmasin?igsh=ank2bWR4anA3Y2tt",
-                  },
-                  {
-                    icon: Facebook,
-                    color: "hover:bg-blue-600",
-                    href: "https://www.facebook.com/share/1BSEjYXn2p/",
-                  },
-                  {
-                    icon: Youtube,
-                    color: "hover:bg-red-600",
-                    href: "https://youtube.com/@dinaspendidikankotabanjarm5448?si=bzyM0JXPoW0asGaR",
-                  },
-                ].map((social, index) => {
-                  const Icon = social.icon;
-                  return (
-                    <a // 1. Gunakan tag <a> untuk link eksternal
-                      key={index}
-                      href={social.href} // 2. INI KOREKSINYA: Ambil url dari social.href
-                      target="_blank" // 3. Buka di tab baru agar user tidak close web Anda
-                      rel="noreferrer" // 4. Keamanan standar
-                      className={`w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center ${social.color} transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 text-white`} // Tambah text-white agar icon terlihat jelas
-                    >
-                      <Icon className="w-5 h-5" />
-                    </a>
-                  );
-                })}
+                <SocialMediaLinks />
               </div>
             </div>
           </div>
