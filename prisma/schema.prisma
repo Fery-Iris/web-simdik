@@ -183,3 +183,17 @@ model Sekolah {
   @@index([status])
   @@index([nama])
 }
+
+model OtpReset {
+  id           BigInt   @id @default(autoincrement()) @map("id_otp_resets")
+  email        String   @db.VarChar(150)
+  otp          String   @db.VarChar(6)
+  berlakuSampai DateTime @map("berlaku_sampai")
+  digunakan    Boolean  @default(false) @map("digunakan")
+  dibuatPada   DateTime @default(now()) @map("dibuat_pada")
+  
+  @@map("otp_resets")
+  @@index([email])
+  @@index([otp])
+  @@index([berlakuSampai])
+}
