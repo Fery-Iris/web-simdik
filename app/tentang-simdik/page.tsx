@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   School,
@@ -18,6 +19,7 @@ import {
   PenSquare,
   LucideComputer,
   MessageCircleCodeIcon,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -26,12 +28,55 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import SocialMediaLinks from "@/components/SocialMediaLinks";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+
+const NAV_ITEMS = [
+  { label: "Beranda", href: "/" },
+  { label: "Reservasi", href: "/reservasi" },
+  { label: "Tentang SIREDI", href: "/tentang-simdik" },
+  { label: "Direktori Sekolah", href: "/direktori-sekolah" },
+  { label: "Berita", href: "/#berita" },
+  { label: "Agenda", href: "/#agenda" },
+  { label: "Kontak", href: "/#kontak" },
+];
 
 export default function AboutSIMDIKPage() {
   const [setActivityRef, activityVisible] = useStaggeredScrollAnimation(6, {
     delay: 150,
     triggerOnce: true,
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const [currentHash, setCurrentHash] = useState("");
+
+  useEffect(() => {
+    const updateHash = () => setCurrentHash(window.location.hash);
+    updateHash();
+    window.addEventListener("hashchange", updateHash);
+    return () => window.removeEventListener("hashchange", updateHash);
+  }, []);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  const isActive = (item: { label: string; href: string }) => {
+    if (item.href === "/") return pathname === "/";
+    if (item.href.startsWith("/#")) {
+      if (pathname !== "/") return false;
+      const sectionHash = item.href.replace("/", "");
+      return currentHash === sectionHash;
+    }
+    return pathname?.startsWith(item.href);
+  };
 
   const officeActivities = [
     {
@@ -112,37 +157,66 @@ export default function AboutSIMDIKPage() {
               </span>
             </Link>
 
-            {/* Navigation - Simplified for sub-page */}
+            {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-              <Link
-                href="/"
-                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group">
-                Beranda
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link
-                href="/tentang-simdik"
-                className="text-primary font-medium transition-all duration-300 relative group">
-                Tentang SIREDI
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600"></span>
-              </Link>
-              <Link
-                href="/direktori-sekolah"
-                className="text-muted-foreground hover:text-primary font-medium transition-all duration-300 relative group">
-                Direktori Sekolah
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "font-medium transition-all duration-300 relative group",
+                    isActive(item) ? "text-primary" : "text-muted-foreground hover:text-primary"
+                  )}
+                >
+                  {item.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-0 h-0.5 bg-blue-600 transition-all duration-300",
+                      isActive(item) ? "w-full" : "w-0 group-hover:w-full"
+                    )}
+                  />
+                </Link>
+              ))}
             </nav>
 
             {/* Mobile Menu Button and Theme Toggle */}
             <div className="flex items-center space-x-2">
-              <button className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-accent">
-                <Menu className="w-6 h-6 text-foreground" />
+              <button
+                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                className="md:hidden p-2 rounded-lg transition-all duration-300 hover:bg-accent"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6 text-foreground" />
+                ) : (
+                  <Menu className="w-6 h-6 text-foreground" />
+                )}
               </button>
               <ThemeToggle />
             </div>
           </div>
         </div>
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-border">
+            <nav className="px-4 py-4 space-y-3 bg-background">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "block rounded-lg px-4 py-3 font-medium transition-colors",
+                    isActive(item)
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section for About Page */}
