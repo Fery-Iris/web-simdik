@@ -348,12 +348,12 @@ export default function AdminDashboard() {
         backgroundColor: [
           'rgb(34, 197, 94)',   // green
           'rgb(59, 130, 246)',  // blue
-          'rgb(239, 68, 68)',   // red
+          'rgb(252, 165, 165)', // light red (not pekat)
         ],
         borderColor: [
           'rgb(34, 197, 94)',
           'rgb(59, 130, 246)',
-          'rgb(239, 68, 68)',
+          'rgb(248, 113, 113)', // softer border for canceled
         ],
         borderWidth: 2,
       },
@@ -414,6 +414,15 @@ export default function AdminDashboard() {
     setSelectedReport(null)
   }
 
+  // Format nomor tiket jadi PTK-<nomor>
+  const formatNomorTiket = (value: any) => {
+    if (!value && value !== 0) return 'PTK-000000'
+    const s = String(value)
+    if (s.toUpperCase().startsWith('PTK-')) return s
+    const last = s.slice(-6).padStart(6, '0')
+    return `PTK-${last}`
+  }
+
   const navigationItems = [
     { icon: Home, label: "Dashboard", href: "/admin/dashboard", active: true },
     { icon: School, label: "Manajemen Sekolah", href: "/admin/sekolah", active: false },
@@ -424,32 +433,32 @@ export default function AdminDashboard() {
 
   const statsData = [
     {
-      title: "Total Sekolah",
-      value: totalSchools.toString(),
-      icon: School,
-      color: "blue",
-      bgColor: "bg-blue-100",
-    },
-    {
-      title: "Total Berita",
-      value: totalNews.toString(),
-      icon: Newspaper,
-      color: "green",
-      bgColor: "bg-green-100",
-    },
-    {
-      title: "Total Agenda",
-      value: totalAgenda.toString(),
-      icon: Calendar,
-      color: "yellow",
-      bgColor: "bg-yellow-100",
-    },
-    {
       title: "Total Reservasi",
       value: totalReservations.toString(),
       icon: FileText,
       color: "red",
       bgColor: "bg-red-100",
+    },
+    {
+      title: "Reservasi Menunggu",
+      value: reservationsByStatus.waiting.toString(),
+      icon: Clock,
+      color: "yellow",
+      bgColor: "bg-yellow-100",
+    },
+    {
+      title: "Reservasi Selesai",
+      value: reservationsByStatus.completed.toString(),
+      icon: CheckCircle,
+      color: "green",
+      bgColor: "bg-green-100",
+    },
+    {
+      title: "Reservasi Dibatalkan",
+      value: reservationsByStatus.cancelled.toString(),
+      icon: AlertCircle,
+      color: "purple",
+      bgColor: "bg-pink-100",
     },
   ]
 
@@ -467,12 +476,12 @@ export default function AdminDashboard() {
       statusColor = 'bg-yellow-600 text-white'
     } else if (reservation.status === 'cancelled') {
       statusText = 'Dibatalkan'
-      statusColor = 'bg-red-600 text-white'
+      statusColor = 'bg-red-200 text-red-800'
     }
     
     return {
       id: reservation.id,
-      queueNumber: reservation.queueNumber || reservation.id,
+      nomorTiket: formatNomorTiket(reservation.queueNumber || reservation.id),
       reporter: reservation.name || reservation.institutionName || 'N/A',
       category: reservation.layanan?.name || reservation.service || 'Reservasi',
       status: statusText,
@@ -668,6 +677,7 @@ export default function AdminDashboard() {
             <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground mt-2">Ringkasan data dan statistik sistem pendidikan</p>
           </div>
+          
 
           {/* Dashboard Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
@@ -814,12 +824,18 @@ export default function AdminDashboard() {
                         case "Ditolak":
                           statusColor = "bg-red-600 text-white"
                           break
+                        case "Menunggu":
+                          statusColor = "bg-yellow-600 text-white"
+                          break
+                        case "Dibatalkan":
+                          statusColor = "bg-red-200 text-red-800"
+                          break
                         default:
                           statusColor = "bg-gray-600 text-white"
                       }
                       return (
                         <TableRow key={report.id}>
-                          <TableCell className="font-medium">{report.queueNumber}</TableCell>
+                          <TableCell className="font-medium">{report.nomorTiket}</TableCell>
                           <TableCell>{report.reporter}</TableCell>
                           <TableCell>{report.category}</TableCell>
                           <TableCell>
@@ -866,7 +882,7 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">No. Tiket</p>
-                  <p className="text-lg font-semibold">{selectedReport.queueNumber}</p>
+                  <p className="text-lg font-semibold">{selectedReport.nomorTiket}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Status</p>
