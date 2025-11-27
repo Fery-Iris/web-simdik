@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { checkReservationStatus, isValidReservationTime, isTimeSlotPassed } from "@/lib/reservation-hours"
 
 // In-memory storage for reservations (fallback)
 let reservations: any[] = []
@@ -36,6 +37,16 @@ function calculateEstimatedTime(service: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Cek status reservasi real-time
+    const status = checkReservationStatus()
+    if (!status.isOpen) {
+      return NextResponse.json({ 
+        success: false,
+        error: status.message,
+        nextOpenTime: status.nextOpenTime,
+      }, { status: 403 })
+    }
+
     const body = await request.json()
 
     // Validate required fields
@@ -43,6 +54,25 @@ export async function POST(request: NextRequest) {
 
     if (!service || !date || !timeSlot || !name || !phone || !purpose) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    // Validasi waktu reservasi
+    const [y, m, d] = date.split('-').map(Number)
+    const reservationDate = new Date(y, m - 1, d)
+    
+    if (!isValidReservationTime(reservationDate, timeSlot)) {
+      return NextResponse.json({ 
+        success: false,
+        error: "Waktu reservasi tidak valid. Pastikan memilih waktu yang sesuai dengan jadwal operasional."
+      }, { status: 400 })
+    }
+
+    // Validasi apakah slot waktu sudah lewat (untuk hari yang sama)
+    if (isTimeSlotPassed(reservationDate, timeSlot)) {
+      return NextResponse.json({ 
+        success: false,
+        error: "Slot waktu yang dipilih sudah lewat. Silakan pilih waktu yang tersedia."
+      }, { status: 400 })
     }
 
     // If idLayanan provided, validate it exists and convert to BigInt

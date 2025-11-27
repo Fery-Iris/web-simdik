@@ -20,6 +20,7 @@ import Link from "next/link"
 import { ScrollReveal } from "@/components/scroll-reveal"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteHeader } from "@/components/site-header"
+import { checkReservationStatus, isTimeSlotPassed } from "@/lib/reservation-hours"
 
 // ⚡ Lazy load PDF generator (jsPDF library cukup besar ~100KB)
 const generateTicketPDF = async (data: ReservationTicketData) => {
@@ -98,13 +99,14 @@ const getTimeSlots = async (selectedDate: Date | undefined) => {
     ]
   }
 
-  // Monday-Thursday (1-4) - 8 AM to 12 PM, then 2 PM to 3 PM (lunch break 12-2 PM)
+  // Monday-Thursday (1-4) - 8 AM to 12 PM, then 2 PM to 4 PM (lunch break 12-2 PM, tutup jam 16:00)
   return [
     { id: "08:00", time: "08:00 - 09:00", capacity: 10, booked: 3 },
     { id: "09:00", time: "09:00 - 10:00", capacity: 10, booked: 7 },
     { id: "10:00", time: "10:00 - 11:00", capacity: 10, booked: 2 },
     { id: "11:00", time: "11:00 - 12:00", capacity: 10, booked: 5 },
     { id: "14:00", time: "14:00 - 15:00", capacity: 10, booked: 4 },
+    { id: "15:00", time: "15:00 - 16:00", capacity: 10, booked: 2 },
   ]
 }
 
@@ -140,6 +142,24 @@ export default function ReservasiPage() {
   const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false)
   const [services, setServices] = useState<ServiceDisplay[]>([])
   const [isLoadingServices, setIsLoadingServices] = useState(true)
+  const [reservationStatus, setReservationStatus] = useState<{isOpen: boolean, message: string, nextOpenTime?: string} | null>(null)
+
+  // Cek status reservasi real-time
+  useEffect(() => {
+    const checkStatus = () => {
+      const status = checkReservationStatus()
+      setReservationStatus(status)
+    }
+    
+    // Cek langsung saat mount
+    checkStatus()
+    
+    // Update setiap detik untuk benar-benar real-time
+    // Ini penting untuk mendeteksi perubahan status tepat waktu (misalnya jam 16:00:00)
+    const interval = setInterval(checkStatus, 1000)
+    
+    return () => clearInterval(interval)
+  }, [])
 
   // Fetch layanans from API
   useEffect(() => {
@@ -233,6 +253,13 @@ export default function ReservasiPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Cek status sebelum submit
+    const status = checkReservationStatus()
+    if (!status.isOpen) {
+      alert(`❌ ${status.message}${status.nextOpenTime ? `\n\nBuka kembali: ${status.nextOpenTime}` : ''}`)
+      return
+    }
+
     try {
       console.log('Submitting reservation data:', {
         service: reservationData.service,
@@ -266,9 +293,18 @@ export default function ReservasiPage() {
       console.log('Response ok:', response.ok)
 
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Response error:', errorText)
-        throw new Error(`HTTP ${response.status}: ${errorText}`)
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Response error:', errorData)
+        
+        // Handle khusus untuk error 403 (reservasi tutup)
+        if (response.status === 403) {
+          const message = errorData.error || 'Reservasi sedang tutup'
+          const nextOpenTime = errorData.nextOpenTime ? `\n\nBuka kembali: ${errorData.nextOpenTime}` : ''
+          alert(`❌ ${message}${nextOpenTime}`)
+          return
+        }
+        
+        throw new Error(errorData.error || `HTTP ${response.status}`)
       }
 
       const result = await response.json()
@@ -358,6 +394,17 @@ export default function ReservasiPage() {
       </section>
 
       <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 relative">
+        {/* Status Banner Hijau - Ditampilkan di tengah konten saat buka */}
+        {reservationStatus && reservationStatus.isOpen && (
+          <ScrollReveal animation="fade-up" delay={100}>
+            <div className="text-center py-4 mb-6">
+              <div className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800 rounded-lg p-4 inline-block">
+                <span className="text-sm sm:text-base font-medium">✅ {reservationStatus.message}</span>
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
+
         <ScrollReveal animation="fade-up" delay={100}>
           <div className="flex items-center justify-center mb-6 sm:mb-8 overflow-x-auto pb-2">
             {[1, 2, 3, 4].map((stepNum) => (
@@ -399,6 +446,24 @@ export default function ReservasiPage() {
                 {isLoadingServices ? (
                   <div className="flex justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : !reservationStatus?.isOpen ? (
+                  <div className="text-center py-12 sm:py-16">
+                    <div className="text-red-600 dark:text-red-400 mb-4">
+                      <Clock className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4" />
+                    </div>
+                    <p className="text-xl sm:text-2xl font-bold mb-3 text-foreground">Reservasi Sedang Tutup</p>
+                    <p className="text-base sm:text-lg text-muted-foreground mb-6">{reservationStatus?.message}</p>
+                    {reservationStatus?.nextOpenTime && (
+                      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6 max-w-md mx-auto">
+                        <p className="text-sm sm:text-base font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                          Buka kembali:
+                        </p>
+                        <p className="text-base sm:text-lg font-bold text-blue-800 dark:text-blue-200">
+                          {reservationStatus.nextOpenTime}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -557,24 +622,35 @@ export default function ReservasiPage() {
                         {timeSlots.map((slot) => {
                         const isAvailable = slot.booked < slot.capacity
                         const isSelected = reservationData.timeSlot === slot.id
+                        const isPassed = selectedDate ? isTimeSlotPassed(selectedDate, slot.id) : false
+                        const isDisabled = !isAvailable || isPassed
 
                         return (
                           <Button
                             key={slot.id}
                             variant={isSelected ? "default" : "outline"}
-                            disabled={!isAvailable}
+                            disabled={isDisabled}
                             className={cn(
                               "h-auto p-3 sm:p-4 flex flex-col items-center transition-all duration-300 touch-manipulation",
                               isSelected && "bg-blue-600 hover:bg-blue-700 shadow-lg text-white",
-                              !isAvailable && "opacity-50 cursor-not-allowed",
+                              isDisabled && "opacity-50 cursor-not-allowed",
                               isAvailable &&
                                 !isSelected &&
+                                !isPassed &&
                                 "hover:border-blue-400 hover:shadow-md bg-background dark:bg-background border-input dark:border-input text-foreground",
                             )}
-                            onClick={() => setReservationData({ ...reservationData, timeSlot: slot.id })}
+                            onClick={() => {
+                              if (!isDisabled) {
+                                setReservationData({ ...reservationData, timeSlot: slot.id })
+                              }
+                            }}
+                            title={isPassed ? "Slot waktu ini sudah lewat" : undefined}
                           >
                             <Clock className="w-4 h-4 mb-1" />
                             <span className="text-xs sm:text-sm font-medium">{slot.time}</span>
+                            {isPassed && (
+                              <span className="text-xs text-red-600 dark:text-red-400 mt-1">Sudah lewat</span>
+                            )}
                           </Button>
                         )
                       })}

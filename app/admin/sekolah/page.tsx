@@ -484,61 +484,61 @@ export default function AdminSchoolsPage() {
 
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="admin-stats-card admin-card-interactive">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Total Sekolah</p>
-                    <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
+              <Card className="admin-stats-card admin-card-interactive">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Total Sekolah</p>
+                      <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
+                    </div>
+                    <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
+                      <School className="w-6 h-6 text-blue-600" />
+                    </div>
                   </div>
-                  <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
-                    <School className="w-6 h-6 text-blue-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card className="admin-stats-card admin-card-interactive">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">PAUD</p>
-                    <p className="text-3xl font-bold text-purple-600">{stats.paud}</p>
+              <Card className="admin-stats-card admin-card-interactive">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">PAUD</p>
+                      <p className="text-3xl font-bold text-purple-600">{stats.paud}</p>
+                    </div>
+                    <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
+                      <School className="w-6 h-6 text-purple-600" />
+                    </div>
                   </div>
-                  <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
-                    <School className="w-6 h-6 text-purple-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card className="admin-stats-card admin-card-interactive">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">SD</p>
-                    <p className="text-3xl font-bold text-green-600">{stats.sd}</p>
+              <Card className="admin-stats-card admin-card-interactive">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">SD</p>
+                      <p className="text-3xl font-bold text-green-600">{stats.sd}</p>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
+                      <School className="w-6 h-6 text-green-600" />
+                    </div>
                   </div>
-                  <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
-                    <School className="w-6 h-6 text-green-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            <Card className="admin-stats-card admin-card-interactive">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">SMP</p>
-                    <p className="text-3xl font-bold text-orange-600">{stats.smp}</p>
+              <Card className="admin-stats-card admin-card-interactive">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">SMP</p>
+                      <p className="text-3xl font-bold text-orange-600">{stats.smp}</p>
+                    </div>
+                    <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
+                      <School className="w-6 h-6 text-orange-600" />
+                    </div>
                   </div>
-                  <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
-                    <School className="w-6 h-6 text-orange-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Filters and Actions */}
