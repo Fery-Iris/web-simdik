@@ -9,6 +9,52 @@ export interface ReservationStatus {
 }
 
 /**
+ * Mendapatkan waktu lokal Indonesia Tengah (WITA - UTC+8)
+ * Menggunakan timezone Asia/Makassar untuk akurasi
+ * Untuk client-side: menggunakan waktu browser (real-time)
+ * Untuk server-side: menggunakan timezone Asia/Makassar
+ */
+function getLocalTimeIndonesia(): {
+  day: number
+  hour: number
+  minute: number
+  date: Date
+} {
+  const now = new Date()
+  
+  // Dapatkan komponen waktu dalam timezone Asia/Makassar (WITA - UTC+8)
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Makassar',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  })
+  
+  const parts = formatter.formatToParts(now)
+  const hour = parseInt(parts.find(p => p.type === 'hour')?.value || '0')
+  const minute = parseInt(parts.find(p => p.type === 'minute')?.value || '0')
+  const day = parseInt(parts.find(p => p.type === 'day')?.value || '0')
+  const month = parseInt(parts.find(p => p.type === 'month')?.value || '0')
+  const year = parseInt(parts.find(p => p.type === 'year')?.value || '0')
+  
+  // Buat Date object untuk mendapatkan day of week (0 = Minggu, 1 = Senin, dll)
+  const date = new Date(year, month - 1, day, hour, minute)
+  const dayOfWeek = date.getDay()
+  
+  return {
+    day: dayOfWeek,
+    hour,
+    minute,
+    date
+  }
+}
+
+/**
  * Mengecek apakah reservasi sedang buka atau tutup berdasarkan waktu saat ini
  * Aturan:
  * - Senin-Kamis: Buka 08:00 - 16:00, Tutup 16:00 - 08:00 (hari berikutnya)
@@ -16,11 +62,13 @@ export interface ReservationStatus {
  * - Sabtu-Minggu: Selalu tutup
  */
 export function checkReservationStatus(): ReservationStatus {
-  const now = new Date()
-  const currentDay = now.getDay() // 0 = Minggu, 1 = Senin, ..., 6 = Sabtu
-  const currentHour = now.getHours()
-  const currentMinute = now.getMinutes()
+  // Gunakan waktu lokal Indonesia Tengah (WITA - UTC+8)
+  const localTime = getLocalTimeIndonesia()
+  const currentDay = localTime.day // 0 = Minggu, 1 = Senin, ..., 6 = Sabtu
+  const currentHour = localTime.hour
+  const currentMinute = localTime.minute
   const currentTime = currentHour * 60 + currentMinute // Total menit sejak 00:00
+  const now = localTime.date
 
   // Sabtu (6) dan Minggu (0) - selalu tutup
   if (currentDay === 0 || currentDay === 6) {
@@ -33,6 +81,7 @@ export function checkReservationStatus(): ReservationStatus {
       isOpen: false,
       message: "Reservasi tutup pada hari Sabtu dan Minggu",
       nextOpenTime: nextMonday.toLocaleString('id-ID', {
+        timeZone: 'Asia/Makassar',
         weekday: 'long',
         day: 'numeric',
         month: 'long',
@@ -63,6 +112,7 @@ export function checkReservationStatus(): ReservationStatus {
         isOpen: false,
         message: "Reservasi tutup. Jumat hanya buka 08:00 - 10:00",
         nextOpenTime: nextMonday.toLocaleString('id-ID', {
+          timeZone: 'Asia/Jakarta',
           weekday: 'long',
           day: 'numeric',
           month: 'long',
@@ -102,6 +152,7 @@ export function checkReservationStatus(): ReservationStatus {
       isOpen: false,
       message: "Reservasi tutup. Buka kembali jam 08:00",
       nextOpenTime: nextOpenTime.toLocaleString('id-ID', {
+        timeZone: 'Asia/Jakarta',
         weekday: 'long',
         day: 'numeric',
         month: 'long',
@@ -144,7 +195,9 @@ export function isValidReservationTime(date: Date, timeSlot: string): boolean {
  * @returns true jika slot waktu sudah lewat (untuk hari yang sama)
  */
 export function isTimeSlotPassed(selectedDate: Date, timeSlot: string): boolean {
-  const now = new Date()
+  // Gunakan waktu lokal Indonesia Tengah (WITA - UTC+8)
+  const localTime = getLocalTimeIndonesia()
+  const now = localTime.date
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const selected = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
   
@@ -158,7 +211,7 @@ export function isTimeSlotPassed(selectedDate: Date, timeSlot: string): boolean 
   // Waktu akhir slot adalah 1 jam setelah waktu awal (contoh: 09:00 -> 10:00)
   const slotEndHour = slotHour + 1
   const slotEndTime = slotEndHour * 60 + slotMinute // Total menit sejak 00:00 untuk waktu akhir
-  const currentTime = now.getHours() * 60 + now.getMinutes() // Total menit sejak 00:00
+  const currentTime = localTime.hour * 60 + localTime.minute // Total menit sejak 00:00
   
   // Slot dianggap lewat jika waktu saat ini >= waktu akhir slot
   // Contoh: Slot 09:00 - 10:00, jika sekarang jam 10:00 atau lebih, maka sudah lewat
