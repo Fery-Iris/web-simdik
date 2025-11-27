@@ -5,10 +5,8 @@ import { checkReservationStatus, isValidReservationTime, isTimeSlotPassed } from
 // In-memory storage for reservations (fallback)
 let reservations: any[] = []
 
-// Helper function to generate queue number
-function generateQueueNumber(service: string): string {
-  const timestamp = Date.now().toString().slice(-6)
-  
+// Helper function to get service code from service name
+function getServiceCode(service: string): string {
   // Map service name to short code
   const serviceCodeMap: { [key: string]: string } = {
     'PTK (Pendidik dan Tenaga Kependidikan)': 'PTK',
@@ -18,9 +16,55 @@ function generateQueueNumber(service: string): string {
   }
   
   // Get short code or use first 3 chars of service name
-  const serviceCode = serviceCodeMap[service] || service.substring(0, 3).toUpperCase()
+  return serviceCodeMap[service] || service.substring(0, 3).toUpperCase()
+}
+
+// Helper function to generate queue number with auto-increment per service
+// Counter akan selalu increment dari max counter yang pernah ada untuk layanan tersebut
+// Saat admin menekan "Selesai", counter TIDAK di-reset, sehingga nomor ticket selalu unik
+async function generateQueueNumber(service: string, idLayanan?: string | bigint | null): Promise<string> {
+  const serviceCode = getServiceCode(service)
   
-  return `${serviceCode}-${timestamp}`
+  try {
+    // Find the maximum counter for this service from ALL reservations (including completed)
+    // Ini memastikan nomor ticket selalu unik dan berurutan, tidak ada duplikasi
+    const maxReservation = await prisma.reservasi.findFirst({
+      where: {
+        OR: [
+          { service: service },
+          ...(idLayanan ? [{ idLayanan: typeof idLayanan === 'string' ? BigInt(idLayanan) : idLayanan }] : [])
+        ],
+        // Cari dari semua reservasi, tidak peduli statusnya
+        queueNumber: {
+          startsWith: `${serviceCode}-`
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+    
+    let nextNumber = 1
+    
+    if (maxReservation) {
+      // Extract number from existing queue number (format: CODE-XX)
+      const match = maxReservation.queueNumber.match(/-(\d+)$/)
+      if (match) {
+        const currentNumber = parseInt(match[1], 10)
+        nextNumber = currentNumber + 1
+      }
+    }
+    
+    // Format number with leading zeros (01, 02, ..., 10, 11, etc.)
+    const formattedNumber = nextNumber.toString().padStart(2, '0')
+    
+    return `${serviceCode}-${formattedNumber}`
+  } catch (error) {
+    console.error("Error generating queue number:", error)
+    // Fallback: use timestamp if database query fails
+    const timestamp = Date.now().toString().slice(-6)
+    return `${serviceCode}-${timestamp}`
+  }
 }
 
 // Helper function to calculate estimated call time
@@ -99,7 +143,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate queue number and estimated call time
-    const queueNumber = generateQueueNumber(service)
+    const queueNumber = await generateQueueNumber(service, layananId)
     const estimatedCallTime = calculateEstimatedTime(service)
 
     // Create new reservation in database (with fallback)
