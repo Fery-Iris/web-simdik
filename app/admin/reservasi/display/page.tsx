@@ -120,7 +120,7 @@ export default function DisplayAntrianPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-5xl font-bold text-gray-900 mb-2">
-              SISTEM INFORMASI MANAJEMEN PENDIDIKAN
+              SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)
             </h1>
             <p className="text-3xl text-gray-600">Nomor Antrian Layanan</p>
           </div>
