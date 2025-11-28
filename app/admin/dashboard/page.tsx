@@ -69,6 +69,7 @@ export default function AdminDashboard() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [selectedReport, setSelectedReport] = useState<any>(null)
   const [showReportDetail, setShowReportDetail] = useState(false)
+  const [updatingStatus, setUpdatingStatus] = useState(false)
   
   // State untuk data dari database
   const [totalReservations, setTotalReservations] = useState(0)
@@ -414,13 +415,71 @@ export default function AdminDashboard() {
     setSelectedReport(null)
   }
 
-  // Format nomor tiket jadi PTK-<nomor>
-  const formatNomorTiket = (value: any) => {
-    if (!value && value !== 0) return 'PTK-000000'
-    const s = String(value)
-    if (s.toUpperCase().startsWith('PTK-')) return s
-    const last = s.slice(-6).padStart(6, '0')
-    return `PTK-${last}`
+  const handleStatusUpdate = async (reservationId: string, newStatus: string) => {
+    try {
+      setUpdatingStatus(true)
+      
+      // Find reservation data
+      const reservation = recentReservations.find(r => r.id === reservationId)
+      if (!reservation) {
+        alert('Reservasi tidak ditemukan')
+        return
+      }
+
+      const response = await fetch(`/api/reservations/${reservationId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: reservation.name,
+          phone: reservation.phone,
+          nik: reservation.nik || '',
+          purpose: reservation.notes || reservation.purpose || '',
+          service: reservation.service || reservation.layanan?.name || '',
+          date: reservation.date,
+          timeSlot: reservation.time || reservation.timeSlot || '',
+          status: newStatus.toUpperCase(),
+          idLayanan: reservation.idLayanan || reservation.layanan?.id || null,
+        }),
+      })
+
+      if (response.ok) {
+        // Refresh dashboard data
+        const refreshResponse = await fetch('/api/reservations')
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json()
+          const reservations = refreshData.data || []
+          setTotalReservations(reservations.length)
+          
+          // Update status counts
+          const completed = reservations.filter((r: any) => r.status === 'completed').length
+          const waiting = reservations.filter((r: any) => r.status === 'waiting').length
+          const cancelled = reservations.filter((r: any) => r.status === 'cancelled').length
+          setReservationsByStatus({ completed, waiting, cancelled })
+          
+          // Update recent reservations
+          const sortedReservations = [...reservations]
+            .sort((a: any, b: any) => {
+              const dateA = new Date(a.createdAt || a.date).getTime()
+              const dateB = new Date(b.createdAt || b.date).getTime()
+              return dateB - dateA
+            })
+            .slice(0, 5)
+          setRecentReservations(sortedReservations)
+        }
+        
+        alert(`Status berhasil diubah menjadi ${newStatus === 'completed' ? 'Selesai' : newStatus === 'waiting' ? 'Menunggu' : newStatus === 'called' ? 'Dipanggil' : 'Dibatalkan'}`)
+        handleCloseReportDetail()
+      } else {
+        alert('Gagal mengubah status')
+      }
+    } catch (error) {
+      console.error('Error updating status:', error)
+      alert('Terjadi kesalahan saat mengubah status')
+    } finally {
+      setUpdatingStatus(false)
+    }
   }
 
   const navigationItems = [
@@ -481,7 +540,7 @@ export default function AdminDashboard() {
     
     return {
       id: reservation.id,
-      nomorTiket: formatNomorTiket(reservation.queueNumber || reservation.id),
+      nomorTiket: reservation.queueNumber || reservation.id,
       reporter: reservation.name || reservation.institutionName || 'N/A',
       category: reservation.layanan?.name || reservation.service || 'Reservasi',
       status: statusText,
@@ -724,17 +783,77 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            {/* Doughnut Chart - Status Reservasi */}
+            {/* Reports Table - Laporan Masuk Terbaru */}
             <Card className="bg-card text-foreground">
               <CardHeader>
-                <CardTitle className="text-base lg:text-lg">Status Reservasi</CardTitle>
+                <CardTitle className="text-base lg:text-lg">Laporan Masuk Terbaru</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="w-full h-[300px] flex items-center justify-center">
-                  <div className="w-full max-w-[250px]">
-                    <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
-                  </div>
-                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>No. Tiket</TableHead>
+                      <TableHead>Pelapor</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {reportsData.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          Belum ada laporan masuk
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      reportsData.slice(0, 5).map((report) => {
+                        let statusColor = ""
+                        switch (report.status) {
+                          case "Baru":
+                            statusColor = "bg-blue-600 text-white"
+                            break
+                          case "Diproses":
+                            statusColor = "bg-yellow-600 text-white"
+                            break
+                          case "Selesai":
+                            statusColor = "bg-green-600 text-white"
+                            break
+                          case "Ditolak":
+                            statusColor = "bg-red-600 text-white"
+                            break
+                          case "Menunggu":
+                            statusColor = "bg-yellow-600 text-white"
+                            break
+                          case "Dibatalkan":
+                            statusColor = "bg-red-200 text-red-800"
+                            break
+                          default:
+                            statusColor = "bg-gray-600 text-white"
+                        }
+                        return (
+                          <TableRow key={report.id}>
+                            <TableCell className="font-medium">{report.nomorTiket}</TableCell>
+                            <TableCell>{report.reporter}</TableCell>
+                            <TableCell>{report.category}</TableCell>
+                            <TableCell>
+                              <Badge className={statusColor}>{report.status}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleViewReportDetail(report)}
+                              >
+                                Lihat Detail
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })
+                    )}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </div>
@@ -784,80 +903,6 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Reports Table */}
-          <Card className="bg-card text-foreground">
-            <CardHeader>
-              <CardTitle>Laporan Masuk Terbaru</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>No. Tiket</TableHead>
-                    <TableHead>Pelapor</TableHead>
-                    <TableHead>Kategori</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {reportsData.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                        Belum ada laporan masuk
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    reportsData.slice(0, 5).map((report) => {
-                      let statusColor = ""
-                      switch (report.status) {
-                        case "Baru":
-                          statusColor = "bg-blue-600 text-white"
-                          break
-                        case "Diproses":
-                          statusColor = "bg-yellow-600 text-white"
-                          break
-                        case "Selesai":
-                          statusColor = "bg-green-600 text-white"
-                          break
-                        case "Ditolak":
-                          statusColor = "bg-red-600 text-white"
-                          break
-                        case "Menunggu":
-                          statusColor = "bg-yellow-600 text-white"
-                          break
-                        case "Dibatalkan":
-                          statusColor = "bg-red-200 text-red-800"
-                          break
-                        default:
-                          statusColor = "bg-gray-600 text-white"
-                      }
-                      return (
-                        <TableRow key={report.id}>
-                          <TableCell className="font-medium">{report.nomorTiket}</TableCell>
-                          <TableCell>{report.reporter}</TableCell>
-                          <TableCell>{report.category}</TableCell>
-                          <TableCell>
-                            <Badge className={statusColor}>{report.status}</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleViewReportDetail(report)}
-                            >
-                              Lihat Detail
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
         </main>
       </div>
 
@@ -932,6 +977,60 @@ export default function AdminDashboard() {
                 <p className="text-sm font-medium text-muted-foreground">Catatan</p>
                 <p className="text-base mt-2 bg-accent/50 p-4 rounded-lg">{selectedReport.description}</p>
               </div>
+
+              {/* Status Update Actions */}
+              {selectedReport.status === "Menunggu" && (
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Update Status</p>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      onClick={() => handleStatusUpdate(selectedReport.id, "called")}
+                      disabled={updatingStatus}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {updatingStatus ? 'Memproses...' : 'Panggil'}
+                    </Button>
+                    <Button
+                      onClick={() => handleStatusUpdate(selectedReport.id, "completed")}
+                      disabled={updatingStatus}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      {updatingStatus ? 'Memproses...' : 'Selesai'}
+                    </Button>
+                    <Button
+                      onClick={() => handleStatusUpdate(selectedReport.id, "cancelled")}
+                      disabled={updatingStatus}
+                      variant="outline"
+                      className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                    >
+                      {updatingStatus ? 'Memproses...' : 'Batalkan'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {selectedReport.status === "Dipanggil" && (
+                <div className="border-t pt-4">
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Update Status</p>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      onClick={() => handleStatusUpdate(selectedReport.id, "completed")}
+                      disabled={updatingStatus}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      {updatingStatus ? 'Memproses...' : 'Selesai'}
+                    </Button>
+                    <Button
+                      onClick={() => handleStatusUpdate(selectedReport.id, "cancelled")}
+                      disabled={updatingStatus}
+                      variant="outline"
+                      className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                    >
+                      {updatingStatus ? 'Memproses...' : 'Batalkan'}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Footer */}
@@ -939,14 +1038,9 @@ export default function AdminDashboard() {
               <Button 
                 variant="outline" 
                 onClick={handleCloseReportDetail}
+                disabled={updatingStatus}
               >
                 Tutup
-              </Button>
-              <Button 
-                variant="default"
-                onClick={() => alert('Fitur update status akan segera tersedia')}
-              >
-                Update Status
               </Button>
             </div>
           </div>

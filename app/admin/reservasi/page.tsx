@@ -35,6 +35,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Monitor,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -620,6 +621,18 @@ export default function AdminReservationsPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Display Antrian Button */}
+          <div className="mb-6">
+            <Button
+              onClick={() => window.open('/admin/reservasi/display', '_blank', 'width=1920,height=1080,fullscreen=yes')}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+              size="lg"
+            >
+              <Monitor className="w-5 h-5 mr-2" />
+              Tampilkan Antrian ke Layar Monitor
+            </Button>
           </div>
 
           {/* Filters */}
