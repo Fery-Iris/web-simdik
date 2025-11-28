@@ -42,23 +42,36 @@ const getServiceKey = (reservation: Reservation): string => {
 
 export default function DisplayAntrianPage() {
   const [reservations, setReservations] = useState<Reservation[]>([])
-  const [currentTime, setCurrentTime] = useState(new Date())
+  const [currentTime, setCurrentTime] = useState<Date | null>(null)
+  const [mounted, setMounted] = useState(false)
   const [calledReservations, setCalledReservations] = useState<{[key: string]: Reservation[]}>({
     ptk: [],
     sd: [],
     smp: [],
     paud: [],
   })
+ 
+  const getCurrentWITATime = (): Date => {
+   
+    const now = new Date()
+    const witaString = now.toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
+    return new Date(witaString)
+  }
 
-  // Update time every second
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
-    return () => clearInterval(timer)
+    setMounted(true)
+    setCurrentTime(getCurrentWITATime())
   }, [])
 
-  // Fetch reservations data
+  useEffect(() => {
+    if (!mounted) return
+    
+    const timer = setInterval(() => {
+      setCurrentTime(getCurrentWITATime())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [mounted])
+
   useEffect(() => {
     const fetchReservations = async () => {
       try {
@@ -68,7 +81,7 @@ export default function DisplayAntrianPage() {
           const allReservations = data.data || []
           setReservations(allReservations)
           
-          // Group by service and get only "called" status
+          
           const grouped: {[key: string]: Reservation[]} = {
             ptk: [],
             sd: [],
@@ -97,7 +110,9 @@ export default function DisplayAntrianPage() {
   }, [])
 
   const formatTime = (date: Date) => {
+    
     return date.toLocaleTimeString('id-ID', {
+      timeZone: 'Asia/Makassar',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -105,7 +120,9 @@ export default function DisplayAntrianPage() {
   }
 
   const formatDate = (date: Date) => {
+    
     return date.toLocaleDateString('id-ID', {
+      timeZone: 'Asia/Makassar',
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -114,25 +131,31 @@ export default function DisplayAntrianPage() {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 p-3 flex flex-col">
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow-lg p-5 mb-3 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-5xl font-bold text-gray-900 mb-2">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-1 sm:p-2 md:p-3 lg:p-4 flex flex-col">
+      {/* Header - Compact untuk monitor */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-1.5 sm:p-2 md:p-2.5 lg:p-3 mb-1 sm:mb-2 flex-shrink-0">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1.5 md:gap-2 lg:gap-3">
+          <div className="flex-1">
+            <h1 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-bold text-foreground mb-0.5 sm:mb-1 leading-tight">
               SIREDI (Sistem Reservasi Dinas Pendidikan dan Informasi)
             </h1>
-            <p className="text-3xl text-gray-600">Nomor Antrian Layanan</p>
+            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground">
+              Nomor Antrian Layanan
+            </p>
           </div>
-          <div className="text-right">
-            <p className="text-7xl font-bold text-blue-600">{formatTime(currentTime)}</p>
-            <p className="text-2xl text-gray-600">{formatDate(currentTime)}</p>
+          <div className="text-center md:text-right flex-shrink-0">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold text-blue-600 dark:text-blue-400 leading-none" suppressHydrationWarning>
+              {currentTime ? formatTime(currentTime) : '--:--:--'}
+            </p>
+            <p className="text-xs sm:text-xs md:text-sm lg:text-base text-muted-foreground mt-0.5" suppressHydrationWarning>
+              {currentTime ? formatDate(currentTime) : '--'}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Queue Display Grid */}
-      <div className="grid grid-cols-2 gap-3 flex-1 min-h-0">
+      {/* Queue Display Grid - Optimized untuk 2x2 tanpa scroll */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-1.5 md:gap-2 lg:gap-2.5 flex-1 min-h-0 overflow-hidden">
         {(Object.keys(SERVICE_LABELS) as Array<keyof typeof SERVICE_LABELS>).map((serviceKey) => {
           const colors = SERVICE_COLORS[serviceKey]
           const label = SERVICE_LABELS[serviceKey]
@@ -140,46 +163,50 @@ export default function DisplayAntrianPage() {
           const latestCalled = currentQueue[currentQueue.length - 1]
 
           return (
-            <Card key={serviceKey} className="shadow-lg border-2 border-gray-200 flex flex-col h-full">
-              <CardHeader className={`${colors.bg} text-white py-4 px-4 flex-shrink-0`}>
-                <CardTitle className="text-4xl font-bold text-center leading-tight">
+            <Card key={serviceKey} className="shadow-lg border border-border flex flex-col h-full overflow-hidden">
+              <CardHeader className={`${colors.bg} text-white py-1 sm:py-1.5 md:py-2 px-2 sm:px-2.5 md:px-3 flex-shrink-0`}>
+                <CardTitle className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-bold text-center leading-tight">
                   {label}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-3 flex-1 flex flex-col justify-center">
+              <CardContent className="p-1.5 sm:p-2 md:p-2.5 lg:p-3 flex-1 flex flex-col justify-center min-h-0">
                 {latestCalled ? (
                   <div className="text-center">
-                    <p className="text-xl text-gray-600 font-medium mb-2">Nomor Antrian:</p>
-                    <div className={`${colors.bgLight} rounded-lg p-3 border-4 border-dashed ${colors.text} border-opacity-50`}>
-                      <p className={`text-9xl font-black ${colors.text} animate-pulse leading-none`}>
+                    <p className="text-xs sm:text-xs md:text-sm text-muted-foreground font-medium mb-0.5 sm:mb-1">
+                      Nomor Antrian:
+                    </p>
+                    <div className={`${colors.bgLight} dark:bg-opacity-20 rounded-lg p-1.5 sm:p-2 md:p-2.5 lg:p-3 border border-dashed ${colors.text} border-opacity-50`}>
+                      <p className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black ${colors.text} animate-pulse leading-none break-all`}>
                         {latestCalled.queueNumber}
                       </p>
                     </div>
-                    <div className="pt-2 mt-2 border-t border-gray-200">
-                      <p className="text-xl font-semibold text-gray-800 truncate">{latestCalled.name}</p>
+                    <div className="pt-0.5 sm:pt-1 mt-0.5 sm:mt-1 border-t border-border">
+                      <p className="text-xs sm:text-xs md:text-sm lg:text-base font-semibold text-foreground truncate px-1">
+                        {latestCalled.name}
+                      </p>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center">
-                    <p className="text-xl text-gray-400 font-medium mb-2">
+                    <p className="text-xs sm:text-xs md:text-sm text-muted-foreground font-medium mb-0.5 sm:mb-1">
                       Belum ada antrian
                     </p>
-                    <div className={`${colors.bgLight} rounded-lg p-3`}>
-                      <p className={`text-7xl font-bold ${colors.text} opacity-30 leading-none`}>-</p>
+                    <div className={`${colors.bgLight} rounded-lg p-1.5 sm:p-2 md:p-2.5 lg:p-3`}>
+                      <p className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold ${colors.text} opacity-30 leading-none`}>-</p>
                     </div>
                   </div>
                 )}
 
                 {/* Previous queues (last 2) */}
                 {currentQueue.length > 1 && (
-                  <div className="mt-2 pt-2 border-t border-gray-200">
-                    <p className="text-base text-gray-500 mb-1 text-center">Sebelumnya:</p>
-                    <div className="flex justify-center gap-2">
+                  <div className="mt-0.5 sm:mt-1 pt-0.5 sm:pt-1 border-t border-border">
+                    <p className="text-xs sm:text-xs md:text-xs text-muted-foreground mb-0.5 text-center">Sebelumnya:</p>
+                    <div className="flex justify-center gap-0.5 sm:gap-1 flex-wrap">
                       {currentQueue.slice(-3, -1).reverse().map((res) => (
                         <Badge
                           key={res.id}
                           variant="outline"
-                          className={`${colors.text} text-lg px-4 py-2`}
+                          className={`${colors.text} text-xs sm:text-xs md:text-sm px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1`}
                         >
                           {res.queueNumber}
                         </Badge>
@@ -193,9 +220,9 @@ export default function DisplayAntrianPage() {
         })}
       </div>
 
-      {/* Footer */}
-      <div className="mt-2 text-center flex-shrink-0">
-        <p className="text-gray-600 text-base">
+      {/* Footer - Compact */}
+      <div className="mt-0.5 sm:mt-1 text-center flex-shrink-0">
+        <p className="text-muted-foreground text-xs sm:text-xs md:text-sm">
           Harap perhatikan nomor antrian Anda di layar monitor
         </p>
       </div>
