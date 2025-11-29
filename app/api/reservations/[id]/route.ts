@@ -98,6 +98,74 @@ export async function PUT(
       }
     }
 
+    // AUTO-COMPLETE LOGIC: When calling a new ticket, auto-complete previous "called" tickets in the same service
+    if (status === "CALLED") {
+      try {
+        // Get the current reservation to determine the service
+        const currentReservation = await prisma.reservasi.findUnique({
+          where: { id: params.id },
+          include: { layanan: true }
+        })
+
+        if (currentReservation) {
+          // Determine service key for matching
+          const serviceKey = service.toLowerCase().trim()
+          const serviceName = currentReservation.layanan?.name?.toLowerCase().trim()
+          
+          // Build conditions to find other "called" reservations in the same service
+          const serviceConditions = []
+          
+          // Match by service field
+          if (serviceKey) {
+            serviceConditions.push({
+              service: {
+                contains: serviceKey,
+                mode: 'insensitive' as const
+              }
+            })
+          }
+          
+          // Match by layanan relation if exists
+          if (layananId) {
+            serviceConditions.push({
+              idLayanan: layananId
+            })
+          }
+          
+          // Match by layanan name if exists
+          if (serviceName) {
+            serviceConditions.push({
+              layanan: {
+                name: {
+                  contains: serviceName,
+                  mode: 'insensitive' as const
+                }
+              }
+            })
+          }
+
+          // Auto-complete all "called" reservations in the same service (except the current one)
+          if (serviceConditions.length > 0) {
+            await prisma.reservasi.updateMany({
+              where: {
+                AND: [
+                  { id: { not: params.id } }, // Exclude current reservation
+                  { status: "CALLED" },
+                  { OR: serviceConditions }
+                ]
+              },
+              data: {
+                status: "COMPLETED"
+              }
+            })
+          }
+        }
+      } catch (autoCompleteError) {
+        console.error("Error in auto-complete logic:", autoCompleteError)
+        // Continue with normal update even if auto-complete fails
+      }
+    }
+
     const reservation = await prisma.reservasi.update({
       where: {
         id: params.id,

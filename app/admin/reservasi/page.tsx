@@ -682,171 +682,194 @@ export default function AdminReservationsPage() {
             </div>
           </div>
 
-          {/* Reservations Table */}
-          <Card className="shadow-lg border-0">
-            <CardHeader className="bg-muted">
-              <CardTitle className="text-foreground">Daftar Reservasi</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              {loading ? (
-                <div className="flex items-center justify-center py-8">
+          {/* Reservations Cards */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-foreground">Daftar Reservasi</h2>
+              <span className="text-sm text-muted-foreground">
+                {filteredReservations.length} reservasi
+              </span>
+            </div>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
                   <div className="text-muted-foreground">Memuat data...</div>
                 </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 dark:bg-gray-900/50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          No. Tiket
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Nama
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Layanan
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Tanggal & Waktu
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Tujuan
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                          Aksi
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                      {paginatedReservations.map((reservation) => (
-                        <tr key={reservation.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400">
-                            {reservation.queueNumber}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {reservation.name}
-                              </div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">{reservation.phone}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate">
-                              {getServiceName(reservation)}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900 dark:text-gray-100">{reservation.date}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{reservation.timeSlot}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate">
-                              {reservation.purpose}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={cn(
-                                "inline-flex px-2 py-1 text-xs font-semibold rounded-full",
-                                getStatusColor(reservation.status)
-                              )}
-                            >
-                              {getStatusText(reservation.status)}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-blue-600 hover:text-blue-700 bg-transparent"
-                                onClick={() => handleViewDetails(reservation)}
-                              >
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-green-600 hover:text-green-700 bg-transparent"
-                                onClick={() => handleEditReservation(reservation)}
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-red-600 hover:text-red-700 bg-transparent"
-                                onClick={() => handleDeleteReservation(reservation)}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-            {filteredReservations.length > 0 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t">
-                <span className="text-sm text-muted-foreground">
-                  Menampilkan {(currentPage - 1) * itemsPerPage + 1}-
-                  {Math.min(currentPage * itemsPerPage, filteredReservations.length)} dari {filteredReservations.length} reservasi
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                    aria-label="Halaman pertama"
-                  >
-                    <ChevronsLeft className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    aria-label="Halaman sebelumnya"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
-                  <span className="text-sm font-medium min-w-[120px] text-center">
-                    Halaman {currentPage} / {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    aria-label="Halaman selanjutnya"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => setCurrentPage(totalPages)}
-                    disabled={currentPage === totalPages}
-                    aria-label="Halaman terakhir"
-                  >
-                    <ChevronsRight className="w-4 h-4" />
-                  </Button>
-                </div>
               </div>
+            ) : filteredReservations.length === 0 ? (
+              <Card className="shadow-lg border-0">
+                <CardContent className="p-12">
+                  <div className="text-center text-muted-foreground">
+                    <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Tidak ada reservasi ditemukan</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {paginatedReservations.map((reservation) => (
+                    <Card 
+                      key={reservation.id} 
+                      className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 hover:scale-[1.02]"
+                    >
+                      <CardContent className="p-6">
+                        {/* Header: Ticket Number & Status */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">No. Tiket</p>
+                            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                              {reservation.queueNumber}
+                            </p>
+                          </div>
+                          <Badge
+                            className={cn(
+                              "px-3 py-1 text-xs font-semibold",
+                              getStatusColor(reservation.status)
+                            )}
+                          >
+                            {getStatusText(reservation.status)}
+                          </Badge>
+                        </div>
+
+                        {/* User Info */}
+                        <div className="space-y-3 mb-4">
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-foreground truncate">
+                                {reservation.name}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              {reservation.phone}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <School className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground truncate">
+                              {getServiceName(reservation)}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              {reservation.date} • {reservation.timeSlot}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Purpose */}
+                        <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                          <p className="text-xs text-muted-foreground mb-1">Tujuan Kunjungan:</p>
+                          <p className="text-sm text-foreground line-clamp-2">
+                            {reservation.purpose}
+                          </p>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-2 pt-3 border-t">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950"
+                            onClick={() => handleViewDetails(reservation)}
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            Detail
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+                            onClick={() => handleEditReservation(reservation)}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                            onClick={() => handleDeleteReservation(reservation)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {filteredReservations.length > 0 && (
+                  <Card className="shadow-lg border-0">
+                    <CardContent className="p-4">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <span className="text-sm text-muted-foreground">
+                          Menampilkan {(currentPage - 1) * itemsPerPage + 1}-
+                          {Math.min(currentPage * itemsPerPage, filteredReservations.length)} dari {filteredReservations.length} reservasi
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="rounded-full"
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                            aria-label="Halaman pertama"
+                          >
+                            <ChevronsLeft className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="rounded-full"
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            aria-label="Halaman sebelumnya"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </Button>
+                          <span className="text-sm font-medium min-w-[120px] text-center">
+                            Halaman {currentPage} / {totalPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="rounded-full"
+                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            aria-label="Halaman selanjutnya"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="rounded-full"
+                            onClick={() => setCurrentPage(totalPages)}
+                            disabled={currentPage === totalPages}
+                            aria-label="Halaman terakhir"
+                          >
+                            <ChevronsRight className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
-          </Card>
+          </div>
         </main>
       </div>
 
