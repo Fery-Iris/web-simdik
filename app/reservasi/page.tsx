@@ -253,13 +253,6 @@ export default function ReservasiPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Cek status sebelum submit
-    const status = checkReservationStatus()
-    if (!status.isOpen) {
-      alert(`❌ ${status.message}${status.nextOpenTime ? `\n\nBuka kembali: ${status.nextOpenTime}` : ''}`)
-      return
-    }
-
     try {
       console.log('Submitting reservation data:', {
         service: reservationData.service,
@@ -394,12 +387,23 @@ export default function ReservasiPage() {
       </section>
 
       <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 relative">
-        {/* Status Banner Hijau - Ditampilkan di tengah konten saat buka */}
-        {reservationStatus && reservationStatus.isOpen && (
+        {/* Status Banner - Informasi jam operasional */}
+        {reservationStatus && (
           <ScrollReveal animation="fade-up" delay={100}>
             <div className="text-center py-4 mb-6">
-              <div className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800 rounded-lg p-4 inline-block">
-                <span className="text-sm sm:text-base font-medium">✅ {reservationStatus.message}</span>
+              <div className={`${
+                reservationStatus.isOpen 
+                  ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800' 
+                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800'
+              } border rounded-lg p-4 inline-block`}>
+                <span className="text-sm sm:text-base font-medium">
+                  {reservationStatus.isOpen ? '✅' : 'ℹ️'} {reservationStatus.message}
+                </span>
+                {!reservationStatus.isOpen && (
+                  <div className="text-xs mt-2 opacity-90">
+                    Anda tetap dapat melakukan reservasi untuk hari-hari berikutnya
+                  </div>
+                )}
               </div>
             </div>
           </ScrollReveal>
@@ -447,52 +451,34 @@ export default function ReservasiPage() {
                   <div className="flex justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
-                ) : !reservationStatus?.isOpen ? (
-                  <div className="text-center py-12 sm:py-16">
-                    <div className="text-red-600 dark:text-red-400 mb-4">
-                      <Clock className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4" />
-                    </div>
-                    <p className="text-xl sm:text-2xl font-bold mb-3 text-foreground">Reservasi Sedang Tutup</p>
-                    <p className="text-base sm:text-lg text-muted-foreground mb-6">{reservationStatus?.message}</p>
-                    {reservationStatus?.nextOpenTime && (
-                      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 sm:p-6 max-w-md mx-auto">
-                        <p className="text-sm sm:text-base font-semibold text-blue-700 dark:text-blue-300 mb-2">
-                          Buka kembali:
-                        </p>
-                        <p className="text-base sm:text-lg font-bold text-blue-800 dark:text-blue-200">
-                          {reservationStatus.nextOpenTime}
-                        </p>
-                      </div>
-                    )}
-                  </div>
                 ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {services.map((service) => {
-                    const Icon = service.icon
-                    return (
-                      <Card
-                        key={service.id}
-                        className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-blue-400 group bg-card dark:bg-card touch-manipulation"
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    {services.map((service) => {
+                      const Icon = service.icon
+                      return (
+                        <Card
+                          key={service.id}
+                          className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-blue-400 group bg-card dark:bg-card touch-manipulation"
                           onClick={() => handleServiceSelect(service.id, service.name)}
-                      >
-                        <CardContent className="p-4 sm:p-6 text-center bg-card dark:bg-card">
-                          <div
-                            className={cn(
-                              "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110",
-                              service.color,
-                            )}
-                          >
-                            <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                          </div>
-                          <h3 className="font-semibold text-base sm:text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-foreground">
-                            {service.name}
-                          </h3>
-                          <p className="text-xs sm:text-sm text-muted-foreground">{service.description}</p>
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
+                        >
+                          <CardContent className="p-4 sm:p-6 text-center bg-card dark:bg-card">
+                            <div
+                              className={cn(
+                                "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110",
+                                service.color,
+                              )}
+                            >
+                              <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                            </div>
+                            <h3 className="font-semibold text-base sm:text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-foreground">
+                              {service.name}
+                            </h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{service.description}</p>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
                 )}
               </CardContent>
             </Card>

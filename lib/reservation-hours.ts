@@ -188,11 +188,17 @@ export function isValidReservationTime(date: Date, timeSlot: string): boolean {
 
 /**
  * Mengecek apakah slot waktu sudah lewat (untuk hari yang sama)
- * Slot dianggap lewat jika waktu saat ini >= waktu akhir slot
- * Contoh: Slot 09:00 - 10:00 masih bisa dipilih sampai jam 10:00
+ * Slot dianggap lewat jika:
+ * 1. Tanggal yang dipilih adalah hari ini
+ * 2. Masih dalam jam operasional (08:00 - 16:00 Senin-Kamis, 08:00 - 10:00 Jumat)
+ * 3. Waktu saat ini >= waktu akhir slot
+ * 
+ * Jika sudah lewat jam operasional (misalnya jam 20:00), dianggap booking untuk hari berikutnya
+ * sehingga semua slot tersedia.
+ * 
  * @param selectedDate Tanggal yang dipilih
  * @param timeSlot Slot waktu dalam format "HH:MM" (waktu awal slot)
- * @returns true jika slot waktu sudah lewat (untuk hari yang sama)
+ * @returns true jika slot waktu sudah lewat (untuk hari yang sama dalam jam operasional)
  */
 export function isTimeSlotPassed(selectedDate: Date, timeSlot: string): boolean {
   // Gunakan waktu lokal Indonesia Tengah (WITA - UTC+8)
@@ -206,15 +212,33 @@ export function isTimeSlotPassed(selectedDate: Date, timeSlot: string): boolean 
     return false
   }
   
-  // Jika hari yang sama, cek apakah waktu akhir slot sudah lewat
+  // Cek apakah masih dalam jam operasional
+  const currentDay = localTime.day
+  const currentTime = localTime.hour * 60 + localTime.minute
+  
+  // Tentukan jam tutup berdasarkan hari
+  let closeTime: number
+  if (currentDay === 5) { // Jumat
+    closeTime = 10 * 60 // 10:00
+  } else if (currentDay >= 1 && currentDay <= 4) { // Senin-Kamis
+    closeTime = 16 * 60 // 16:00
+  } else { // Sabtu-Minggu (tidak operasional)
+    return false
+  }
+  
+  // Jika sudah lewat jam tutup, anggap booking untuk hari berikutnya
+  // Semua slot dianggap belum lewat
+  if (currentTime >= closeTime) {
+    return false
+  }
+  
+  // Jika masih dalam jam operasional, cek apakah slot sudah lewat
   const [slotHour, slotMinute] = timeSlot.split(':').map(Number)
   // Waktu akhir slot adalah 1 jam setelah waktu awal (contoh: 09:00 -> 10:00)
   const slotEndHour = slotHour + 1
-  const slotEndTime = slotEndHour * 60 + slotMinute // Total menit sejak 00:00 untuk waktu akhir
-  const currentTime = localTime.hour * 60 + localTime.minute // Total menit sejak 00:00
+  const slotEndTime = slotEndHour * 60 + slotMinute
   
   // Slot dianggap lewat jika waktu saat ini >= waktu akhir slot
-  // Contoh: Slot 09:00 - 10:00, jika sekarang jam 10:00 atau lebih, maka sudah lewat
   return currentTime >= slotEndTime
 }
 

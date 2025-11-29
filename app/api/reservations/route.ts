@@ -81,16 +81,6 @@ function calculateEstimatedTime(service: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    // Cek status reservasi real-time
-    const status = checkReservationStatus()
-    if (!status.isOpen) {
-      return NextResponse.json({ 
-        success: false,
-        error: status.message,
-        nextOpenTime: status.nextOpenTime,
-      }, { status: 403 })
-    }
-
     const body = await request.json()
 
     // Validate required fields
@@ -100,10 +90,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Validasi waktu reservasi
+    // Validasi tanggal reservasi
     const [y, m, d] = date.split('-').map(Number)
     const reservationDate = new Date(y, m - 1, d)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    reservationDate.setHours(0, 0, 0, 0)
     
+    // Validasi tanggal tidak boleh di masa lalu
+    if (reservationDate < today) {
+      return NextResponse.json({ 
+        success: false,
+        error: "Tanggal reservasi tidak boleh di masa lalu."
+      }, { status: 400 })
+    }
+
+    // Validasi waktu reservasi sesuai jadwal (Sabtu/Minggu/Jumat/Senin-Kamis)
     if (!isValidReservationTime(reservationDate, timeSlot)) {
       return NextResponse.json({ 
         success: false,
@@ -111,7 +113,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validasi apakah slot waktu sudah lewat (untuk hari yang sama)
+    // Validasi apakah slot waktu sudah lewat (hanya untuk hari yang sama dalam jam operasional)
+    // Jika sudah lewat jam operasional, anggap booking untuk hari berikutnya
     if (isTimeSlotPassed(reservationDate, timeSlot)) {
       return NextResponse.json({ 
         success: false,
