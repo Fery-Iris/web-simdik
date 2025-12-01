@@ -589,93 +589,98 @@ export default function AdminSchoolsPage() {
                   </Select>
                 </div>
 
-                {/* Table */}
+                {/* Cards Grid */}
                 {loading ? (
                   <div className="text-center py-8 text-gray-500">Memuat data...</div>
                 ) : filteredSekolah.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">Tidak ada sekolah ditemukan</div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 dark:bg-gray-900/50"> 
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Nama Sekolah
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Jenjang
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Kecamatan
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Akreditasi
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Aksi
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                        {paginatedSekolah.map((sekolah, index) => (
-                          <tr key={sekolah.id} className="admin-table-row">
-                            <td className="px-4 py-4">
-                              <div className="flex items-center">
-                                <div>
-                                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{sekolah.nama}</div>
-                                  <div className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{sekolah.alamat}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap">
-                              <Badge variant="outline">{sekolah.jenjang}</Badge>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                              {sekolah.kecamatan}
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap">
-                              <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {paginatedSekolah.map((sekolah) => (
+                      <Card key={sekolah.id} className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 hover:scale-[1.02] overflow-hidden">
+                        {/* Image Preview */}
+                        <div className="relative w-full h-40 bg-gray-100">
+                          {sekolah.gambarUtama ? (
+                            <img
+                              src={sekolah.gambarUtama}
+                              alt={sekolah.nama}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                              <School className="w-12 h-12 text-gray-300" />
+                            </div>
+                          )}
+                          <div className="absolute top-2 right-2">
+                            <Badge variant="outline" className="bg-white">
+                              {sekolah.jenjang}
+                            </Badge>
+                          </div>
+                        </div>
+                        
+                        <CardContent className="p-6">
+                          <div className="space-y-3 mb-4">
+                            <h3 className="font-bold text-sm line-clamp-2 min-h-[2.5rem] text-foreground">
+                              {sekolah.nama}
+                            </h3>
+                            
+                            <p className="text-xs text-muted-foreground line-clamp-1">
+                              {sekolah.alamat || 'Alamat tidak tersedia'}
+                            </p>
+                            
+                            <div className="flex items-center gap-2">
+                              <School className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                              <p className="text-sm text-muted-foreground truncate">
+                                {sekolah.kecamatan}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className="text-xs">
+                                {sekolah.status}
+                              </Badge>
+                              <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 text-xs">
                                 {sekolah.akreditasi || "-"}
                               </Badge>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                              {sekolah.status}
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <div className="flex justify-end space-x-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleViewDetails(sekolah)}
-                                  className="text-blue-600 hover:text-blue-700 bg-transparent admin-button-hover"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleEdit(sekolah)}
-                                  className="text-green-600 hover:text-green-700 bg-transparent admin-button-hover"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleDelete(sekolah)}
-                                  className="text-red-600 hover:text-red-700 bg-transparent admin-button-hover"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                            </div>
+                            {sekolah.tahunBerdiri && (
+                              <div className="text-xs text-muted-foreground mt-2">
+                                Berdiri: {sekolah.tahunBerdiri}
                               </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            )}
+                          </div>
+                          
+                          <div className="flex gap-2 pt-3 border-t">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleViewDetails(sekolah)}
+                              className="flex-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEdit(sekolah)}
+                              className="flex-1 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDelete(sekolah)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 )}
                 {filteredSekolah.length > 0 && (

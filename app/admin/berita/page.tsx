@@ -531,93 +531,97 @@ export default function AdminNewsPage() {
                   </Select>
                 </div>
 
-                {/* Table */}
+                {/* Cards Grid */}
                 {loading ? (
                   <div className="text-center py-8 text-gray-500">Memuat data...</div>
                 ) : filteredBerita.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">Tidak ada berita ditemukan</div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50 dark:bg-gray-900/50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Judul
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Kategori
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Status
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Views
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Tanggal
-                          </th>
-                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Aksi
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                        {paginatedBerita.map((berita, index) => (
-                          <tr key={berita.id} className="admin-table-row">
-                            <td className="px-4 py-4">
-                              <div className="flex items-center">
-                                <div>
-                                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{berita.judul}</div>
-                                  <div className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{berita.ringkasan}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap">
-                              <Badge variant="outline">{berita.kategori}</Badge>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap">
-                              <Badge className={getStatusColor(berita.status)}>
-                                {getStatusLabel(berita.status)}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {paginatedBerita.map((berita) => (
+                      <Card key={berita.id} className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 hover:scale-[1.02] overflow-hidden">
+                        {/* Image Preview */}
+                        <div className="relative w-full h-40 bg-gray-100">
+                          {berita.gambarUtama ? (
+                            <img
+                              src={berita.gambarUtama}
+                              alt={berita.judul}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                              <Newspaper className="w-12 h-12 text-gray-300" />
+                            </div>
+                          )}
+                          <div className="absolute top-2 right-2">
+                            <Badge className={getStatusColor(berita.status)}>
+                              {getStatusLabel(berita.status)}
+                            </Badge>
+                          </div>
+                          {berita.unggulan && (
+                            <div className="absolute top-2 left-2">
+                              <Badge className="bg-yellow-500 text-white">
+                                Unggulan
                               </Badge>
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                              {berita.views}
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                              {new Date(berita.createdAt).toLocaleDateString('id-ID')}
-                            </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                              <div className="flex justify-end space-x-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleViewDetails(berita)}
-                                  className="text-blue-600 hover:text-blue-700 bg-transparent admin-button-hover"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleEdit(berita)}
-                                  className="text-green-600 hover:text-green-700 bg-transparent admin-button-hover"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleDelete(berita)}
-                                  className="text-red-600 hover:text-red-700 bg-transparent admin-button-hover"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <CardContent className="p-6">
+                          <div className="space-y-3 mb-4">
+                            <h3 className="font-bold text-sm line-clamp-2 min-h-[2.5rem] text-foreground">
+                              {berita.judul}
+                            </h3>
+                            
+                            <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">
+                              {berita.ringkasan || 'Tidak ada ringkasan'}
+                            </p>
+                          </div>
+                          
+                          <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className="text-xs">
+                                {berita.kategori}
+                              </Badge>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Eye className="w-3 h-3" />
+                                {berita.views}
                               </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-2">
+                              {new Date(berita.createdAt).toLocaleDateString('id-ID')}
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2 pt-3 border-t">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleViewDetails(berita)}
+                              className="flex-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEdit(berita)}
+                              className="flex-1 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDelete(berita)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 )}
                 {filteredBerita.length > 0 && (

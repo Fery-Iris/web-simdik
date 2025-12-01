@@ -688,93 +688,96 @@ export default function AgendaPage() {
               </Select>
             </div>
 
-            {/* Table */}
+            {/* Cards Grid */}
             {loading ? (
               <div className="text-center py-8 text-gray-500">Memuat data...</div>
             ) : filteredAgendas.length === 0 ? (
               <div className="text-center py-8 text-gray-500">Tidak ada agenda ditemukan</div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-900/50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Judul
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Kategori
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Kapasitas
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Tanggal
-                      </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Aksi
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-950 divide-y divide-gray-200 dark:divide-gray-800">
-                    {paginatedAgendas.map((agenda, index) => (
-                      <tr key={agenda.id} className="admin-table-row">
-                        <td className="px-4 py-4">
-                          <div className="flex items-center">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{agenda.title}</div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">{agenda.location}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <Badge variant="outline">{agenda.category}</Badge>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
-                          <Badge className={statusColors[agenda.status]}>
-                            {statusLabels[agenda.status]}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {paginatedAgendas.map((agenda) => (
+                  <Card key={agenda.id} className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 hover:scale-[1.02] overflow-hidden">
+                    {/* Image Preview */}
+                    <div className="relative w-full h-40 bg-gray-100">
+                      {agenda.imageUrl ? (
+                        <img
+                          src={agenda.imageUrl}
+                          alt={agenda.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                          <Calendar className="w-12 h-12 text-gray-300" />
+                        </div>
+                      )}
+                      <div className="absolute top-2 right-2">
+                        <Badge className={statusColors[agenda.status]}>
+                          {statusLabels[agenda.status]}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <CardContent className="p-6">
+                      <div className="space-y-3 mb-4">
+                        <h3 className="font-bold text-sm line-clamp-2 min-h-[2.5rem] text-foreground">
+                          {agenda.title}
+                        </h3>
+                        
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(agenda.date).toLocaleDateString('id-ID')}
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                          <p className="text-sm text-muted-foreground truncate">
+                            {agenda.location}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <Badge variant="outline" className="text-xs">
+                            {agenda.category}
                           </Badge>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {agenda.capacity > 0 ? `${agenda.capacity} orang` : 'Tidak terbatas'}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {new Date(agenda.date).toLocaleDateString('id-ID')}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleView(agenda.id)}
-                              className="text-blue-600 hover:text-blue-700 bg-transparent admin-button-hover"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleEdit(agenda)}
-                              className="text-green-600 hover:text-green-700 bg-transparent admin-button-hover"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleDelete(agenda.id)}
-                              className="text-red-600 hover:text-red-700 bg-transparent admin-button-hover"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          <span className="text-xs text-muted-foreground">
+                            {agenda.capacity > 0 ? `${agenda.capacity} orang` : 'Unlimited'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 pt-3 border-t">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleView(agenda.id)}
+                          className="flex-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEdit(agenda)}
+                          className="flex-1 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDelete(agenda.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
             {filteredAgendas.length > 0 && (
