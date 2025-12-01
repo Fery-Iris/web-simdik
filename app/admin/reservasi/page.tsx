@@ -564,60 +564,156 @@ export default function AdminReservationsPage() {
             </p>
           </div>
 
-          {/* Reservation Statistics */}
+          {/* Reservation Statistics with Quick Call */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            {/* PTK Service Card */}
             <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Total Reservasi</p>
-                    <p className="text-2xl font-bold text-blue-600">{stats.total}</p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base font-bold text-blue-600 mb-1">PTK</p>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {reservations.filter(r => getServiceKey(r) === 'ptk' && r.status === 'waiting').length}
+                      </p>
+                      <p className="text-xs text-gray-500">Menunggu</p>
+                    </div>
+                    <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
+                      <User className="w-6 h-6 text-blue-600" />
+                    </div>
                   </div>
-                  <div className="bg-blue-100 p-3 rounded-lg admin-icon-hover">
-                    <Calendar className="w-6 h-6 text-blue-600" />
-                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => {
+                      const nextWaiting = reservations
+                        .filter(r => getServiceKey(r) === 'ptk' && r.status === 'waiting')
+                        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
+                      if (nextWaiting) {
+                        handleStatusUpdate(nextWaiting.id, 'called')
+                      } else {
+                        alert('Tidak ada antrian PTK yang menunggu')
+                      }
+                    }}
+                    disabled={reservations.filter(r => getServiceKey(r) === 'ptk' && r.status === 'waiting').length === 0}
+                  >
+                    <Clock className="w-4 h-4 mr-1" />
+                    Panggil Antrian
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
+            {/* SD Service Card */}
             <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Selesai</p>
-                    <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base font-bold text-green-600 mb-1">SD Umum</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {reservations.filter(r => getServiceKey(r) === 'sd' && r.status === 'waiting').length}
+                      </p>
+                      <p className="text-xs text-gray-500">Menunggu</p>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
+                      <School className="w-6 h-6 text-green-600" />
+                    </div>
                   </div>
-                  <div className="bg-green-100 p-3 rounded-lg admin-icon-hover">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => {
+                      const nextWaiting = reservations
+                        .filter(r => getServiceKey(r) === 'sd' && r.status === 'waiting')
+                        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
+                      if (nextWaiting) {
+                        handleStatusUpdate(nextWaiting.id, 'called')
+                      } else {
+                        alert('Tidak ada antrian SD yang menunggu')
+                      }
+                    }}
+                    disabled={reservations.filter(r => getServiceKey(r) === 'sd' && r.status === 'waiting').length === 0}
+                  >
+                    <Clock className="w-4 h-4 mr-1" />
+                    Panggil Antrian
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
+            {/* SMP Service Card */}
             <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Menunggu</p>
-                    <p className="text-2xl font-bold text-orange-600">{stats.waiting}</p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base font-bold text-yellow-600 mb-1">SMP Umum</p>
+                      <p className="text-2xl font-bold text-yellow-600">
+                        {reservations.filter(r => getServiceKey(r) === 'smp' && r.status === 'waiting').length}
+                      </p>
+                      <p className="text-xs text-gray-500">Menunggu</p>
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded-lg admin-icon-hover">
+                      <School className="w-6 h-6 text-yellow-600" />
+                    </div>
                   </div>
-                  <div className="bg-orange-100 p-3 rounded-lg admin-icon-hover">
-                    <Clock className="w-6 h-6 text-orange-600" />
-                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                    onClick={() => {
+                      const nextWaiting = reservations
+                        .filter(r => getServiceKey(r) === 'smp' && r.status === 'waiting')
+                        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
+                      if (nextWaiting) {
+                        handleStatusUpdate(nextWaiting.id, 'called')
+                      } else {
+                        alert('Tidak ada antrian SMP yang menunggu')
+                      }
+                    }}
+                    disabled={reservations.filter(r => getServiceKey(r) === 'smp' && r.status === 'waiting').length === 0}
+                  >
+                    <Clock className="w-4 h-4 mr-1" />
+                    Panggil Antrian
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
+            {/* PAUD Service Card */}
             <Card className="admin-stats-card admin-card-interactive">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Dibatalkan</p>
-                    <p className="text-2xl font-bold text-red-600">{stats.cancelled}</p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base font-bold text-purple-600 mb-1">PAUD</p>
+                      <p className="text-2xl font-bold text-purple-600">
+                        {reservations.filter(r => getServiceKey(r) === 'paud' && r.status === 'waiting').length}
+                      </p>
+                      <p className="text-xs text-gray-500">Menunggu</p>
+                    </div>
+                    <div className="bg-purple-100 p-3 rounded-lg admin-icon-hover">
+                      <School className="w-6 h-6 text-purple-600" />
+                    </div>
                   </div>
-                  <div className="bg-red-100 p-3 rounded-lg admin-icon-hover">
-                    <XCircle className="w-6 h-6 text-red-600" />
-                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    onClick={() => {
+                      const nextWaiting = reservations
+                        .filter(r => getServiceKey(r) === 'paud' && r.status === 'waiting')
+                        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
+                      if (nextWaiting) {
+                        handleStatusUpdate(nextWaiting.id, 'called')
+                      } else {
+                        alert('Tidak ada antrian PAUD yang menunggu')
+                      }
+                    }}
+                    disabled={reservations.filter(r => getServiceKey(r) === 'paud' && r.status === 'waiting').length === 0}
+                  >
+                    <Clock className="w-4 h-4 mr-1" />
+                    Panggil Antrian
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -709,7 +805,7 @@ export default function AdminReservationsPage() {
               </Card>
             ) : (
               <>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {paginatedReservations.map((reservation) => (
                     <Card 
                       key={reservation.id} 
