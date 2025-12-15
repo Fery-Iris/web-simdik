@@ -113,12 +113,13 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Validasi apakah slot waktu sudah lewat (hanya untuk hari yang sama dalam jam operasional)
-    // Jika sudah lewat jam operasional, anggap booking untuk hari berikutnya
+    // Validasi apakah slot waktu sudah lewat (hanya untuk hari yang sama)
+    // Jika hari ini dan slot sudah lewat atau sudah lewat jam operasional,
+    // maka HARUS pilih tanggal besok atau selanjutnya
     if (isTimeSlotPassed(reservationDate, timeSlot)) {
       return NextResponse.json({ 
         success: false,
-        error: "Slot waktu yang dipilih sudah lewat. Silakan pilih waktu yang tersedia."
+        error: "Slot waktu untuk hari ini sudah tidak tersedia. Silakan pilih tanggal besok atau selanjutnya."
       }, { status: 400 })
     }
 
