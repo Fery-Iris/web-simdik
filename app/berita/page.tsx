@@ -92,7 +92,7 @@ export default function BeritaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50 dark:bg-background">
         <SiteHeader />
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="text-center py-12">
@@ -104,7 +104,7 @@ export default function BeritaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 dark:bg-background">
       <SiteHeader />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -165,7 +165,7 @@ export default function BeritaPage() {
           {filteredNews.map((news) => (
             <Card
               key={news.id}
-              className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border-2 border-transparent hover:border-blue-400 max-w-sm mx-auto w-full"
+              className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 group border-2 border-transparent hover:border-blue-400 max-w-sm mx-auto w-full bg-white dark:bg-card shadow-lg"
             >
               <div className="relative overflow-hidden h-44 sm:h-48">
                 <Image

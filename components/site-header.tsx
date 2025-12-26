@@ -64,7 +64,7 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300">
+    <header className="sticky top-0 z-50 bg-gray-200 dark:bg-background/95 backdrop-blur-sm border-b border-gray-300 dark:border-border shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <ScrollReveal animation="fade-right" delay={0} triggerOnce={false}>
@@ -122,8 +122,8 @@ export function SiteHeader() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border">
-            <nav className="px-4 py-6 space-y-4 bg-background">
+          <div className="md:hidden border-t border-gray-300 dark:border-border">
+            <nav className="px-4 py-6 space-y-4 bg-gray-200 dark:bg-background">
               {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.label}

@@ -142,7 +142,7 @@ export default function AboutSIMDIKPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-background text-foreground overflow-x-hidden">
       {/* Header - Consistent with main page */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -384,7 +384,7 @@ export default function AboutSIMDIKPage() {
                       : "opacity-0 translate-y-8 rotate-1"
                   }`}>
                   <Link href={`/tentang-simdik/kegiatan/${slug}`}>
-                    <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400 cursor-pointer">
+                    <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400 cursor-pointer bg-white dark:bg-card shadow-lg">
                       <div className="relative h-48 overflow-hidden">
                         <Image
                           src={activity.image || "/placeholder.svg"}

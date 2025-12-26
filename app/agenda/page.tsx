@@ -104,7 +104,7 @@ export default function AgendaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50 dark:bg-background">
         <SiteHeader />
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="text-center py-12">
@@ -116,7 +116,7 @@ export default function AgendaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 dark:bg-background">
       <SiteHeader />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -204,7 +204,7 @@ export default function AgendaPage() {
           {filteredAgendas.map((agenda) => (
             <Card
               key={agenda.id}
-              className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400"
+              className="overflow-hidden hover:shadow-xl transition-all duration-500 transform hover:-translate-y-3 group border-2 border-transparent hover:border-blue-400 bg-white dark:bg-card shadow-lg"
             >
               <div className="aspect-video relative overflow-hidden">
                 <Image
