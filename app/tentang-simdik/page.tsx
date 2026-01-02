@@ -121,7 +121,7 @@ export default function AboutSIMDIKPage() {
       image:
         "https://vqirqjfmypfwysfmfcjl.supabase.co/storage/v1/object/public/SIMDIK-Uploads/tentang_simdik/WhatsApp%20Image%202025-11-13%20at%2012.48.29.jpeg",
     },
-    {
+    /*{
       title: "Pengembangan Sistem Informasi Pendidikan",
       description:
         "Meningkatkan dan mengembangkan sistem informasi untuk pengelolaan data pendidikan yang lebih efisien dan terintegrasi.",
@@ -138,7 +138,7 @@ export default function AboutSIMDIKPage() {
       date: "Nov 2025",
       location: "Berbagai Lokasi",
       image: "/kegiatan/forum-1.png",
-    },
+    },*/
   ];
 
   return (
