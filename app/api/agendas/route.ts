@@ -4,20 +4,117 @@ import { z } from 'zod'
 
 const agendaSchema = z.object({
   title: z.string().min(1, 'Judul agenda harus diisi').max(255, 'Judul agenda terlalu panjang').optional(),
-  slug: z.string().min(1, 'Slug harus diisi').max(255, 'Slug terlalu panjang').optional(),
+  // Slug bisa kosong (empty string), akan di-generate otomatis jika kosong
+  slug: z.preprocess(
+    (val) => {
+      // Jika empty string atau whitespace, ubah menjadi undefined
+      if (typeof val === 'string' && val.trim() === '') {
+        return undefined
+      }
+      return val
+    },
+    z.string().max(255, 'Slug terlalu panjang').optional()
+  ),
   description: z.string().optional(),
   date: z.string().min(1, 'Tanggal harus diisi').optional(),
   time: z.string().min(1, 'Waktu harus diisi').optional(),
   location: z.string().min(1, 'Lokasi harus diisi').max(255, 'Lokasi terlalu panjang').optional(),
   address: z.string().optional(),
   organizer: z.string().optional(),
-  capacity: z.union([z.number().int().min(0), z.string().transform(val => parseInt(val) || 0)]).optional(),
+  capacity: z.preprocess(
+    (val) => {
+      // Handle null atau undefined
+      if (val === null || val === undefined) {
+        return undefined
+      }
+      // Handle empty string
+      if (val === '') {
+        return undefined
+      }
+      // Jika string, parse ke number
+      if (typeof val === 'string') {
+        const trimmed = val.trim()
+        if (trimmed === '') {
+          return undefined
+        }
+        const parsed = parseInt(trimmed, 10)
+        // Jika hasil parse bukan number, return undefined
+        if (isNaN(parsed)) {
+          return undefined
+        }
+        // Jika negative, return 0 (atau undefined jika ingin reject)
+        return parsed < 0 ? 0 : parsed
+      }
+      // Jika sudah number
+      if (typeof val === 'number') {
+        // Jika NaN, return undefined
+        if (isNaN(val)) {
+          return undefined
+        }
+        // Jika negative, return 0
+        return val < 0 ? 0 : Math.floor(val)
+      }
+      return undefined
+    },
+    z.number().int().min(0).optional()
+  ),
   category: z.string().optional(),
   registrationFee: z.string().optional(),
   contactPerson: z.string().optional(),
   imageUrl: z.string().optional(),
   status: z.enum(['SCHEDULED', 'ONGOING', 'COMPLETED', 'CANCELLED']).optional(),
 })
+
+/**
+ * Membuat slug URL-friendly dari string
+ * Contoh: "Rapat Koordinasi 2024" -> "rapat-koordinasi-2024"
+ */
+function createSlugFromTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    // Replace karakter khusus dengan spasi
+    .replace(/[^\w\s-]/g, '')
+    // Replace spasi ganda dengan spasi tunggal
+    .replace(/\s+/g, ' ')
+    // Replace spasi dengan dash
+    .replace(/\s/g, '-')
+    // Hapus dash di awal dan akhir
+    .replace(/^-+|-+$/g, '')
+}
+
+/**
+ * Generate slug yang unik untuk agenda
+ * Jika slug sudah ada, akan menambahkan angka di belakang (slug-1, slug-2, dst)
+ */
+async function generateUniqueSlug(baseSlug: string, excludeId?: string): Promise<string> {
+  let slug = baseSlug
+  let counter = 1
+  
+  while (true) {
+    // Cek apakah slug sudah ada di database
+    const existingAgenda = await prisma.agenda.findUnique({
+      where: { slug },
+    })
+    
+    // Jika tidak ada atau adalah agenda yang sedang diupdate, return slug ini
+    if (!existingAgenda || existingAgenda.id === excludeId) {
+      return slug
+    }
+    
+    // Jika sudah ada, tambahkan counter di belakang
+    slug = `${baseSlug}-${counter}`
+    counter++
+    
+    // Safety check: jika counter terlalu besar, tambahkan timestamp
+    if (counter > 1000) {
+      slug = `${baseSlug}-${Date.now()}`
+      break
+    }
+  }
+  
+  return slug
+}
 
 // GET /api/agendas - Get all agendas
 export async function GET(request: NextRequest) {
@@ -99,15 +196,27 @@ export async function POST(request: NextRequest) {
     console.log('📝 Validated.title:', validatedData.title)
 
     // Generate slug if not provided
-    let slug = validatedData.slug
-    if (!slug) {
-      // Get the count of existing agendas to generate a sequential slug
-      const agendaCount = await prisma.agenda.count()
-      slug = (agendaCount + 1).toString()
+    // Setelah preprocess, empty string sudah diubah menjadi undefined
+    let finalSlug: string
+    if (!validatedData.slug) {
+      // Generate slug dari title
+      const title = validatedData.title || `Agenda ${validatedData.date ? new Date(validatedData.date).toLocaleDateString('id-ID') : new Date().toLocaleDateString('id-ID')}`
+      const baseSlug = createSlugFromTitle(title)
+      
+      // Jika baseSlug kosong (misalnya title hanya karakter khusus), gunakan fallback
+      if (!baseSlug || baseSlug.trim() === '') {
+        const fallbackSlug = `agenda-${Date.now()}`
+        finalSlug = await generateUniqueSlug(fallbackSlug)
+      } else {
+        finalSlug = await generateUniqueSlug(baseSlug)
+      }
+      
+      console.log('🔗 Generated slug:', finalSlug)
+    } else {
+      // Jika slug sudah diisi, validasi bahwa slug unik
+      finalSlug = await generateUniqueSlug(validatedData.slug.trim())
+      console.log('🔗 Using provided slug:', finalSlug)
     }
-
-    // Use slug as is for now (can be improved later)
-    const finalSlug = slug
 
     // Prepare data for Prisma - only use fields that exist in schema
     const agendaData = {
@@ -127,14 +236,38 @@ export async function POST(request: NextRequest) {
       status: validatedData.status || 'SCHEDULED',
     }
 
-    const agenda = await prisma.agenda.create({
-      data: agendaData,
-    })
+    try {
+      const agenda = await prisma.agenda.create({
+        data: agendaData,
+      })
 
-    return NextResponse.json(
-      { success: true, data: agenda, message: 'Agenda berhasil dibuat' },
-      { status: 201 }
-    )
+      return NextResponse.json(
+        { success: true, data: agenda, message: 'Agenda berhasil dibuat' },
+        { status: 201 }
+      )
+    } catch (createError: any) {
+      // Handle unique constraint violation (slug duplikat)
+      if (createError.code === 'P2002' && createError.meta?.target?.includes('slug')) {
+        console.warn('⚠️ Slug collision detected, regenerating...')
+        // Regenerate slug dengan timestamp untuk memastikan unik
+        const title = validatedData.title || `Agenda ${validatedData.date ? new Date(validatedData.date).toLocaleDateString('id-ID') : new Date().toLocaleDateString('id-ID')}`
+        const baseSlug = createSlugFromTitle(title) || `agenda-${Date.now()}`
+        const uniqueSlug = `${baseSlug}-${Date.now()}`
+        
+        agendaData.slug = await generateUniqueSlug(uniqueSlug)
+        
+        // Retry create dengan slug baru
+        const agenda = await prisma.agenda.create({
+          data: agendaData,
+        })
+
+        return NextResponse.json(
+          { success: true, data: agenda, message: 'Agenda berhasil dibuat' },
+          { status: 201 }
+        )
+      }
+      throw createError
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error('Validation errors:', error.errors)

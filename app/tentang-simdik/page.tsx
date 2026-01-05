@@ -160,7 +160,7 @@ export default function AboutSIMDIKPage() {
             {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               {NAV_ITEMS.map((item) => (
-                <Link
+              <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
@@ -175,7 +175,7 @@ export default function AboutSIMDIKPage() {
                       isActive(item) ? "w-full" : "w-0 group-hover:w-full"
                     )}
                   />
-                </Link>
+              </Link>
               ))}
             </nav>
 
@@ -189,7 +189,7 @@ export default function AboutSIMDIKPage() {
                 {isMobileMenuOpen ? (
                   <X className="w-6 h-6 text-foreground" />
                 ) : (
-                  <Menu className="w-6 h-6 text-foreground" />
+                <Menu className="w-6 h-6 text-foreground" />
                 )}
               </button>
               <ThemeToggle />

@@ -452,33 +452,33 @@ export default function ReservasiPage() {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    {services.map((service) => {
-                      const Icon = service.icon
-                      return (
-                        <Card
-                          key={service.id}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  {services.map((service) => {
+                    const Icon = service.icon
+                    return (
+                      <Card
+                        key={service.id}
                           className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-blue-400 group bg-white dark:bg-card touch-manipulation"
                           onClick={() => handleServiceSelect(service.id, service.name)}
-                        >
+                      >
                           <CardContent className="p-4 sm:p-6 text-center bg-white dark:bg-card">
-                            <div
-                              className={cn(
-                                "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110",
-                                service.color,
-                              )}
-                            >
-                              <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                            </div>
-                            <h3 className="font-semibold text-base sm:text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-foreground">
-                              {service.name}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-muted-foreground">{service.description}</p>
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
+                          <div
+                            className={cn(
+                              "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110",
+                              service.color,
+                            )}
+                          >
+                            <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                          </div>
+                          <h3 className="font-semibold text-base sm:text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-foreground">
+                            {service.name}
+                          </h3>
+                          <p className="text-xs sm:text-sm text-muted-foreground">{service.description}</p>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
                 )}
               </CardContent>
             </Card>

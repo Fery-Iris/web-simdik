@@ -425,33 +425,33 @@ export default function Component() {
                   </div>
                 ) : (
                   detailedStats.map((category, categoryIndex) => (
-                    <div
-                      key={categoryIndex}
+                  <div
+                    key={categoryIndex}
                       className="card-glow card-glow-purple bg-white dark:bg-card/90 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
-                    >
+                  >
                       <h4 className="text-lg font-semibold text-foreground mb-1 text-center">
-                        {category.category}
-                      </h4>
+                      {category.category}
+                    </h4>
                       {category.description && (
                         <p className="text-sm text-muted-foreground text-center mb-4 border-b border-border pb-2">
                           {category.description}
                         </p>
                       )}
-                      <div className="space-y-3">
-                        {category.data.map((item, itemIndex) => (
-                          <div
-                            key={itemIndex}
+                    <div className="space-y-3">
+                      {category.data.map((item, itemIndex) => (
+                        <div
+                          key={itemIndex}
                             className="card-glow-cyan flex justify-between items-center p-3 bg-gray-50 dark:bg-muted/40 rounded-lg hover:bg-gray-100 dark:hover:bg-muted/60 transition-all duration-300 border border-gray-200 dark:border-transparent"
-                          >
-                            <div>
+                        >
+                          <div>
                               <div className="font-medium text-foreground">{item.label}</div>
                               <div className="text-xs text-muted-foreground">Jumlah sekolah tercatat</div>
-                            </div>
-                            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{item.count}</div>
                           </div>
-                        ))}
-                      </div>
+                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{item.count}</div>
+                        </div>
+                      ))}
                     </div>
+                  </div>
                   ))
                 )}
               </div>
