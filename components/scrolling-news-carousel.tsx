@@ -199,7 +199,7 @@ export function ScrollingNewsCarousel() {
             className="flex-shrink-0 px-2 md:px-3"
             style={{ width: `${cardWidthPercentage}%` }}
           >
-            <Card className="card-glow card-glow-cyan overflow-hidden group border-2 border-transparent h-full">
+            <Card className="card-glow card-glow-cyan overflow-hidden group border-2 border-transparent h-full bg-white dark:bg-card shadow-lg">
               <div className="relative overflow-hidden h-44 sm:h-48">
                 <Image
                   src={news.gambarUtama || "/placeholder.svg"}

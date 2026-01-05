@@ -237,7 +237,7 @@ export default function Component() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-background text-foreground overflow-x-hidden">
       <SiteHeader />
 
       {/* Hero Section */}
@@ -390,7 +390,7 @@ export default function Component() {
                     statsVisible[index] ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"
                   }`}
                 >
-                  <Card className="card-glow card-glow-blue text-center p-6 h-full group cursor-pointer border-2 border-transparent">
+                  <Card className="card-glow card-glow-blue text-center p-6 h-full group cursor-pointer border-2 border-transparent bg-white dark:bg-card shadow-lg">
                     <CardContent className="pt-6 h-full flex flex-col justify-center">
                       <div
                         className={`w-16 h-16 ${chartColorClass} rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 shadow-md`}
@@ -427,7 +427,7 @@ export default function Component() {
                   detailedStats.map((category, categoryIndex) => (
                     <div
                       key={categoryIndex}
-                      className="card-glow card-glow-purple bg-card/90 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
+                      className="card-glow card-glow-purple bg-white dark:bg-card/90 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
                     >
                       <h4 className="text-lg font-semibold text-foreground mb-1 text-center">
                         {category.category}
@@ -441,7 +441,7 @@ export default function Component() {
                         {category.data.map((item, itemIndex) => (
                           <div
                             key={itemIndex}
-                            className="card-glow-cyan flex justify-between items-center p-3 bg-muted/60 dark:bg-muted/40 rounded-lg hover:bg-muted/80 dark:hover:bg-muted/60 transition-all duration-300 border border-transparent"
+                            className="card-glow-cyan flex justify-between items-center p-3 bg-gray-50 dark:bg-muted/40 rounded-lg hover:bg-gray-100 dark:hover:bg-muted/60 transition-all duration-300 border border-gray-200 dark:border-transparent"
                           >
                             <div>
                               <div className="font-medium text-foreground">{item.label}</div>

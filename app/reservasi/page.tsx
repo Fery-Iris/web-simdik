@@ -366,7 +366,7 @@ export default function ReservasiPage() {
   const selectedTimeSlot = timeSlots.find((t) => t.id === reservationData.timeSlot)
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-background text-foreground overflow-x-hidden">
       <SiteHeader />
 
       <section className="py-8 sm:py-12 bg-gradient-to-r from-blue-600 to-blue-700 text-white relative overflow-hidden">
@@ -437,7 +437,7 @@ export default function ReservasiPage() {
         {/* Step 1: Service Selection */}
         {step === 1 && (
           <ScrollReveal animation="fade-up" delay={200}>
-            <Card className="shadow-lg border-0 bg-card dark:bg-card">
+            <Card className="shadow-lg border-0 bg-white dark:bg-card">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/40 p-4 sm:p-6">
                 <CardTitle className="text-center text-xl sm:text-2xl text-blue-700 dark:text-blue-300">
                   Pilih Layanan
@@ -446,7 +446,7 @@ export default function ReservasiPage() {
                   Silakan pilih layanan yang Anda butuhkan
                 </p>
               </CardHeader>
-              <CardContent className="p-4 sm:p-8 bg-card dark:bg-card">
+              <CardContent className="p-4 sm:p-8 bg-white dark:bg-card">
                 {isLoadingServices ? (
                   <div className="flex justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -458,10 +458,10 @@ export default function ReservasiPage() {
                       return (
                         <Card
                           key={service.id}
-                          className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-blue-400 group bg-card dark:bg-card touch-manipulation"
+                          className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 border-2 hover:border-blue-400 group bg-white dark:bg-card touch-manipulation"
                           onClick={() => handleServiceSelect(service.id, service.name)}
                         >
-                          <CardContent className="p-4 sm:p-6 text-center bg-card dark:bg-card">
+                          <CardContent className="p-4 sm:p-6 text-center bg-white dark:bg-card">
                             <div
                               className={cn(
                                 "w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-all duration-300 group-hover:scale-110",
@@ -488,7 +488,7 @@ export default function ReservasiPage() {
         {/* Step 2: Date and Time Selection */}
         {step === 2 && (
           <ScrollReveal animation="fade-up" delay={200}>
-            <Card className="shadow-lg border-0 bg-card dark:bg-card">
+            <Card className="shadow-lg border-0 bg-white dark:bg-card">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/40 p-4 sm:p-6">
                 <CardTitle className="text-center text-xl sm:text-2xl text-blue-700 dark:text-blue-300">
                   Pilih Tanggal & Waktu
@@ -672,7 +672,7 @@ export default function ReservasiPage() {
         {/* Step 3: Personal Information */}
         {step === 3 && (
           <ScrollReveal animation="fade-up" delay={200}>
-            <Card className="shadow-lg border-0 bg-card dark:bg-card">
+            <Card className="shadow-lg border-0 bg-white dark:bg-card">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/40 p-4 sm:p-6">
                 <CardTitle className="text-center text-xl sm:text-2xl text-blue-700 dark:text-blue-300">
                   Data Diri
@@ -681,7 +681,7 @@ export default function ReservasiPage() {
                   Lengkapi data diri Anda untuk reservasi
                 </p>
               </CardHeader>
-              <CardContent className="p-4 sm:p-8 bg-card dark:bg-card">
+              <CardContent className="p-4 sm:p-8 bg-white dark:bg-card">
                 <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <div>
@@ -785,7 +785,7 @@ export default function ReservasiPage() {
         {/* Step 4: Ticket Display with Print Option */}
         {step === 4 && (
           <ScrollReveal animation="fade-up" delay={200}>
-            <Card className="shadow-lg border-0 bg-card dark:bg-card">
+            <Card className="shadow-lg border-0 bg-white dark:bg-card">
               <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/40 dark:to-green-900/40 print:hidden p-4 sm:p-6">
                 <CardTitle className="text-center text-xl sm:text-2xl text-green-600 dark:text-green-400">
                   Tiket Reservasi Anda
@@ -794,7 +794,7 @@ export default function ReservasiPage() {
                   Simpan atau cetak tiket ini sebagai bukti reservasi
                 </p>
               </CardHeader>
-              <CardContent className="p-4 sm:p-8 bg-card dark:bg-card">
+              <CardContent className="p-4 sm:p-8 bg-white dark:bg-card">
                 <div className="bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 sm:p-8 rounded-lg print:border-black print:shadow-none shadow-inner mb-4 sm:mb-6">
                   <div className="text-center space-y-3 sm:space-y-4">
                     <div className="text-xs sm:text-sm text-muted-foreground font-medium print:text-black">

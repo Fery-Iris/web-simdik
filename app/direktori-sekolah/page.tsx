@@ -114,7 +114,7 @@ export default function SchoolDirectory() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50 dark:bg-background">
       <SiteHeader />
 
       {/* Hero Section with Cover Image */}
@@ -323,7 +323,7 @@ export default function SchoolDirectory() {
             <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 {currentSchools.map((school) => (
-                  <Card key={school.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Card key={school.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-card shadow-lg">
                 {/* School Image */}
                     <div className="relative h-40 sm:h-48 bg-gray-200">
                       {school.gambarUtama ? (

@@ -177,7 +177,7 @@ export function ScrollingAgendaCarousel({ agendas }: ScrollingAgendaCarouselProp
             className="flex-shrink-0 px-2 md:px-3"
             style={{ width: `${cardWidthPercentage}%` }}
           >
-            <Card className="card-glow card-glow-purple overflow-hidden group border-2 border-transparent h-full">
+            <Card className="card-glow card-glow-purple overflow-hidden group border-2 border-transparent h-full bg-white dark:bg-card shadow-lg">
               <CardContent className="p-4 sm:p-5">
                 <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 transition-all duration-300 group-hover:text-blue-600 line-clamp-2">
                   {agenda.title}
