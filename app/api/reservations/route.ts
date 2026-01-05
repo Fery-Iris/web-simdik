@@ -146,6 +146,38 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ✅ VALIDASI KAPASITAS SLOT - Cegah double booking
+    try {
+      // Hitung jumlah reservasi aktif (WAITING atau CALLED) pada tanggal dan slot yang sama
+      const existingReservations = await prisma.reservasi.count({
+        where: {
+          date: reservationDate,
+          timeSlot: timeSlot,
+          status: {
+            in: ["WAITING", "CALLED"] // Hanya hitung yang aktif, tidak termasuk COMPLETED atau CANCELLED
+          }
+        }
+      })
+
+      // Tentukan kapasitas maksimal berdasarkan hari
+      const dayOfWeek = reservationDate.getDay()
+      const maxCapacity = 1 // Setiap slot hanya untuk 1 orang
+
+      // Cek apakah slot sudah penuh
+      if (existingReservations >= maxCapacity) {
+        return NextResponse.json({ 
+          success: false,
+          error: `Slot waktu ${timeSlot} pada tanggal ${date} sudah dipesan oleh orang lain. Silakan pilih slot waktu lain.`
+        }, { status: 400 })
+      }
+
+      console.log(`✅ Slot ${timeSlot} pada ${date}: ${existingReservations}/${maxCapacity} (tersedia ${maxCapacity - existingReservations} slot)`)
+    } catch (validationError) {
+      console.error("Error validating slot capacity:", validationError)
+      // Jika error saat validasi, tetap lanjutkan (fail-safe)
+      // Tapi log error untuk monitoring
+    }
+
     // Generate queue number and estimated call time
     const queueNumber = await generateQueueNumber(service, layananId)
     const estimatedCallTime = calculateEstimatedTime(service)

@@ -14,8 +14,8 @@ const getTimeSlotsForDay = (dayOfWeek: number) => {
   // Friday (5) - only 8 AM to 10 AM
   if (dayOfWeek === 5) {
     return [
-      { id: "08:00", time: "08:00 - 09:00", capacity: 10 },
-      { id: "09:00", time: "09:00 - 10:00", capacity: 10 },
+      { id: "08:00", time: "08:00 - 09:00", capacity: 1 },
+      { id: "09:00", time: "09:00 - 10:00", capacity: 1 },
     ]
   }
   
@@ -26,12 +26,12 @@ const getTimeSlotsForDay = (dayOfWeek: number) => {
   
   // Monday-Thursday (1-4) - 8 AM to 12 PM, then 2 PM to 4 PM (lunch break 12-2 PM, tutup jam 16:00)
   return [
-    { id: "08:00", time: "08:00 - 09:00", capacity: 10 },
-    { id: "09:00", time: "09:00 - 10:00", capacity: 10 },
-    { id: "10:00", time: "10:00 - 11:00", capacity: 10 },
-    { id: "11:00", time: "11:00 - 12:00", capacity: 10 },
-    { id: "14:00", time: "14:00 - 15:00", capacity: 10 },
-    { id: "15:00", time: "15:00 - 16:00", capacity: 10 },
+    { id: "08:00", time: "08:00 - 09:00", capacity: 1 },
+    { id: "09:00", time: "09:00 - 10:00", capacity: 1 },
+    { id: "10:00", time: "10:00 - 11:00", capacity: 1 },
+    { id: "11:00", time: "11:00 - 12:00", capacity: 1 },
+    { id: "14:00", time: "14:00 - 15:00", capacity: 1 },
+    { id: "15:00", time: "15:00 - 16:00", capacity: 1 },
   ]
 }
 
