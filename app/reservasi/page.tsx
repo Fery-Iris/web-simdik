@@ -94,19 +94,19 @@ const getTimeSlots = async (selectedDate: Date | undefined) => {
   // Friday (5) - only 8 AM to 10 AM
   if (dayOfWeek === 5) {
     return [
-      { id: "08:00", time: "08:00 - 09:00", capacity: 10, booked: 3 },
-      { id: "09:00", time: "09:00 - 10:00", capacity: 10, booked: 7 },
+      { id: "08:00", time: "08:00 - 09:00", capacity: 1, booked: 0 },
+      { id: "09:00", time: "09:00 - 10:00", capacity: 1, booked: 0 },
     ]
   }
 
   // Monday-Thursday (1-4) - 8 AM to 12 PM, then 2 PM to 4 PM (lunch break 12-2 PM, tutup jam 16:00)
   return [
-    { id: "08:00", time: "08:00 - 09:00", capacity: 10, booked: 3 },
-    { id: "09:00", time: "09:00 - 10:00", capacity: 10, booked: 7 },
-    { id: "10:00", time: "10:00 - 11:00", capacity: 10, booked: 2 },
-    { id: "11:00", time: "11:00 - 12:00", capacity: 10, booked: 5 },
-    { id: "14:00", time: "14:00 - 15:00", capacity: 10, booked: 4 },
-    { id: "15:00", time: "15:00 - 16:00", capacity: 10, booked: 2 },
+    { id: "08:00", time: "08:00 - 09:00", capacity: 1, booked: 0 },
+    { id: "09:00", time: "09:00 - 10:00", capacity: 1, booked: 0 },
+    { id: "10:00", time: "10:00 - 11:00", capacity: 1, booked: 0 },
+    { id: "11:00", time: "11:00 - 12:00", capacity: 1, booked: 0 },
+    { id: "14:00", time: "14:00 - 15:00", capacity: 1, booked: 0 },
+    { id: "15:00", time: "15:00 - 16:00", capacity: 1, booked: 0 },
   ]
 }
 
@@ -630,12 +630,15 @@ export default function ReservasiPage() {
                                 setReservationData({ ...reservationData, timeSlot: slot.id })
                               }
                             }}
-                            title={isPassed ? "Slot waktu ini sudah lewat" : undefined}
+                            title={isPassed ? "Slot waktu ini sudah lewat" : !isAvailable ? "Slot sudah dipesan" : undefined}
                           >
                             <Clock className="w-4 h-4 mb-1" />
                             <span className="text-xs sm:text-sm font-medium">{slot.time}</span>
                             {isPassed && (
                               <span className="text-xs text-red-600 dark:text-red-400 mt-1">Sudah lewat</span>
+                            )}
+                            {!isPassed && !isAvailable && (
+                              <span className="text-xs text-red-600 dark:text-red-400 mt-1 font-semibold">Penuh</span>
                             )}
                           </Button>
                         )
